@@ -139,7 +139,7 @@
   label {
     display: grid;
     gap: 0.3rem;
-    font-size: 0.8rem;
+    font-size: 0.95rem;
   }
   input,
   select,
@@ -163,7 +163,7 @@
   pre {
     max-height: 22rem;
     overflow: auto;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
   }
   small {
     overflow-wrap: anywhere;

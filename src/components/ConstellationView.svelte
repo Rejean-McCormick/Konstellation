@@ -200,7 +200,7 @@
           <circle r="24" />
           <text class="history-mark" y="5" text-anchor="middle">‹</text>
           <text class="history-kicker" y="-35" text-anchor="middle">précédent</text>
-          {#each splitLabel(previousEntry.label, 15) as line, i}<text class="history-label" y={43 + i * 13} text-anchor="middle">{line}</text>{/each}
+          {#each splitLabel(previousEntry.label, 15) as line, i}<text class="history-label" y={44 + i * 16} text-anchor="middle">{line}</text>{/each}
           <title>Revenir à {previousEntry.label}</title>
         </g>
       {/if}
@@ -236,7 +236,7 @@
           <g class="constellation-node-motion">
             <circle r={radius(node)} />
             {#if node.count !== null}<text class="node-count" y="4" text-anchor="middle">{node.count}</text>{:else}<text class="node-mark" y="5" text-anchor="middle">{node.kind === 'source' ? '◫' : node.kind === 'group' ? '✦' : '•'}</text>{/if}
-            {#each splitLabel(node.label) as line, i}<text class="node-label" y={radius(node) + 18 + i * 14} text-anchor="middle">{line}</text>{/each}
+            {#each splitLabel(node.label) as line, i}<text class="node-label" y={radius(node) + 20 + i * 17} text-anchor="middle">{line}</text>{/each}
             <title>{node.label}{node.salience ? ` · score ${node.salience.score} · ${node.evidence.assertionCount} assertion(s)` : ''}</title>
           </g>
         </g>
