@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:konstellation:schema:relation:1.0",
+  "title": "Konstellation Relation Definition",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["id", "version", "label", "domain", "range", "direction", "operators"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "version": { "type": "string" },
+    "label": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "string" }
+    },
+    "domain": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "range": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "direction": { "enum": ["outgoing", "incoming", "derived"] },
+    "operators": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "inverseOf": { "type": "string" },
+    "mappings": { "type": "object" },
+    "ui": { "type": "object" }
+  }
+}

@@ -1,0 +1,29 @@
+node_modules/
+dist/
+.astro/
+test-results/
+playwright-report/
+.env
+*.local.pack.json
+/SmartSnap.pyw
+
+# Generated test/import packs and transient output
+test-pack-*/
+.tmp/
+.cache/
+coverage/
+*.log
+
+# Python helper caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Backup files
+*.bak
+*.bak_*
+*.bak-*
+*.orig
+*.swp

@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "root": {"type": "human"},
+  "filters": [
+    {"relation": "lifespan", "operator": "overlaps", "from": 300, "to": 500},
+    {"relation": "field_of_work", "operator": "equals", "value": "concept:philosophy"},
+    {"relation": "movement", "operator": "exists"}
+  ],
+  "sort": [{"key": "label", "direction": "asc"}],
+  "page": {"limit": 50, "cursor": null}
+}

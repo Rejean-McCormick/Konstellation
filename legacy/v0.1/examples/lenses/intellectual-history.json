@@ -1,0 +1,15 @@
+{
+  "id": "intellectual-history",
+  "version": "1.0",
+  "label": {"fr": "Histoire intellectuelle", "en": "Intellectual history"},
+  "rootType": "human",
+  "facets": [
+    {"relation": "lifespan", "widget": "range"},
+    {"relation": "occupation", "widget": "multi-select"},
+    {"relation": "field_of_work", "widget": "entity-picker"},
+    {"relation": "movement", "widget": "entity-picker"},
+    {"relation": "religious_tradition", "widget": "entity-picker"},
+    {"relation": "educated_at", "widget": "entity-picker"},
+    {"relation": "influenced_by", "widget": "entity-picker"}
+  ]
+}

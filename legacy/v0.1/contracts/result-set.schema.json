@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:konstellation:schema:result-set:1.0",
+  "title": "Konstellation ResultSet",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["version", "queryHash", "items"],
+  "properties": {
+    "version": { "const": "1.0" },
+    "queryHash": { "type": "string" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "label"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "label": { "type": "string" },
+          "matchedFilters": { "type": "array" },
+          "provenanceRefs": { "type": "array" },
+          "epistemic": { "type": "object" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "nextCursor": { "type": ["string", "null"] }
+  }
+}

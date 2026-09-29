@@ -1,0 +1,505 @@
+{
+  "version": "0.5.0",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "6ae1b5d9934bbb5f21db184b62a7c5ca89d374e11149ed30ba0bd5cd641e3d76"
+    },
+    {
+      "path": ".prettierrc.json",
+      "sha256": "632bd43f4372cd97ed18b9fe86b3aae98f59117a96b6290b9f2c2172d151eaf6"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "dd658ac4970ba90f592186ec2430934ef4f8f26cb30bce0084628ee847f25498"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "0ed16948b1a75a1f9f33e79e58da51357ae01f251e3618838d1d3240450a5093"
+    },
+    {
+      "path": "README.md",
+      "sha256": "a0913e12befe8d16e6f4de03a787e1aca907199512af17a8acd07adaf3e63938"
+    },
+    {
+      "path": "astro.config.mjs",
+      "sha256": "0e9b88d7b751acb870f184e23b408a1587bac774473dd582985656ba43978bff"
+    },
+    {
+      "path": "contracts/constellation-response.schema.json",
+      "sha256": "41be459dc78bda39b0897637837d63f62d5253039ce11c21b332f2a588a9ba84"
+    },
+    {
+      "path": "contracts/exploration-state.schema.json",
+      "sha256": "082547c54670f7629928f408350610713a2ef507c9191708a78713e6202d8d44"
+    },
+    {
+      "path": "contracts/lens.schema.json",
+      "sha256": "7fff19caf42668e8f174bb900f572ee6657cee5b2f704dd53d5fdf25b7a7f388"
+    },
+    {
+      "path": "contracts/query-spec.schema.json",
+      "sha256": "d4e65aa5f7913613d5d49d22a6330400517cb7820be14ac8b8385f5b51c7e5bf"
+    },
+    {
+      "path": "contracts/relation-registry.schema.json",
+      "sha256": "c1bdfa70fb0239a8b4797f9c905f0a103484a463527becf78fdcddba070cd820"
+    },
+    {
+      "path": "contracts/result-set.schema.json",
+      "sha256": "a592e5bee92fe7855a4fc54e69d6f21dab54962e07a1993c8be3835822247dd5"
+    },
+    {
+      "path": "contracts/upstream/README.md",
+      "sha256": "f8f36aae552e49d65e0ea7deb82cba39798d5254eb511ebc6d6cf813eb85cc35"
+    },
+    {
+      "path": "contracts/upstream/communication_request.schema.json",
+      "sha256": "0a9f6510ccaa889aaeef84b220f6c10b0f79b80c3453395e49ea04c5b8314292"
+    },
+    {
+      "path": "contracts/upstream/communication_result.schema.json",
+      "sha256": "c9964d4a0f57712ab36600173b717473bef0ff2e6c4fa5413bd7ebe91f3d0454"
+    },
+    {
+      "path": "contracts/upstream/reader-policy.schema.json",
+      "sha256": "2a3f843eaf4e89515ebf40ce5514f85406e1d556f4ecd503f0075d35b43c565c"
+    },
+    {
+      "path": "contracts/upstream/runtime-pack-manifest.schema.json",
+      "sha256": "17b3569166a3278953853b6d781058414614d8ca52ac64e006ad02e90961461e"
+    },
+    {
+      "path": "contracts/upstream/structured-epistemic-state.schema.json",
+      "sha256": "23de5d84986c1f09235f619f41af0e6ef87f9c25aa240c00b5632bc84a5a8598"
+    },
+    {
+      "path": "data/demo.pack.json",
+      "sha256": "ccd59dd9c675ec411415ff38671c3c2888667f40fcaa6c3a11af2e24f9445609"
+    },
+    {
+      "path": "docs/00-decisions.md",
+      "sha256": "d1c3fcc706f7e38f6851401933a32f662f75076f4771d83aa8e30821cb1888b9"
+    },
+    {
+      "path": "docs/01-architecture.md",
+      "sha256": "adccfe58ce3500e2f82c34d8ddb8b71eeb198bdd457e4b58a4483ede6b882bf2"
+    },
+    {
+      "path": "docs/02-query-model.md",
+      "sha256": "44aae525cd275990c48f619ebc1f58977551258f4fe5a49fba5c844c460dc5d0"
+    },
+    {
+      "path": "docs/03-navigation.md",
+      "sha256": "84d81b4f0b1c21110d78af8b5adc51b4d719009d9e333fd3c89454b1cfc2dac8"
+    },
+    {
+      "path": "docs/04-knowledge-semantics.md",
+      "sha256": "c2ad0eb849f3a42166302dfbeff812d2c4998bbbf3297e09d7d74ef4643dfd59"
+    },
+    {
+      "path": "docs/05-execution.md",
+      "sha256": "878599a2e3f2ba25143d27473fafda17b5e7a3072504f9a099376893484b9a51"
+    },
+    {
+      "path": "docs/06-integrations.md",
+      "sha256": "2c4243e68d90288643416aa375c8cd2a891e1343fdd32bd41b9de8201cf488ab"
+    },
+    {
+      "path": "docs/07-delivery-plan.md",
+      "sha256": "04ad26a87aad292de2d3495e8da6e258766377824ecae01b1318c452bfaba4f3"
+    },
+    {
+      "path": "docs/08-migration.md",
+      "sha256": "2da4af0052beaa4deee19fb2343e12b6b6e00797f8ec29d078c5ce7972570384"
+    },
+    {
+      "path": "docs/09-source-audit.md",
+      "sha256": "c8c6e01accc60db89a8efdfeca01436a7c45d3cd68a82c4ae964fb1cc7b6f361"
+    },
+    {
+      "path": "docs/10-validation-report.md",
+      "sha256": "001fdbf7d3dfd41514dcb39cca5e0858e0b14893262e140b76e87cc8abb8d9be"
+    },
+    {
+      "path": "docs/DESIGN-v0.2-README.md",
+      "sha256": "d06617acbb29e99a3501083273d29a1d47025a95b5f997dda614a18c7baa4a72"
+    },
+    {
+      "path": "docs/IMPLEMENTATION.md",
+      "sha256": "4c1f123c5955d73c23a3e085cef134c594dfc7cb7e6522d0970656f76b4f16a4"
+    },
+    {
+      "path": "docs/IMPORT.md",
+      "sha256": "72b010e800af005bfae78468331fd96beb236435ac81d94bd3387dfc80e02338"
+    },
+    {
+      "path": "docs/INTEGRATIONS.md",
+      "sha256": "a4ed7bc62918f353c51ed0e183884d40184b6f9b1e0961206f7aea62f50d6385"
+    },
+    {
+      "path": "docs/OPERATIONS.md",
+      "sha256": "8997b50ddd73af47ef7bf686978b738e38a86517a5fbb0fe2c848d69a30944d8"
+    },
+    {
+      "path": "docs/VALIDATION-v0.3.md",
+      "sha256": "38f36456055ac3a8f7aa3f3174c66709c8bc2c7037c89ae7f8fe840cd766a2c5"
+    },
+    {
+      "path": "docs/VALIDATION-v0.4.md",
+      "sha256": "d1a41ddacda8ef5cd57ea91998f0919748d2ae51eebf2a7931b10482907f765f"
+    },
+    {
+      "path": "docs/VALIDATION-v0.5.md",
+      "sha256": "cbaa24bc7b91c5cbe31c8fc9636f4187ca60f9a53ede047ea7cadf9686c2a044"
+    },
+    {
+      "path": "docs/adr/ADR-0005-bounded-selection-tree.md",
+      "sha256": "84a00331eb2a7964aeb75acc8126832bfa57f8fa86b1eea269ed7ff2485a2bd5"
+    },
+    {
+      "path": "docs/input-snapshots.json",
+      "sha256": "db88123031c1a3f674f9d349297103dbaa6f750e95b3b7599e3991068bd570ff"
+    },
+    {
+      "path": "examples/exploration.json",
+      "sha256": "98a05c58b5b91fd84cc0e07c73c275ddd75a6198dd1d1c99cf5ed783cb1e4a83"
+    },
+    {
+      "path": "examples/import/mapping.json",
+      "sha256": "d65729d535aaedf375b031c07fb51a88d65c2a402a6ea092a4e688398e1deb8b"
+    },
+    {
+      "path": "examples/import/state.json",
+      "sha256": "b9364cb7346c3124572e3f5f20f29b300ce5d701b1bc319d455b9a7c5ccd4516"
+    },
+    {
+      "path": "examples/integrations/kristal-directory.json",
+      "sha256": "ba79cf6b21169e7802263a6a74b711b2cddee012774d7c79a6163213666993e2"
+    },
+    {
+      "path": "examples/integrations/kristal-http.json",
+      "sha256": "5372f77852906d50481d7ee23fac69a903c2d6388f866ff0c47e41353aed1b5b"
+    },
+    {
+      "path": "examples/integrations/runtime-pack/assertions.parquet",
+      "sha256": "6f5962978166e57e6fc667b7a81de8ff87b3f90353331ecbb2c89fd40d5a9022"
+    },
+    {
+      "path": "examples/integrations/runtime-pack/catalog.json",
+      "sha256": "dec652ab4ff45415ae1a3d76fda8c9f345ec49d566be36385b19308bcd5ecb03"
+    },
+    {
+      "path": "examples/integrations/runtime-pack/manifest.json",
+      "sha256": "760a658af391432037e3f8f982e0bf41b6d63a65b2dd2eb68c7353c8e03a1669"
+    },
+    {
+      "path": "examples/integrations/runtime-pack/reader-policy.json",
+      "sha256": "84dcdad76ad338841ecb42d56eb71da503072f9c8adb4b172516dfdd5a8ec061"
+    },
+    {
+      "path": "examples/integrations/semantik.json",
+      "sha256": "9f5ba6614eb0e6d6258171bfa087d3889c3954198b2889b059a18622dfc33306"
+    },
+    {
+      "path": "examples/lenses/catholic-intellectual-history.json",
+      "sha256": "a096282ad701a941befb93d44335b8b98f73105439928a5fa49a8a4b0eaba5b1"
+    },
+    {
+      "path": "examples/lenses/intellectual-history.json",
+      "sha256": "c399b96695b715647fa750bb616bcea6c8db16b49d538f212d272e000993fea5"
+    },
+    {
+      "path": "examples/lenses/sociodemography.json",
+      "sha256": "63d0d0db67b9398f04fb13d77182ccddfc8c52579a54eca9eecc675143cb31f9"
+    },
+    {
+      "path": "examples/queries/people.json",
+      "sha256": "ea75153f4cd08bb26f5e85bd5e5ec8e28fc6d2baf4f2d4a49d4a6a0c089c7465"
+    },
+    {
+      "path": "examples/queries/works.json",
+      "sha256": "f0948ce9e91fb1c98d25ae4b09c4e30997443a07fe9830a3f06ed99f36200724"
+    },
+    {
+      "path": "examples/registry.json",
+      "sha256": "6612ed2e8ab45f4761cc3d77a8891f13051b6a690ec263b298deea70f7d495e2"
+    },
+    {
+      "path": "examples/result.json",
+      "sha256": "8ec9e325914703fd8dbd5771b8d5618449fe59374aadd99d5755904f07ce3cc1"
+    },
+    {
+      "path": "legacy/v0.1/CHANGELOG.md",
+      "sha256": "5ab673a2abf562fda487b5863b17424a999caa734f06d754fc849fa0ecc3560b"
+    },
+    {
+      "path": "legacy/v0.1/CONTRIBUTING.md",
+      "sha256": "3ecff54533c109a4eefe68bdd7b73bfacf913112b7b05296e158008ddb725bc0"
+    },
+    {
+      "path": "legacy/v0.1/README.md",
+      "sha256": "00a529a46436bb4259baa3d1a70a81148b62f9d28969ac91731b8cd1113220f9"
+    },
+    {
+      "path": "legacy/v0.1/contracts/lens.schema.json",
+      "sha256": "b620c7c95792c6b4e5789493100b84d68043ad9e5196e8197f7be42dfb7b4ef5"
+    },
+    {
+      "path": "legacy/v0.1/contracts/query-spec.schema.json",
+      "sha256": "28102a61eeec3dbc1c7f120ca6182cbfc113f273c930e287460f4019b3c8a794"
+    },
+    {
+      "path": "legacy/v0.1/contracts/relation.schema.json",
+      "sha256": "f5ee6ce076b44504e649fd671b806900c056d5f10f405a10049640018b6c258a"
+    },
+    {
+      "path": "legacy/v0.1/contracts/result-set.schema.json",
+      "sha256": "5c9f384ca6dd52cd816706c39e5cccfa3fd5c86f72821a25e43c91f8b388f705"
+    },
+    {
+      "path": "legacy/v0.1/docs/00-vision.md",
+      "sha256": "75361cdb4a65bcf31dd8ab465beb8f68eb6b9e0f40dcede45a5dfaefa7dc7168"
+    },
+    {
+      "path": "legacy/v0.1/docs/01-architecture.md",
+      "sha256": "66476d974f455f6b673efcc82c5519583111853250675bf46594d1c57ee2f21b"
+    },
+    {
+      "path": "legacy/v0.1/docs/02-query-model.md",
+      "sha256": "5ccacff20ef63467ddaf29b2d22333de9e640287629ca5c3540fca85e3f37fca"
+    },
+    {
+      "path": "legacy/v0.1/docs/03-query-lenses.md",
+      "sha256": "6ec6421de58a988fc4c0742061bd2cad8addfe951349ae67d2bbd4a5bd90e8ca"
+    },
+    {
+      "path": "legacy/v0.1/docs/04-relation-registry.md",
+      "sha256": "fd6fe60724728d516750f3eb2cbd134f485598c61300571ab2b22c21bdaac350"
+    },
+    {
+      "path": "legacy/v0.1/docs/05-kristal-read-model.md",
+      "sha256": "f54084428f96efd9f041a265f676ca4fe7ebe5b25fb378e3e214d74f03801ab0"
+    },
+    {
+      "path": "legacy/v0.1/docs/06-semantik-architect.md",
+      "sha256": "ed05513916cfd19a5d503135566f402731b6933146dee0a5e7a66f47671118e1"
+    },
+    {
+      "path": "legacy/v0.1/docs/07-ui-ux.md",
+      "sha256": "62a8fe3f145113cdfb43fc796885785099e601e3ed55b386c4821d97d1c1bad5"
+    },
+    {
+      "path": "legacy/v0.1/docs/08-boundaries.md",
+      "sha256": "77f56b069c64296ecc2df46306039d17eb0385ea12bf8ed3f5a44496d957e3be"
+    },
+    {
+      "path": "legacy/v0.1/docs/09-roadmap.md",
+      "sha256": "6a75e23867768e6d6b222f83771aa4f6eb1bc17263baa4a0d9d3fa8699e9b7d1"
+    },
+    {
+      "path": "legacy/v0.1/docs/10-repository-layout.md",
+      "sha256": "c74fce4fd527f3ee03c248e41ede44bb1e29f5233e10faba3c3db5bb02753a37"
+    },
+    {
+      "path": "legacy/v0.1/docs/adr/ADR-0001-queryspec-is-canonical.md",
+      "sha256": "1ef14e819b45582e7c4cf70a3719c8cfb851f1347a7a326d7cf79fa51f977e93"
+    },
+    {
+      "path": "legacy/v0.1/docs/adr/ADR-0002-kristal-remains-authority.md",
+      "sha256": "370b69a4f1c7eab75d5ff58beb80caa75c50ea55049d51467876209651ff6d30"
+    },
+    {
+      "path": "legacy/v0.1/docs/adr/ADR-0003-lenses-are-declarative.md",
+      "sha256": "b23e4818068ee266d78649f817a98666caec113ebf0bfdd3f8b2a41eb7aff193"
+    },
+    {
+      "path": "legacy/v0.1/docs/adr/ADR-0004-sa-articulates-not-selects.md",
+      "sha256": "b484bd10cfad7af6fc91d900d867b20018041d94eff8d43fb48d3f5fb38f74d1"
+    },
+    {
+      "path": "legacy/v0.1/examples/lenses/catholic-intellectual-history.json",
+      "sha256": "91322d9eb865e13b115985a808a8fa57bdf6826d7d8a5c9b4a4d55f0fd80328f"
+    },
+    {
+      "path": "legacy/v0.1/examples/lenses/intellectual-history.json",
+      "sha256": "f8e190a97653b4528af6acde2da46db3b109986ca72795b1077b73fa9979360d"
+    },
+    {
+      "path": "legacy/v0.1/examples/lenses/sociodemography.json",
+      "sha256": "095b7c44c26f6f3bb7c16201ba9da90a7b3edc5dc3bc26780fbdfa7b04ed35ae"
+    },
+    {
+      "path": "legacy/v0.1/examples/queries/late-antiquity-philosophers.json",
+      "sha256": "97e2433f3463e5eae48d502b7f8713199ef8693673f2232faee6adfa937dec11"
+    },
+    {
+      "path": "package.json",
+      "sha256": "be88a5fbc145ba45d10a7f99d7727189fab80b2628f6ef1614f1222328fd48b3"
+    },
+    {
+      "path": "playwright.config.mjs",
+      "sha256": "d25f7f32981beb997b4f7c61b12387e29edeec9b42873a6e9253105ce567f316"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "sha256": "756cc9e506ae4ee1a6f6c0507088b5cfc0dc8ba350fb2d2d46f1ffa72033adb6"
+    },
+    {
+      "path": "scripts/create-demo.mjs",
+      "sha256": "120ec9916157b3532d1d8b94fd42f043c983087d3937dc20ae34b0919d10df5d"
+    },
+    {
+      "path": "scripts/dev.mjs",
+      "sha256": "0c46963778f119f140e0267591a3a687cb34da110e4defa682be3be63ab67340"
+    },
+    {
+      "path": "scripts/generate-integration-example.mjs",
+      "sha256": "c2ab6d88de9d267b1192c72278382dcbc3b51e2d3158127bc8f2822a95b89e99"
+    },
+    {
+      "path": "scripts/import-kristal.mjs",
+      "sha256": "b02e66810df5d171af50dc66bbf1d3da36255e64f275f55a23331491caa730f3"
+    },
+    {
+      "path": "scripts/pack.mjs",
+      "sha256": "28113d261ea225a421b65059429a47d6f6c37a1359011d0439dee13d47784013"
+    },
+    {
+      "path": "scripts/smoke-dev.mjs",
+      "sha256": "662241d039a3f0afe5bb2bf6bc64628ae1c72b8a22c43ac3546974794ff12318"
+    },
+    {
+      "path": "server/contracts.mjs",
+      "sha256": "c3b2b5df6069e92f8aae9f547a81110ba4200052811ff9f6359471fa6bc2ca43"
+    },
+    {
+      "path": "server/engine.mjs",
+      "sha256": "0113db9763020672bc971365be0ccad615bbee09542d9f5c82e4a3a420b6cdfc"
+    },
+    {
+      "path": "server/index.mjs",
+      "sha256": "a476e707979dc94253fbbd6790696725fb76482352e3857a24dcd6a7cf95ed6d"
+    },
+    {
+      "path": "server/integrations/kristal.mjs",
+      "sha256": "651025c2ad2bde00604d731f614b4433a3da186c6dcfe3f5881ac138dc688075"
+    },
+    {
+      "path": "server/integrations/reader-policy.mjs",
+      "sha256": "71f2272703e87ed9269b94027ec39a670817f36ee881c57e6dac22d708f0349b"
+    },
+    {
+      "path": "server/integrations/semantik.mjs",
+      "sha256": "503a240fdf311c8f4ef9267aef90d5ce4b965f29072893f5d458337d1f3cbe0c"
+    },
+    {
+      "path": "server/integrations/upstream.mjs",
+      "sha256": "6987bb3411a7fae342256636c151dc0508db2b10298032e6b298cda83cf861f5"
+    },
+    {
+      "path": "server/navigation/index.mjs",
+      "sha256": "c3d3e674cfba6fe87bf370f71d3aa9622a2a767de6563509fe32b230f2e73847"
+    },
+    {
+      "path": "server/navigation/projector.mjs",
+      "sha256": "863cd129473f1d30788dd0e743422e1595a1dc9b302cad0dbca444da7ca963ca"
+    },
+    {
+      "path": "server/navigation/salience.mjs",
+      "sha256": "1d2d7c3c7f4fa17bc9d7257820608a30db5466197d134b25befb0dbc291886f0"
+    },
+    {
+      "path": "server/pack.mjs",
+      "sha256": "4b9648caa1f3584a11fc3a74af1240488366e919630cd95ceaefa9e33a3466cb"
+    },
+    {
+      "path": "src/components/Communication.svelte",
+      "sha256": "7ab881ca4c2ab10a7c9cec99f113393accb35f03a23807e3500abda41b3d492a"
+    },
+    {
+      "path": "src/components/ConstellationView.svelte",
+      "sha256": "e40b7614053cc3e5525f67ecf5d80075823479c7c1bba667a10add344f58e8f8"
+    },
+    {
+      "path": "src/components/Explorer.svelte",
+      "sha256": "18c47c6e633af09c1606b561fb42902225217102fc4e4e1002f62f81fdca73f0"
+    },
+    {
+      "path": "src/components/QueryTree.svelte",
+      "sha256": "ad7d7e58b8b196a2fdabb8af929463789e35cc4db67e39d726b47de8c40fe79d"
+    },
+    {
+      "path": "src/components/RelationGraph.svelte",
+      "sha256": "6b89ec80ec84e383b0ebaefbecb1c179ab58f15b68274bfd7783d6de6b5e21ae"
+    },
+    {
+      "path": "src/lib/constellation/layout.js",
+      "sha256": "20b7ef0f453eb4131471bd8260bdde06cd73e1e270f891c024c4aa1e6e35abd7"
+    },
+    {
+      "path": "src/pages/index.astro",
+      "sha256": "522b5edf02b024c03c1a66a0578d9c4e75f644084a0cc84308e2135c020affcc"
+    },
+    {
+      "path": "src/styles/global.css",
+      "sha256": "c03ca4f166e86f6131627eada256c82657457fed0abe4f35d96f0f2319f00b1d"
+    },
+    {
+      "path": "svelte.config.js",
+      "sha256": "450f0af4f4c1ecc4c7180f2e364c8a59bfed69dd350fb6b47bce8641c2a37786"
+    },
+    {
+      "path": "test-pack-LLxJG9/assertions.parquet",
+      "sha256": "6f5962978166e57e6fc667b7a81de8ff87b3f90353331ecbb2c89fd40d5a9022"
+    },
+    {
+      "path": "test-pack-LLxJG9/catalog.json",
+      "sha256": "dec652ab4ff45415ae1a3d76fda8c9f345ec49d566be36385b19308bcd5ecb03"
+    },
+    {
+      "path": "test-pack-LLxJG9/manifest.json",
+      "sha256": "e8de64c201531336b469966c23de2aa61462d1b239a37713cf5be54c66f24543"
+    },
+    {
+      "path": "test-pack-LLxJG9/reader-policy.json",
+      "sha256": "84dcdad76ad338841ecb42d56eb71da503072f9c8adb4b172516dfdd5a8ec061"
+    },
+    {
+      "path": "tests/api.test.mjs",
+      "sha256": "de16300b43fdccb8a670a40fdf474fc5c562fe19215f7cf6d8637e00df487c98"
+    },
+    {
+      "path": "tests/browser/explorer.spec.mjs",
+      "sha256": "0b773639109a89a4a634653079b76476e3950787e47b47a4f00a44ac64b5d22b"
+    },
+    {
+      "path": "tests/constellation.test.mjs",
+      "sha256": "e73c5edeada25d79c796d370e39075974a80e3a8394132998ba5f97a2869fb60"
+    },
+    {
+      "path": "tests/engine.test.mjs",
+      "sha256": "407ddc5164ec2f3da121b840066a08c8bf7664954c76b7e276a5de21a43ef7dd"
+    },
+    {
+      "path": "tests/import.test.mjs",
+      "sha256": "9e5319af276bc074634cbb156f0b40588855382d3361193d53a22f13310e29f5"
+    },
+    {
+      "path": "tests/integrations.test.mjs",
+      "sha256": "90a07e2f7e39334b5dfafb54e6d23f4133ea14ece9e1b1c687a0379e6e3f7760"
+    },
+    {
+      "path": "tests/ui/explorer.test.mjs",
+      "sha256": "e68d1199afec1f72c14a43c651ba2055749aa82054fed4d821e79de0815620e8"
+    },
+    {
+      "path": "tools/validate.py",
+      "sha256": "5c0bb6d03e749d605c457d439e88d1c4271b9a0fc1a339eb57a9aaad18d5006f"
+    },
+    {
+      "path": "vitest.config.mjs",
+      "sha256": "3902e116f8a089512226bb98c9527324d8d92acd7576047b7b98a3ffaeca1a78"
+    }
+  ]
+}

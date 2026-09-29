@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:konstellation:schema:lens:1.0",
+  "title": "Konstellation Query Lens",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["id", "version", "label", "rootType", "facets"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "version": { "type": "string" },
+    "label": { "type": "object", "additionalProperties": { "type": "string" } },
+    "rootType": { "type": "string" },
+    "facets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["relation"],
+        "properties": {
+          "relation": { "type": "string" },
+          "widget": { "type": "string" },
+          "label": { "type": "object" }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}
