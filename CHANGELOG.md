@@ -1,3 +1,22 @@
+## Biblical Graph v1 — 2026-09-29
+
+- Added `person`, `tradition`, `event`, `group` and `term` graph types.
+- Authorship is now modeled through historical, traditional, disputed, pseudepigraphic and attributed relations.
+- Added contextual canon relations and biblical/apocryphal work seed.
+- Added BibleData importer for all named biblical figures, aliases and person relationships.
+- Added Biblical People and Biblical Works lenses.
+- Astrolabe now searches aliases and French biblical forms.
+- Launcher merges the update onto the local Theophile pack when available and caches the generated pack.
+- Added `Update_Biblical_Corpus.cmd` for explicit corpus refresh.
+
+
+## 0.5.1 — Playwright QA harness
+
+- Ajoute `Test_Konstellation.cmd` avec modes rapide, Astrolabe, complet, UI et rapport.
+- Tests E2E du démarrage, des API, du corpus biblique, de l’Astrolabe, de la navigation, de l’inspecteur, des sauvegardes et du responsive.
+- Capture automatique des `Failed to fetch`, erreurs console, requêtes échouées et réponses 5xx.
+- Rapports HTML avec screenshots, vidéos et traces conservés en cas d’échec.
+- Instance de test isolée sur le port 4323, sans perturber le launcher normal sur 4321.
 
 ## Astrolabe
 

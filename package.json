@@ -15,7 +15,14 @@
     "check": "npm test && npm run test:ui && npm run build",
     "pack:validate": "node scripts/pack.mjs validate",
     "pack:import": "node scripts/import-kristal.mjs",
-    "test:ui": "vitest run"
+    "test:ui": "vitest run",
+    "corpus:biblical": "node scripts/update-biblical-corpus.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test --grep @smoke",
+    "test:e2e:astrolabe": "playwright test --grep @astrolabe",
+    "test:e2e:corpus": "playwright test --grep @corpus",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@astrojs/svelte": "9.0.1",

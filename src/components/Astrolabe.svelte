@@ -7,6 +7,10 @@
   const typeLabels = {
     author: 'Auteur',
     human: 'Personne',
+    person: 'Personne / personnage',
+    event: 'Événement',
+    group: 'Groupe / tradition',
+    term: 'Terme',
     position: 'Position',
     editorial: 'Question',
     theme: 'Thème',
@@ -90,10 +94,12 @@
     if (!q) return 0;
     const label = normalize(entity.label);
     const description = normalize(entity.description);
+    const aliases = normalize((entity.aliases || []).join(' '));
     const id = normalize(entity.id);
     if (label === q) return 140;
     if (label.startsWith(q)) return 110;
     if (label.includes(q)) return 95;
+    if (aliases.includes(q)) return 90;
     if (description.includes(q)) return 70;
     if (id.includes(q)) return 55;
 
@@ -156,7 +162,7 @@
   }
 
   function surprise() {
-    const candidates = entities.filter((entity) => ['editorial', 'theme', 'position'].includes(entity.type));
+    const candidates = entities.filter((entity) => ['editorial', 'theme', 'position', 'concept', 'person', 'work'].includes(entity.type));
     if (!candidates.length) return;
     const entity = candidates[Math.floor(Math.random() * candidates.length)];
     onNavigate(entity);
@@ -169,7 +175,7 @@
   $: current = orientation(term);
 </script>
 
-<section class="astrolabe" id="astrolabe" aria-labelledby="astrolabe-title">
+<section class="astrolabe" id="astrolabe" data-testid="astrolabe" aria-labelledby="astrolabe-title">
   <div class="astrolabe-orbit" aria-hidden="true">
     <span class="orbit orbit-one"></span>
     <span class="orbit orbit-two"></span>
@@ -201,7 +207,7 @@
   </div>
 
   {#if term.trim()}
-    <div class="astrolabe-reading" aria-live="polite">
+    <div class="astrolabe-reading" data-testid="astrolabe-reading" aria-live="polite">
       <div class="astrolabe-reading-head">
         <div>
           <small>LECTURE DE L’ASTROLABE</small>
@@ -225,9 +231,9 @@
       {/if}
 
       {#if current.results.length}
-        <div class="astrolabe-caps">
+        <div class="astrolabe-caps" data-testid="astrolabe-caps">
           {#each current.results.slice(0, 8) as item}
-            <button class="astrolabe-cap" on:click={() => onNavigate(item.entity)}>
+            <button class="astrolabe-cap" data-entity-id={item.entity.id} data-entity-type={item.entity.type} on:click={() => onNavigate(item.entity)}>
               <span class="cap-mark" aria-hidden="true">✦</span>
               <span class="cap-copy">
                 <small>{item.reason} · {typeLabels[item.entity.type] || item.entity.type}</small>
