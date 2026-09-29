@@ -10,12 +10,12 @@
   export let limit = 8;
   export let inspect = () => {};
 
-  const VIEW_WIDTH = 960;
-  const VIEW_HEIGHT = 560;
-  const BASE_CENTER_X = 480;
-  const HISTORY_CENTER_X = 540;
-  const CENTER_Y = 280;
-  const HISTORY_X = 76;
+  const VIEW_WIDTH = 1000;
+  const VIEW_HEIGHT = 620;
+  const BASE_CENTER_X = 500;
+  const HISTORY_CENTER_X = 565;
+  const CENTER_Y = 300;
+  const HISTORY_X = 82;
 
   let data = null,
     busy = false,
@@ -130,9 +130,9 @@
   }
 
   function radius(node) {
-    if (node.kind === 'group') return 38;
-    if (node.kind === 'source') return 31;
-    return 28;
+    if (node.kind === 'group') return 41;
+    if (node.kind === 'source') return 34;
+    return 31;
   }
   function nodeClass(node) {
     return `constellation-node kind-${node.kind}`;
@@ -211,8 +211,8 @@
             class="constellation-center constellation-center-motion"
             style={`--from-x:${arrival.dx}px;--from-y:${arrival.dy}px`}
           >
-            <circle r="70" />
-            {#each splitLabel(model.center.label, 18) as line, i}<text y={-5 + i * 17} text-anchor="middle">{line}</text>{/each}
+            <circle r="76" />
+            {#each splitLabel(model.center.label, 18) as line, i}<text y={-5 + i * 20} text-anchor="middle">{line}</text>{/each}
             {#if model.center.kind !== 'group'}<text class="node-kind" y="42" text-anchor="middle">{model.center.kind}</text>{/if}
           </g>
         {/key}
@@ -236,7 +236,7 @@
           <g class="constellation-node-motion">
             <circle r={radius(node)} />
             {#if node.count !== null}<text class="node-count" y="4" text-anchor="middle">{node.count}</text>{:else}<text class="node-mark" y="5" text-anchor="middle">{node.kind === 'source' ? '◫' : node.kind === 'group' ? '✦' : '•'}</text>{/if}
-            {#each splitLabel(node.label) as line, i}<text class="node-label" y={radius(node) + 20 + i * 17} text-anchor="middle">{line}</text>{/each}
+            {#each splitLabel(node.label) as line, i}<text class="node-label" y={radius(node) + 22 + i * 19} text-anchor="middle">{line}</text>{/each}
             <title>{node.label}{node.salience ? ` · score ${node.salience.score} · ${node.evidence.assertionCount} assertion(s)` : ''}</title>
           </g>
         </g>

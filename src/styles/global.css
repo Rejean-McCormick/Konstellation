@@ -1866,3 +1866,704 @@ tr.selected {
     animation: none !important;
   }
 }
+
+/* v0.5 desktop readability completion — calibrated against the user's
+   Windows 11 / Chrome UI at 100% zoom. The aim is not browser zoom: it is
+   a deliberate type hierarchy with 14px body text, 13px secondary text and
+   12px reserved for genuinely tertiary metadata. */
+:root {
+  --ui-body: 14px;
+  --ui-secondary: 13px;
+  --ui-micro: 12px;
+  --ui-control: 14px;
+  --ui-leading: 1.55;
+}
+
+body {
+  font-size: var(--ui-body);
+  line-height: var(--ui-leading);
+}
+
+small {
+  font-size: var(--ui-secondary);
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: var(--ui-control);
+}
+
+/* Global navigation and contextual controls */
+.brand small,
+.context-bar small,
+.version-pill,
+.results-heading .eyebrow,
+.pivot-tag {
+  font-size: var(--ui-micro);
+}
+.topbar nav > a,
+.topbar nav > button,
+.local-indicator,
+.context-bar select,
+.context-end,
+.button,
+.demo-banner {
+  font-size: var(--ui-body);
+}
+.nav-count {
+  font-size: var(--ui-secondary);
+}
+.eyebrow {
+  font-size: var(--ui-secondary);
+}
+.intro p,
+.alert {
+  font-size: var(--ui-body);
+}
+
+/* Three-column reading layout: give prose enough width to remain readable. */
+.workspace {
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: 24px;
+}
+.workspace:has(.inspector) {
+  grid-template-columns: 310px minmax(460px, 1fr) 390px;
+  gap: 22px;
+}
+.filters-panel {
+  padding: 23px 20px;
+}
+.panel-heading h2 {
+  font-size: 15px;
+}
+.text-button,
+.hint,
+.apply-period,
+.operator {
+  font-size: var(--ui-body);
+}
+.panel-caption,
+.year-inputs label,
+.facet-values > label small,
+.facet-footer,
+.filter-note p {
+  font-size: var(--ui-secondary);
+}
+.facet-title h3,
+.facet-values > label {
+  font-size: var(--ui-body);
+  line-height: 1.45;
+}
+.facet-values {
+  gap: 7px;
+  max-height: 285px;
+}
+.facet-values > label {
+  padding: 5px 0;
+}
+input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+}
+.year-inputs input {
+  font-size: var(--ui-body);
+}
+
+/* Result header, search, view controls, result rows. */
+.journey-toolbar {
+  min-height: 56px;
+  padding: 15px 21px;
+}
+.history-controls button {
+  width: 28px;
+  height: 28px;
+  font-size: 15px;
+}
+.breadcrumb,
+.breadcrumb strong,
+.results-actions > select,
+.search-input input,
+.view-switch button {
+  font-size: var(--ui-body);
+}
+.results-heading {
+  padding: 26px 24px 18px;
+}
+.results-heading h2 {
+  font-size: 29px;
+}
+.result-count {
+  font-size: var(--ui-secondary);
+}
+.results-heading p {
+  font-size: var(--ui-body);
+  line-height: 1.55;
+  max-width: 620px;
+}
+.view-switch span {
+  font-size: var(--ui-secondary);
+}
+.results-actions {
+  padding: 0 24px 20px;
+}
+.search-input {
+  min-height: 42px;
+  padding: 9px 11px;
+}
+.entity-list article {
+  padding: 16px 24px;
+  gap: 12px;
+}
+.entity-list article.selected {
+  padding-left: 21px;
+}
+.entity-avatar {
+  width: 42px;
+  height: 46px;
+  font-size: 18px;
+}
+.entity-copy strong {
+  font-size: 15px;
+  line-height: 1.35;
+}
+.entity-copy small,
+.entity-meta > span,
+.results-footer,
+.active-filters,
+.filter-chip,
+.hidden-filters-note,
+.selection-bar,
+.selection-bar button {
+  font-size: var(--ui-secondary);
+}
+.entity-copy small {
+  margin-top: 5px;
+  line-height: 1.45;
+}
+.entity-meta button {
+  font-size: 19px;
+}
+.results-footer {
+  padding: 16px 23px;
+}
+.results-footer .button {
+  font-size: var(--ui-secondary);
+}
+.filter-chip span {
+  font-size: var(--ui-body);
+}
+
+/* Query/source/saved utility panels */
+.query-branch,
+.query-condition,
+.query-link,
+.query-panel details,
+.query-panel textarea,
+.utility-panel p,
+.save-form > input,
+.saved-list small,
+.match-proof,
+.match-proof p {
+  font-size: var(--ui-secondary);
+}
+.query-node {
+  padding: 9px 12px;
+}
+.query-condition,
+.query-link {
+  line-height: 1.5;
+}
+.saved-list > div > button:first-child {
+  font-size: var(--ui-body);
+}
+.match-proof code {
+  font-size: var(--ui-micro);
+}
+
+/* Inspector: the screenshot's right pane was the biggest readability gap. */
+.inspector {
+  padding: 22px;
+}
+.close {
+  font-size: 23px;
+}
+.inspector-hero {
+  padding: 20px 0 22px;
+  margin-bottom: 18px;
+}
+.entity-avatar.large {
+  width: 56px;
+  height: 59px;
+  font-size: 28px;
+}
+.inspector h2 {
+  font-size: 27px;
+  line-height: 1.2;
+}
+.inspector-hero p {
+  font-size: var(--ui-body);
+  line-height: 1.55;
+}
+.inspector-pivots .button {
+  font-size: var(--ui-secondary);
+}
+.inspector h3 {
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.assertion-card {
+  padding: 16px 0;
+}
+.assertion-heading,
+.assertion-card details,
+.conflict-note,
+.detail-list dt,
+.detail-list dd {
+  font-size: var(--ui-secondary);
+  line-height: 1.5;
+}
+.status-pill,
+.assertion-card > small,
+.assertion-card code {
+  font-size: var(--ui-micro);
+}
+.assertion-card > strong {
+  font-size: 15px;
+  line-height: 1.42;
+  margin-bottom: 9px;
+}
+.assertion-card details p {
+  line-height: 1.55;
+}
+.detail-list {
+  gap: 7px;
+}
+.detail-list > div {
+  grid-template-columns: minmax(112px, 0.42fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+/* Tables and empty/loading states */
+table {
+  font-size: var(--ui-body);
+}
+th {
+  font-size: var(--ui-secondary);
+}
+th,
+td {
+  padding: 16px;
+}
+.empty-state p,
+.graph-nodes button {
+  font-size: var(--ui-body);
+}
+.page-footer {
+  font-size: var(--ui-secondary);
+}
+
+/* Relation graph */
+.graph-canvas text {
+  font-size: 14px;
+}
+.graph-canvas .edge-label,
+.graph-center small {
+  font-size: 13px;
+}
+.graph-center strong {
+  font-size: 17px;
+}
+
+/* Semantic constellation — labels should read like native UI, not captions. */
+.constellation-view {
+  padding: 20px 22px 26px;
+}
+.constellation-breadcrumb {
+  font-size: 14px;
+  gap: 8px;
+}
+.satellite-limit {
+  font-size: 13px;
+  gap: 11px;
+}
+.satellite-limit strong {
+  font-size: 14px;
+}
+.satellite-limit input {
+  width: 125px;
+}
+.constellation-canvas {
+  min-height: 500px;
+}
+.constellation-center text {
+  font-size: 17px;
+}
+.constellation-center .node-kind {
+  font-size: 12px;
+}
+.constellation-node .node-count,
+.constellation-node .node-mark {
+  font-size: 14px;
+}
+.constellation-node .node-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+.constellation-footer,
+.constellation-message {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.constellation-history-node .history-kicker,
+.constellation-history-node .history-label {
+  font-size: 12px;
+}
+
+/* Utility communication panel uses component-local CSS; these descendants
+   deliberately raise its effective hierarchy without changing its semantics. */
+.communication {
+  font-size: 14px;
+}
+.communication summary,
+.communication p,
+.communication li,
+.communication label,
+.communication input,
+.communication select,
+.communication button {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.communication small,
+.communication pre {
+  font-size: 12px;
+}
+
+@media (min-width: 1600px) {
+  .workspace {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+  .workspace:has(.inspector) {
+    grid-template-columns: 320px minmax(520px, 1fr) 405px;
+  }
+}
+
+@media (max-width: 1320px) {
+  .workspace:has(.inspector) {
+    grid-template-columns: 290px minmax(420px, 1fr);
+  }
+  .inspector {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    max-height: 100vh;
+    width: 390px;
+    z-index: 20;
+    border-radius: 0;
+    box-shadow: -20px 0 60px #28391c25;
+  }
+}
+
+@media (max-width: 800px) {
+  :root {
+    --ui-body: 14px;
+    --ui-secondary: 13px;
+    --ui-micro: 12px;
+  }
+  .workspace,
+  .workspace:has(.inspector) {
+    grid-template-columns: 235px minmax(0, 1fr);
+  }
+  .panel-heading h2,
+  .entity-copy strong {
+    font-size: 14px;
+  }
+  .panel-caption,
+  .entity-copy small {
+    font-size: 13px;
+  }
+  .row-checkbox input {
+    width: 15px;
+    height: 15px;
+  }
+  .constellation-canvas {
+    min-height: 430px;
+  }
+}
+
+@media (max-width: 560px) {
+  .workspace,
+  .workspace:has(.inspector) {
+    display: flex;
+  }
+  .inspector {
+    width: 100%;
+    max-width: 420px;
+  }
+  .results-heading h2 {
+    font-size: 27px;
+  }
+}
+
+/* Astrolabe — a semantic entry layer above the catalogue. */
+.astrolabe {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(380px, 1.08fr);
+  gap: 28px;
+  overflow: hidden;
+  margin: 0 0 25px;
+  padding: 29px 31px;
+  border: 1px solid #dce5da;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 8% 20%, #e8f1e6 0, transparent 33%),
+    linear-gradient(135deg, #fbfcf8 0%, #f4f7f0 100%);
+}
+.astrolabe:not(:has(.astrolabe-reading)) {
+  grid-template-columns: 1fr;
+}
+.astrolabe-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+}
+.astrolabe h2 {
+  margin: 8px 0 8px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 29px;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  color: #2d493e;
+}
+.astrolabe-copy > p {
+  max-width: 680px;
+  margin-bottom: 17px;
+  color: #7d887e;
+  font-size: 14px;
+}
+.astrolabe-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 760px;
+  padding: 7px 7px 7px 13px;
+  border: 1px solid #d8e0d6;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 7px 22px rgba(45, 73, 62, 0.06);
+}
+.astrolabe-search > span {
+  color: #779283;
+  font-size: 21px;
+}
+.astrolabe-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 15px;
+}
+.astrolabe-search input::placeholder {
+  color: #a1aaa2;
+}
+.astrolabe-search .button {
+  padding: 10px 13px;
+}
+.astrolabe-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+.astrolabe-examples button {
+  padding: 6px 9px;
+  border: 1px solid #dde5d9;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #788479;
+  font-size: 12px;
+}
+.astrolabe-examples button:hover,
+.astrolabe-examples button.active {
+  border-color: #a9c1b3;
+  background: #edf4ef;
+  color: var(--green);
+}
+.astrolabe-examples .surprise {
+  border-style: dashed;
+  color: #587268;
+}
+.astrolabe-reading {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(211, 223, 211, 0.9);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(8px);
+}
+.astrolabe-reading-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e7ece4;
+}
+.astrolabe-reading-head small {
+  display: block;
+  margin-bottom: 5px;
+  color: #8c998f;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+.astrolabe-reading-head strong {
+  display: block;
+  color: #344e42;
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+.astrolabe-status {
+  flex: none;
+  padding: 5px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.astrolabe-status.direct {
+  background: #e8f2ec;
+  color: #37705d;
+}
+.astrolabe-status.nearby {
+  background: #f2efe4;
+  color: #7c7052;
+}
+.astrolabe-status.empty {
+  background: #f2ece9;
+  color: #806d63;
+}
+.astrolabe-note {
+  margin: 12px 0 9px;
+  color: #78857d;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.astrolabe-caps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 10px;
+}
+.astrolabe-cap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #e1e7df;
+  border-radius: 7px;
+  background: #fff;
+  text-align: left;
+}
+.astrolabe-cap:hover {
+  border-color: #b9cdbf;
+  background: #f8fbf7;
+}
+.cap-mark {
+  flex: none;
+  color: #78937f;
+  font-size: 13px;
+}
+.cap-copy {
+  min-width: 0;
+  flex: 1;
+}
+.cap-copy small {
+  display: block;
+  margin-bottom: 3px;
+  overflow: hidden;
+  color: #9aa39b;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cap-copy strong {
+  display: block;
+  overflow: hidden;
+  color: #42594d;
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cap-arrow {
+  flex: none;
+  color: #8ea294;
+}
+.astrolabe-orbit {
+  position: absolute;
+  left: -82px;
+  top: -98px;
+  width: 310px;
+  height: 310px;
+  pointer-events: none;
+  opacity: 0.52;
+}
+.astrolabe-orbit .orbit {
+  position: absolute;
+  inset: 30px;
+  border: 1px solid #b7cabb;
+  border-radius: 50%;
+  transform: rotate(-16deg) scaleY(0.48);
+}
+.astrolabe-orbit .orbit-two {
+  inset: 72px 18px;
+  transform: rotate(37deg) scaleY(0.62);
+}
+.astrolabe-star {
+  position: absolute;
+  right: 79px;
+  bottom: 91px;
+  color: #698b78;
+  font-size: 18px;
+}
+@media (max-width: 1050px) {
+  .astrolabe,
+  .astrolabe:not(:has(.astrolabe-reading)) {
+    grid-template-columns: 1fr;
+  }
+  .astrolabe-caps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 680px) {
+  .astrolabe {
+    padding: 22px 18px;
+  }
+  .astrolabe-search {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+  .astrolabe-search input {
+    min-width: 180px;
+  }
+  .astrolabe-search .button {
+    width: 100%;
+  }
+  .astrolabe-caps {
+    grid-template-columns: 1fr;
+  }
+  .astrolabe-reading-head {
+    flex-direction: column;
+  }
+}

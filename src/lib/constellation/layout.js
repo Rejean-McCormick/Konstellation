@@ -13,11 +13,11 @@ export function layoutConstellation(items, width = 900, height = 560, centerX = 
         ring,
       };
     });
-  if (n <= 10) return place(items, Math.min(330, width * 0.36), Math.min(190, height * 0.34), -Math.PI / 2, 1);
+  if (n <= 10) return place(items, Math.min(350, width * 0.36), Math.min(215, height * 0.35), -Math.PI / 2, 1);
   const innerCount = Math.min(8, Math.max(6, Math.round(n * 0.34)));
   return [
-    ...place(items.slice(0, innerCount), Math.min(230, width * 0.25), Math.min(145, height * 0.26), -Math.PI / 2, 1),
-    ...place(items.slice(innerCount), Math.min(385, width * 0.43), Math.min(235, height * 0.42), -Math.PI / 2 + 0.13, 2),
+    ...place(items.slice(0, innerCount), Math.min(245, width * 0.25), Math.min(160, height * 0.27), -Math.PI / 2, 1),
+    ...place(items.slice(innerCount), Math.min(405, width * 0.43), Math.min(255, height * 0.42), -Math.PI / 2 + 0.13, 2),
   ];
 }
 

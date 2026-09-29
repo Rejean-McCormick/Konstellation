@@ -1,3 +1,12 @@
+
+## Astrolabe
+
+- Ajout d’une couche d’orientation sémantique avant le catalogue.
+- Recherche tolérante aux accents, traits d’union et petites fautes.
+- Caps sémantiques pour des termes non indexés directement (eudiste, Saint-Esprit, parousie, iconoclaste).
+- Bouton « Cap au hasard » et navigation depuis un cap vers un QuerySpec Konstellation normal.
+- Distinction visible entre correspondance du corpus et piste voisine.
+
 # v0.5.0 — 2026-09-28
 
 Nouvelle vue **Constellation** : navigation sémantique centrée sur une entité, groupes déclaratifs optionnels dans les Lens, projection de qualificatifs et sources sans créer de nouvelles assertions, classement de saillance déterministe et diversifié, budget utilisateur de 3 à 25 satellites, fil d’Ariane restaurable, et rendu lisible des qualificatifs dans l’inspecteur. Le Query Service expose `/api/constellation`; le frontend reste Astro + Svelte + SVG natif, sans bibliothèque de graphe supplémentaire.

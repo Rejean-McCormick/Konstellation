@@ -1,6 +1,7 @@
 <script>
   import { onMount, tick } from 'svelte';
   import Communication from './Communication.svelte';
+  import Astrolabe from './Astrolabe.svelte';
   import QueryTree from './QueryTree.svelte';
   import ConstellationView from './ConstellationView.svelte';
   let boot = null,
@@ -85,6 +86,12 @@
       : 0;
   }
   const clone = (x) => JSON.parse(JSON.stringify(x));
+  const isOpaqueRef = (value) => /^sha256:[0-9a-f]{64}$/i.test(String(value || ''));
+  const sourceTitle = (sid) => {
+    const title = detail?.sources?.find((s) => s.id === sid)?.title;
+    if (title) return title;
+    return isOpaqueRef(sid) ? 'Source documentée' : sid;
+  };
   async function api(path, body, signal) {
     const r = await fetch('/api/' + path, {
       method: body === undefined ? 'GET' : 'POST',
@@ -299,6 +306,18 @@
     showQuery = true;
     await commit(next, { lens: nextLens });
   }
+  async function navigateFromAstrolabe(entity) {
+    if (!entity?.id || !entity?.type) return;
+    const next = clone(query);
+    next.selection = { entityType: entity.type, ids: [entity.id], filters: [], links: [] };
+    const nextLens = boot.lenses.find((l) => l.rootType === entity.type)?.id || 'type:' + entity.type;
+    view = 'list';
+    showQuery = false;
+    await commit(next, { lens: nextLens });
+    await tick();
+    document.querySelector('.workspace')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   async function inspect(id) {
     detailController?.abort();
     detailController = new AbortController();
@@ -481,7 +500,7 @@
       <span>Konstellation<small>DES ÉTOILES POUR S’ORIENTER</small></span>
     </a>
     <nav aria-label="Navigation principale">
-      <a class="active" href="/">Explorer</a><button
+      <a class="active" href="/">Explorer</a><a href="#astrolabe">Astrolabe</a><button
         class:active={showSaved}
         on:click={() => (showSaved = !showSaved)}
         >Mes explorations <span class="nav-count">{saved.length}</span></button
@@ -510,6 +529,7 @@
           >
         </div>
       </section>
+      <Astrolabe entities={boot.entities} onNavigate={errorGuard(navigateFromAstrolabe)} />
       {#if boot.synthetic}<div class="demo-banner">
           <span class="tiny-star">✦</span><strong>Corpus de démonstration</strong><span
             >Notices illustratives et relations synthétiques. Aucune validation historique
@@ -959,7 +979,11 @@
                     </p>
                     {#if w.kind === 'absence_in_view'}<p>
                         Aucune valeur correspondante dans cette vue complètement évaluée.
-                      </p>{:else}<p>Témoin : {w.assertionRefs.join(', ')}</p>{/if}{/each}
+                      </p>{:else}<p>
+                        {w.assertionRefs.length > 1
+                          ? `${w.assertionRefs.length} assertions documentées soutiennent cette correspondance.`
+                          : 'Une assertion documentée soutient cette correspondance.'}
+                      </p>{/if}{/each}
                 </details>{/if}
               <h3>Assertions visibles <span>{detail.assertions.length}</span></h3>
               <p class="hint">Chaque statut décrit une assertion, pas la personne entière.</p>
@@ -999,10 +1023,10 @@
                       </dl>{/if}
                     {#if a.payload.lineage}<p>Lineage : {JSON.stringify(a.payload.lineage)}</p>{/if}
                     {#each a.payload.sourceRefs as sid}<p class="source-ref">
-                        ↗ {detail.sources.find((s) => s.id === sid)?.title || sid}
-                      </p>{/each}{#if a.payload.ruleRef}<p>
+                        ↗ {sourceTitle(sid)}
+                      </p>{/each}{#if a.payload.ruleRef && !isOpaqueRef(a.payload.ruleRef)}<p>
                         Dérivation : {a.payload.ruleRef}
-                      </p>{/if}<code>{a.assertionRef}</code>
+                      </p>{/if}
                   </details>
                 </div>{:else}<p>Aucune assertion visible sous cette politique.</p>{/each}{/if}
           </aside>{/if}

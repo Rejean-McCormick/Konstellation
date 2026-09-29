@@ -12,6 +12,8 @@
     result = null,
     request = null,
     controller;
+  const isOpaqueRef = (value) => /^sha256:[0-9a-f]{64}$/i.test(String(value || ''));
+  $: visibleSourceRefs = (result?.source_refs || []).filter((ref) => !isOpaqueRef(ref));
   $: identity = JSON.stringify({ query, cursor, entityId, action, language, locale });
   $: if (identity) {
     controller?.abort();
@@ -108,12 +110,12 @@
       <small
         >Runtime : {result.runtime.runtime_set_id} · {result.coverage.length} obligations couvertes</small
       >
-      <details>
+      {#if visibleSourceRefs.length}<details>
         <summary>Références communiquées</summary>
         <ul>
-          {#each result.source_refs || [] as ref}<li>{ref}</li>{/each}
+          {#each visibleSourceRefs as ref}<li>{ref}</li>{/each}
         </ul>
-      </details>
+      </details>{/if}
     </section>{/if}
 </details>
 
@@ -129,6 +131,14 @@
   summary {
     cursor: pointer;
     font-weight: 600;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  .communication > p,
+  .communication section p,
+  .communication li {
+    font-size: 14px;
+    line-height: 1.55;
   }
   .controls {
     display: flex;
@@ -139,7 +149,7 @@
   label {
     display: grid;
     gap: 0.3rem;
-    font-size: 0.95rem;
+    font-size: 14px;
   }
   input,
   select,
@@ -163,7 +173,7 @@
   pre {
     max-height: 22rem;
     overflow: auto;
-    font-size: 0.85rem;
+    font-size: 12px;
   }
   small {
     overflow-wrap: anywhere;
