@@ -11,6 +11,7 @@ export const test = base.extend({
       const consoleErrors = [];
       const failedRequests = [];
       const serverErrors = [];
+      const apiErrors = [];
 
       page.on('pageerror', (error) => pageErrors.push(error.message));
       page.on('console', (message) => {
@@ -22,15 +23,26 @@ export const test = base.extend({
           failedRequests.push(`${request.method()} ${request.url()} — ${reason}`);
         }
       });
-      page.on('response', (response) => {
+      page.on('response', async (response) => {
         if (response.status() >= 500) {
           serverErrors.push(`${response.status()} ${response.request().method()} ${response.url()}`);
         }
+        if (response.status() >= 400 && response.url().includes('/api/')) {
+          let detail = '';
+          try {
+            detail = (await response.text()).slice(0, 500);
+          } catch {
+            detail = '<corps indisponible>';
+          }
+          apiErrors.push(
+            `${response.status()} ${response.request().method()} ${response.url()}${detail ? ` — ${detail}` : ''}`,
+          );
+        }
       });
 
-      await use({ pageErrors, consoleErrors, failedRequests, serverErrors });
+      await use({ pageErrors, consoleErrors, failedRequests, serverErrors, apiErrors });
 
-      const diagnostics = { pageErrors, consoleErrors, failedRequests, serverErrors };
+      const diagnostics = { pageErrors, consoleErrors, failedRequests, serverErrors, apiErrors };
       await testInfo.attach('diagnostics.json', {
         body: Buffer.from(JSON.stringify(diagnostics, null, 2)),
         contentType: 'application/json',
@@ -41,6 +53,7 @@ export const test = base.extend({
         expect.soft(consoleErrors, 'console.error inattendu').toEqual([]);
         expect.soft(failedRequests, 'requêtes réseau échouées').toEqual([]);
         expect.soft(serverErrors, 'réponses HTTP 5xx').toEqual([]);
+        expect.soft(apiErrors, 'réponses API HTTP 4xx/5xx').toEqual([]);
       }
     },
     { auto: true },

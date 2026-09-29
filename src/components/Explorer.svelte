@@ -36,7 +36,7 @@
     selectedIds = [],
     constellationPath = [],
     satelliteLimit = 8;
-  const typeLabels = { human: 'Personnes', author: 'Auteurs', position: 'Positions', work: 'Œuvres', source: 'Sources', place: 'Lieux', concept: 'Concepts', theme: 'Thèmes', tradition: 'Traditions', doctrine: 'Doctrines', 'doctrinal-status': 'Statuts doctrinaux', argument: 'Arguments', editorial: 'Éléments éditoriaux' };
+  const typeLabels = { human: 'Personnes', person: 'Personnes / personnages', event: 'Événements', group: 'Groupes', term: 'Termes', author: 'Auteurs', position: 'Positions', work: 'Œuvres', source: 'Sources', place: 'Lieux', concept: 'Concepts', theme: 'Thèmes', tradition: 'Traditions', doctrine: 'Doctrines', 'doctrinal-status': 'Statuts doctrinaux', argument: 'Arguments', editorial: 'Éléments éditoriaux' };
   const statusLabels = {
     sourced: 'Sourcée',
     validated: 'Validée',
@@ -103,6 +103,16 @@
     if (!r.ok) throw Error(j.error?.message || 'La requête a échoué.');
     return j;
   }
+  const FACET_BATCH_SIZE = 32;
+  async function loadFacets(queryValue, relationIds, signal) {
+    const ids = [...new Set((relationIds || []).filter(Boolean))];
+    const merged = {};
+    for (let i = 0; i < ids.length; i += FACET_BATCH_SIZE) {
+      const relations = ids.slice(i, i + FACET_BATCH_SIZE);
+      Object.assign(merged, await api('facets', { query: queryValue, relations }, signal));
+    }
+    return merged;
+  }
   function state() {
     return {
       schemaVersion: '0.2',
@@ -143,7 +153,7 @@
       result = data;
       if (!cursor) {
         try {
-          const f = await api('facets', { query, relations: ids }, signal);
+          const f = await loadFacets(query, ids, signal);
           if (current === revision) facets = f;
         } catch (e) {
           if (e.name !== 'AbortError' && current === revision) {
