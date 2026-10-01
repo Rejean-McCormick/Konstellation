@@ -6,8 +6,9 @@ const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PLAYWRIGHT_PORT || 4323);
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || `http://127.0.0.1:${port}`;
 const localPack = path.join(ROOT, 'data', 'biblical.pack.local.json');
-const testPack = process.env.KONSTELLATION_TEST_PACK || localPack;
-const testLenses = process.env.KONSTELLATION_TEST_LENSES || path.join(ROOT, 'examples', 'lenses');
+const enrichedPack = path.join(ROOT, 'data', 'theophile-biblical.enriched.pack.json');
+const testPack = process.env.KONSTELLATION_TEST_PACK || enrichedPack;
+const testLenses = process.env.KONSTELLATION_TEST_LENSES || path.join(ROOT, 'lenses-enriched');
 const externalServer = Boolean(process.env.PLAYWRIGHT_BASE_URL);
 
 export default defineConfig({
@@ -52,8 +53,7 @@ export default defineConfig({
     : {
         webServer: {
           // Important: le pack est préparé AVANT le démarrage du serveur.
-          // Le chemin KONSTELLATION_PACK pointe toujours vers le pack local que
-          // prepare-playwright-corpus.mjs crée à partir de data/demo.pack.json.
+          // Le serveur de test utilise le pack Théophile + graphe biblique livré.
           command: 'node scripts/prepare-playwright-corpus.mjs && npm run build && node server/index.mjs',
           url: `${baseURL}/api/health`,
           reuseExistingServer: false,

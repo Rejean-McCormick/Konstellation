@@ -638,6 +638,73 @@ main {
   background: #fff;
   padding: 9px 7px;
 }
+.catalog-search-results {
+  margin: -8px 23px 18px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fbfcf8;
+}
+.catalog-search-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+  color: #657668;
+  font-size: 11px;
+}
+.catalog-search-head strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+.catalog-search-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+.catalog-search-grid button {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #e1e7df;
+  border-radius: 6px;
+  background: #fff;
+  text-align: left;
+}
+.catalog-search-grid button:hover {
+  border-color: #b9cdbf;
+  background: #f8fbf7;
+}
+.catalog-search-grid small,
+.catalog-search-grid strong,
+.catalog-search-grid span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.catalog-search-grid small {
+  margin-bottom: 2px;
+  color: #98a198;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.catalog-search-grid strong {
+  color: #42594d;
+  font-size: 12px;
+  font-weight: 600;
+}
+.catalog-search-grid span {
+  margin-top: 3px;
+  color: #87928b;
+  font-size: 10px;
+}
+.catalog-search-results > p {
+  margin: 0;
+  color: #7e897f;
+  font-size: 12px;
+}
 .entity-list {
   border-top: 1px solid #edf0e7;
 }
@@ -1403,6 +1470,13 @@ tr.selected {
   }
 }
 @media (max-width: 560px) {
+  .catalog-search-grid {
+    grid-template-columns: 1fr;
+  }
+  .catalog-search-results {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
   main {
     padding: 0 16px;
   }
@@ -2503,6 +2577,17 @@ td {
   color: #42594d;
   font-size: 12px;
   font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cap-copy em {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: #87928b;
+  font-size: 10px;
+  font-style: normal;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

@@ -8,6 +8,9 @@ const specialQualifierLabels = {
   'corpus:source': { fr: 'Œuvres et sources', en: 'Works and sources' },
   'corpus:source_date': { fr: 'Repères chronologiques', en: 'Chronology' },
   'corpus:genre': { fr: 'Genres documentaires', en: 'Document genres' },
+  'corpus:auteur': { fr: 'Auteurs et instances', en: 'Authors and sources' },
+  'corpus:position_source': { fr: 'Positions sources', en: 'Source positions' },
+  'corpus:relation_positionnelle': { fr: 'Nature du dialogue', en: 'Relation type' },
 };
 
 const specialRelationLabels = {
@@ -24,6 +27,11 @@ const specialRelationLabels = {
   'corpus:reception_partielle': 'Réceptions partielles',
   'corpus:relecture_spirituelle': 'Relectures spirituelles',
   'corpus:tension_a_interpreter': 'Tensions à interpréter',
+  'corpus:appuie_sur_position': 'Positions mobilisées par la question',
+  'corpus:mobilise_theme': 'Idées et thèmes mobilisés',
+  'corpus:met_en_dialogue_auteur': 'Auteurs mis en dialogue par la question',
+  'corpus:auteurs_mis_en_dialogue': 'Auteurs mis en dialogue',
+  'corpus:reconstruction_argumentative': 'Reconstruction argumentative',
 };
 
 const titleCase = (s) =>
@@ -31,6 +39,10 @@ const titleCase = (s) =>
     .replace(/^corpus:/, '')
     .replace(/[_-]+/g, ' ')
     .replace(/\b\p{L}/gu, (m) => m.toUpperCase());
+
+
+const entityLabel = (entity) =>
+  entity?.disambiguation ? `${entity.label} — ${entity.disambiguation}` : entity?.label || '';
 
 const humanize = (s) => {
   const value = String(s || '').replace(/[_-]+/g, ' ').trim();
@@ -50,6 +62,7 @@ function linkedLabel(engine, values, fallback) {
   return {
     author: 'Auteurs liés',
     human: 'Personnes liées',
+    person: 'Personnages liés',
     position: 'Positions liées',
     work: 'Œuvres liées',
     source: 'Sources liées',
@@ -58,6 +71,9 @@ function linkedLabel(engine, values, fallback) {
     place: 'Lieux liés',
     tradition: 'Traditions liées',
     doctrine: 'Doctrines liées',
+    editorial: 'Questions liées',
+    argument: 'Arguments liés',
+    'doctrinal-status': 'Statuts doctrinaux liés',
   }[types[0]] || fallback;
 }
 
@@ -94,7 +110,7 @@ function resolveFocus(engine, index, focus) {
   if (focus.kind === 'entity') {
     const entity = engine.entities.get(focus.id);
     if (!entity) fail('NOT_FOUND', 'Entité de constellation indisponible.', 404);
-    return { focus, id: focusKey(focus), kind: 'entity', label: entity.label, description: entity.description || '' };
+    return { focus, id: focusKey(focus), kind: 'entity', label: entityLabel(entity), description: entity.description || '' };
   }
   if (focus.kind === 'source') {
     const source = engine.sources.get(focus.id);
@@ -201,7 +217,7 @@ function configuredCandidates(engine, index, focus, group) {
           {
             id: target.focus.kind === 'entity' ? focusKey(target.focus) : `rel:${relationId}:${canonical(value)}`,
             kind: relation?.valueKind === 'entity' ? 'entity' : 'value',
-            label: relation?.valueKind === 'entity' ? engine.entities.get(value)?.label || String(value) : displayValue(value),
+            label: relation?.valueKind === 'entity' ? entityLabel(engine.entities.get(value)) || String(value) : displayValue(value),
             target,
             family: group.id,
             priority: group.priority ?? 0.8,
@@ -309,7 +325,7 @@ function contentForGroup(engine, index, focus, group) {
       const rel = engine.relations.get(a.relation);
       const value = group.source.role === 'subject' ? a.subject : rel?.valueKind === 'entity' ? a.value : null;
       if (!value || !engine.entities.has(value)) continue;
-      addCandidate(map, { id: `entity:${value}`, kind: 'entity', label: engine.entities.get(value).label, target: { focus: { kind: 'entity', id: value }, groupId: null }, family: group.id, priority: group.priority, directness: 0.85 }, a, engine);
+      addCandidate(map, { id: `entity:${value}`, kind: 'entity', label: entityLabel(engine.entities.get(value)), target: { focus: { kind: 'entity', id: value }, groupId: null }, family: group.id, priority: group.priority, directness: 0.85 }, a, engine);
     }
   } else if (group.source.kind === 'network') {
     const linked = new Set(entityIds(engine, assertions));
@@ -319,7 +335,7 @@ function contentForGroup(engine, index, focus, group) {
       if (rel?.valueKind !== 'entity' || !linked.has(a.subject) || !linked.has(a.value)) continue;
       for (const value of [a.subject, a.value]) {
         if (!engine.entities.has(value)) continue;
-        addCandidate(map, { id: `entity:${value}`, kind: 'entity', label: engine.entities.get(value).label, target: { focus: { kind: 'entity', id: value }, groupId: null }, family: group.id, priority: group.priority, directness: 0.7 }, a, engine);
+        addCandidate(map, { id: `entity:${value}`, kind: 'entity', label: entityLabel(engine.entities.get(value)), target: { focus: { kind: 'entity', id: value }, groupId: null }, family: group.id, priority: group.priority, directness: 0.7 }, a, engine);
       }
     }
   }

@@ -89,17 +89,43 @@
     return row[b.length];
   }
 
+  function duplicateKey(entity) {
+    return entity?.type === 'person' ? normalize(entity.label) : '';
+  }
+
+  $: duplicatePersonLabels = entities.reduce((counts, entity) => {
+    const key = duplicateKey(entity);
+    if (key) counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+
+  function displayLabel(entity) {
+    if (!entity) return '';
+    const duplicated = entity.type === 'person' && duplicatePersonLabels[duplicateKey(entity)] > 1;
+    return duplicated && entity.disambiguation
+      ? `${entity.label} — ${entity.disambiguation}`
+      : entity.label;
+  }
+
+  function displayType(entity) {
+    if (entity?.type === 'person' && String(entity.id || '').startsWith('biblical:person:'))
+      return 'Personnage biblique';
+    return typeLabels[entity?.type] || entity?.type;
+  }
+
   function score(entity, rawQuery) {
     const q = normalize(rawQuery);
     if (!q) return 0;
     const label = normalize(entity.label);
     const description = normalize(entity.description);
+    const disambiguation = normalize(entity.disambiguation);
     const aliases = normalize((entity.aliases || []).join(' '));
     const id = normalize(entity.id);
     if (label === q) return 140;
     if (label.startsWith(q)) return 110;
     if (label.includes(q)) return 95;
     if (aliases.includes(q)) return 90;
+    if (disambiguation.includes(q)) return 82;
     if (description.includes(q)) return 70;
     if (id.includes(q)) return 55;
 
@@ -134,7 +160,11 @@
     return entities
       .map((entity) => ({ entity, score: score(entity, rawQuery), reason: 'Correspondance' }))
       .filter((item) => item.score > 0)
-      .sort((a, b) => b.score - a.score || a.entity.label.localeCompare(b.entity.label, 'fr'));
+      .sort((a, b) =>
+        b.score - a.score ||
+        displayLabel(a.entity).localeCompare(displayLabel(b.entity), 'fr') ||
+        a.entity.id.localeCompare(b.entity.id),
+      );
   }
 
   function anchorMatches(route, directIds) {
@@ -154,15 +184,23 @@
   }
 
   function orientation(rawQuery) {
-    const direct = rank(rawQuery).slice(0, 8);
+    const ranked = rank(rawQuery);
+    const q = normalize(rawQuery);
+    const homonymousPeople = ranked.filter(
+      (item) => item.entity.type === 'person' && normalize(item.entity.label) === q,
+    );
+    // A bare biblical name such as « Joseph », « Marie » or « Simon » should
+    // expose the homonymous people first, rather than bury them below works or
+    // entities whose descriptions merely mention that name.
+    const direct = (homonymousPeople.length > 1 ? homonymousPeople : ranked).slice(0, 20);
     const route = routeFor(rawQuery);
     const nearby = anchorMatches(route, direct.map((item) => item.entity.id));
-    const merged = [...direct, ...nearby].slice(0, 12);
+    const merged = [...direct, ...nearby].slice(0, 16);
     return { direct, route, results: merged };
   }
 
   function surprise() {
-    const candidates = entities.filter((entity) => ['editorial', 'theme', 'position', 'concept', 'person', 'work'].includes(entity.type));
+    const candidates = entities.filter((entity) => ['author', 'editorial', 'theme', 'position', 'concept', 'person', 'work'].includes(entity.type));
     if (!candidates.length) return;
     const entity = candidates[Math.floor(Math.random() * candidates.length)];
     onNavigate(entity);
@@ -172,7 +210,7 @@
     if (current.results[0]) onNavigate(current.results[0].entity);
   }
 
-  $: current = orientation(term);
+  $: current = orientation(term, entities, duplicatePersonLabels);
 </script>
 
 <section class="astrolabe" id="astrolabe" data-testid="astrolabe" aria-labelledby="astrolabe-title">
@@ -232,12 +270,15 @@
 
       {#if current.results.length}
         <div class="astrolabe-caps" data-testid="astrolabe-caps">
-          {#each current.results.slice(0, 8) as item}
+          {#each current.results.slice(0, 12) as item}
             <button class="astrolabe-cap" data-entity-id={item.entity.id} data-entity-type={item.entity.type} on:click={() => onNavigate(item.entity)}>
               <span class="cap-mark" aria-hidden="true">✦</span>
               <span class="cap-copy">
-                <small>{item.reason} · {typeLabels[item.entity.type] || item.entity.type}</small>
-                <strong>{item.entity.label}</strong>
+                <small>{item.reason} · {displayType(item.entity)}</small>
+                <strong>{displayLabel(item.entity)}</strong>
+                {#if item.entity.type === 'person' && item.entity.description}
+                  <em>{item.entity.description}</em>
+                {/if}
               </span>
               <span class="cap-arrow" aria-hidden="true">→</span>
             </button>

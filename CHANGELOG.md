@@ -1,3 +1,21 @@
+## Correctifs Graphe biblique / recherche — 2026-09-30
+
+- Le pack Théophile + graphe biblique devient le corpus local par défaut du serveur et du lanceur; aucun repli silencieux vers un ancien corpus externe.
+- L’Astrolabe recherche explicitement les personnages bibliques et affiche jusqu’à 12 homonymes directs.
+- Les homonymes bibliques reçoivent une désambiguïsation lisible; les 12 Joseph sont distingués (fils de Jacob, époux de Marie, d’Arimathie, Barsabbas/Justus, Barnabé, etc.).
+- La barre de recherche de la liste cherche maintenant dans tout le catalogue chargé, et pas seulement dans la page courante.
+- Les libellés désambiguïsés sont réutilisés dans les listes, l’inspecteur et les sélections.
+- Les tests Playwright ciblent le pack enrichi et couvrent la recherche « Joseph ».
+
+## Théophile semantic enrichment — 2026-09-30
+
+- Embedded an enriched Théophile + Biblical Graph pack.
+- Added explicit question → position, question → theme and question → author navigation.
+- Added author-to-author dialogue projections derived only from existing position relations.
+- Added Théophile lenses for authors, questions, positions and themes.
+- Added readable constellation labels for the new semantic relations.
+- Launcher now prefers the embedded enriched pack and local lenses.
+
 ## Biblical Graph v1 — 2026-09-29
 
 - Added `person`, `tradition`, `event`, `group` and `term` graph types.

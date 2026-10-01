@@ -183,8 +183,12 @@ export function validatePack(pack) {
   }
   return pack;
 }
-export function loadPack(
-  file = process.env.KONSTELLATION_PACK || path.join(ROOT, 'data/demo.pack.json'),
-) {
+export function loadPack(file) {
+  if (!file) {
+    const enriched = path.join(ROOT, 'data/theophile-biblical.enriched.pack.json');
+    file =
+      process.env.KONSTELLATION_PACK ||
+      (fs.existsSync(enriched) ? enriched : path.join(ROOT, 'data/demo.pack.json'));
+  }
   return validatePack(readJson(file));
 }

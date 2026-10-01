@@ -1,25 +1,61 @@
 {
-  "version": "0.5.0",
+  "version": "0.5.0+theophile-biblical-searchfix.20260930",
   "files": [
     {
       "path": ".gitignore",
-      "sha256": "6ae1b5d9934bbb5f21db184b62a7c5ca89d374e11149ed30ba0bd5cd641e3d76"
+      "sha256": "075474a237999f8f151efe3b4301fa37ac8df008e03ce1d60f47904b586235de"
     },
     {
       "path": ".prettierrc.json",
       "sha256": "632bd43f4372cd97ed18b9fe86b3aae98f59117a96b6290b9f2c2172d151eaf6"
     },
     {
+      "path": ".smartignore",
+      "sha256": "72a1ab05aaea412d3754f4c6bec95a2048b16ea5daf4c687538fb30f73648d04"
+    },
+    {
+      "path": "CHANGELOG-PLAYWRIGHT-FIX.md",
+      "sha256": "ce6cd6e9f85b960b502c302e42182a294e2dcc5e5c4e226eac425138d8522292"
+    },
+    {
       "path": "CHANGELOG.md",
-      "sha256": "dd658ac4970ba90f592186ec2430934ef4f8f26cb30bce0084628ee847f25498"
+      "sha256": "3fc252eb367a5d0fbb4abda565c6caf0e06c050fe0c76ce5dcb548e47a1cfbaa"
     },
     {
       "path": "CONTRIBUTING.md",
       "sha256": "0ed16948b1a75a1f9f33e79e58da51357ae01f251e3618838d1d3240450a5093"
     },
     {
+      "path": "FIXES-20260930.md",
+      "sha256": "56dcd6cbc223f4ca1d69975d77017b32b68fd384f9ae897cd6e7effdcd3ab55a"
+    },
+    {
+      "path": "GitSink.bat",
+      "sha256": "15b0af32d211ff210de0ed87eb4b374cf41f9302d92baf82a464a518ffe2c97e"
+    },
+    {
+      "path": "Konstellation_Launcher.cmd",
+      "sha256": "65d1f6e50109137898ea2936dc1c1d997abfad8c76f4090f57f07cea5d82bb5a"
+    },
+    {
+      "path": "README-PLAYWRIGHT-FIX.md",
+      "sha256": "6e4f367cd8d95bf7ff3cc69ab045b7af6b95f61a961d7d5748b550b0c2ad6980"
+    },
+    {
       "path": "README.md",
-      "sha256": "a0913e12befe8d16e6f4de03a787e1aca907199512af17a8acd07adaf3e63938"
+      "sha256": "ccfbfa9cc2824868c8da7432e077b4afb7ccfb9dac4aa4751227d6cad947b005"
+    },
+    {
+      "path": "SNAPSHOT_INDEX.txt",
+      "sha256": "a3cd51bfd739e134b6bb1cf9edaf8e7428ac9e93a273feaf168f1d72480f5086"
+    },
+    {
+      "path": "Test_Konstellation.cmd",
+      "sha256": "9c83c5de6ecfa2e0264aac2c2851682c13ccea55811317ad551afe9bd6e3ccc3"
+    },
+    {
+      "path": "Update_Biblical_Corpus.cmd",
+      "sha256": "0677f9f471b960f86e991c6f503c6239d1b6a18a5707c69715c8bbbfa353ac2b"
     },
     {
       "path": "astro.config.mjs",
@@ -74,8 +110,24 @@
       "sha256": "23de5d84986c1f09235f619f41af0e6ef87f9c25aa240c00b5632bc84a5a8598"
     },
     {
+      "path": "data/biblical-seed.json",
+      "sha256": "5df431826daf25ef2069ef7fa7634ddc2d37c843e8949893e0497902f3e4f3cd"
+    },
+    {
+      "path": "data/biblical.pack.local.json",
+      "sha256": "b3066a542aa3a0f007a9f222fa54ba19b7b63c5325d26fefd5500ba246a54ef6"
+    },
+    {
       "path": "data/demo.pack.json",
       "sha256": "ccd59dd9c675ec411415ff38671c3c2888667f40fcaa6c3a11af2e24f9445609"
+    },
+    {
+      "path": "data/theophile-biblical.enriched.pack.json",
+      "sha256": "7c03e66bd708115878a34ca82ddccd4f5faf411c918eb6b5935bcae5b075a6c1"
+    },
+    {
+      "path": "data/theophile.semantic.enriched.json",
+      "sha256": "58b3f6070e87f35f57fdfe6a28d9a389616ad4720ff01eaaacdfad1eb5be0729"
     },
     {
       "path": "docs/00-decisions.md",
@@ -122,6 +174,18 @@
       "sha256": "001fdbf7d3dfd41514dcb39cca5e0858e0b14893262e140b76e87cc8abb8d9be"
     },
     {
+      "path": "docs/11-astrolabe.md",
+      "sha256": "9438ffb741f1da1b2c9543eec3c043575c01fe24e44f96e795deb2c63080b4d5"
+    },
+    {
+      "path": "docs/13-playwright.md",
+      "sha256": "9064dda4c273e7258b73614aec8b18fccc04071c32eb3755062d8bb88d6c92e6"
+    },
+    {
+      "path": "docs/14-theophile-enrichment.md",
+      "sha256": "c5be340b8bfe8c79528685b96e35b792a40a8da15d4a937086e504427edb07d4"
+    },
+    {
       "path": "docs/DESIGN-v0.2-README.md",
       "sha256": "d06617acbb29e99a3501083273d29a1d47025a95b5f997dda614a18c7baa4a72"
     },
@@ -139,7 +203,7 @@
     },
     {
       "path": "docs/OPERATIONS.md",
-      "sha256": "8997b50ddd73af47ef7bf686978b738e38a86517a5fbb0fe2c848d69a30944d8"
+      "sha256": "9dc462a5fe96869e1409932cbb2c3dce0cb010847a033a39f6cb2773ca40fa25"
     },
     {
       "path": "docs/VALIDATION-v0.3.md",
@@ -230,120 +294,60 @@
       "sha256": "8ec9e325914703fd8dbd5771b8d5618449fe59374aadd99d5755904f07ce3cc1"
     },
     {
-      "path": "legacy/v0.1/CHANGELOG.md",
-      "sha256": "5ab673a2abf562fda487b5863b17424a999caa734f06d754fc849fa0ecc3560b"
+      "path": "lenses-enriched/biblical-people.json",
+      "sha256": "fb459c481eada537b79d145885f403324f8a887d2e18932b88a195f29bd8e1d6"
     },
     {
-      "path": "legacy/v0.1/CONTRIBUTING.md",
-      "sha256": "3ecff54533c109a4eefe68bdd7b73bfacf913112b7b05296e158008ddb725bc0"
+      "path": "lenses-enriched/biblical-traditions.json",
+      "sha256": "56527945b42ceb84297071aa0c848b2ca6dc3851594ed16cdb55fce13edc40ec"
     },
     {
-      "path": "legacy/v0.1/README.md",
-      "sha256": "00a529a46436bb4259baa3d1a70a81148b62f9d28969ac91731b8cd1113220f9"
+      "path": "lenses-enriched/biblical-works.json",
+      "sha256": "5f92a0a4cb2c9e53f8ea3d661bd5a98c9c5c189fa117ab9e5d9ded929e9a0c2a"
     },
     {
-      "path": "legacy/v0.1/contracts/lens.schema.json",
-      "sha256": "b620c7c95792c6b4e5789493100b84d68043ad9e5196e8197f7be42dfb7b4ef5"
+      "path": "lenses-enriched/catholic-intellectual-history.json",
+      "sha256": "a096282ad701a941befb93d44335b8b98f73105439928a5fa49a8a4b0eaba5b1"
     },
     {
-      "path": "legacy/v0.1/contracts/query-spec.schema.json",
-      "sha256": "28102a61eeec3dbc1c7f120ca6182cbfc113f273c930e287460f4019b3c8a794"
+      "path": "lenses-enriched/intellectual-history.json",
+      "sha256": "c399b96695b715647fa750bb616bcea6c8db16b49d538f212d272e000993fea5"
     },
     {
-      "path": "legacy/v0.1/contracts/relation.schema.json",
-      "sha256": "f5ee6ce076b44504e649fd671b806900c056d5f10f405a10049640018b6c258a"
+      "path": "lenses-enriched/sociodemography.json",
+      "sha256": "63d0d0db67b9398f04fb13d77182ccddfc8c52579a54eca9eecc675143cb31f9"
     },
     {
-      "path": "legacy/v0.1/contracts/result-set.schema.json",
-      "sha256": "5c9f384ca6dd52cd816706c39e5cccfa3fd5c86f72821a25e43c91f8b388f705"
+      "path": "lenses-enriched/theophile-authors.json",
+      "sha256": "d271372d30fe4f786f466219a91b00a270f6c1ca46a437da1cdc22c64b48ac06"
     },
     {
-      "path": "legacy/v0.1/docs/00-vision.md",
-      "sha256": "75361cdb4a65bcf31dd8ab465beb8f68eb6b9e0f40dcede45a5dfaefa7dc7168"
+      "path": "lenses-enriched/theophile-positions.json",
+      "sha256": "9f28611f0a2844c4b5f17e83c5415d7fa2ea49ebdd6bada93671204f272acc32"
     },
     {
-      "path": "legacy/v0.1/docs/01-architecture.md",
-      "sha256": "66476d974f455f6b673efcc82c5519583111853250675bf46594d1c57ee2f21b"
+      "path": "lenses-enriched/theophile-questions.json",
+      "sha256": "2ef95abe6b5729efbd0fd2b339e112b4002b0a9a08137eddd659f2a74991d082"
     },
     {
-      "path": "legacy/v0.1/docs/02-query-model.md",
-      "sha256": "5ccacff20ef63467ddaf29b2d22333de9e640287629ca5c3540fca85e3f37fca"
-    },
-    {
-      "path": "legacy/v0.1/docs/03-query-lenses.md",
-      "sha256": "6ec6421de58a988fc4c0742061bd2cad8addfe951349ae67d2bbd4a5bd90e8ca"
-    },
-    {
-      "path": "legacy/v0.1/docs/04-relation-registry.md",
-      "sha256": "fd6fe60724728d516750f3eb2cbd134f485598c61300571ab2b22c21bdaac350"
-    },
-    {
-      "path": "legacy/v0.1/docs/05-kristal-read-model.md",
-      "sha256": "f54084428f96efd9f041a265f676ca4fe7ebe5b25fb378e3e214d74f03801ab0"
-    },
-    {
-      "path": "legacy/v0.1/docs/06-semantik-architect.md",
-      "sha256": "ed05513916cfd19a5d503135566f402731b6933146dee0a5e7a66f47671118e1"
-    },
-    {
-      "path": "legacy/v0.1/docs/07-ui-ux.md",
-      "sha256": "62a8fe3f145113cdfb43fc796885785099e601e3ed55b386c4821d97d1c1bad5"
-    },
-    {
-      "path": "legacy/v0.1/docs/08-boundaries.md",
-      "sha256": "77f56b069c64296ecc2df46306039d17eb0385ea12bf8ed3f5a44496d957e3be"
-    },
-    {
-      "path": "legacy/v0.1/docs/09-roadmap.md",
-      "sha256": "6a75e23867768e6d6b222f83771aa4f6eb1bc17263baa4a0d9d3fa8699e9b7d1"
-    },
-    {
-      "path": "legacy/v0.1/docs/10-repository-layout.md",
-      "sha256": "c74fce4fd527f3ee03c248e41ede44bb1e29f5233e10faba3c3db5bb02753a37"
-    },
-    {
-      "path": "legacy/v0.1/docs/adr/ADR-0001-queryspec-is-canonical.md",
-      "sha256": "1ef14e819b45582e7c4cf70a3719c8cfb851f1347a7a326d7cf79fa51f977e93"
-    },
-    {
-      "path": "legacy/v0.1/docs/adr/ADR-0002-kristal-remains-authority.md",
-      "sha256": "370b69a4f1c7eab75d5ff58beb80caa75c50ea55049d51467876209651ff6d30"
-    },
-    {
-      "path": "legacy/v0.1/docs/adr/ADR-0003-lenses-are-declarative.md",
-      "sha256": "b23e4818068ee266d78649f817a98666caec113ebf0bfdd3f8b2a41eb7aff193"
-    },
-    {
-      "path": "legacy/v0.1/docs/adr/ADR-0004-sa-articulates-not-selects.md",
-      "sha256": "b484bd10cfad7af6fc91d900d867b20018041d94eff8d43fb48d3f5fb38f74d1"
-    },
-    {
-      "path": "legacy/v0.1/examples/lenses/catholic-intellectual-history.json",
-      "sha256": "91322d9eb865e13b115985a808a8fa57bdf6826d7d8a5c9b4a4d55f0fd80328f"
-    },
-    {
-      "path": "legacy/v0.1/examples/lenses/intellectual-history.json",
-      "sha256": "f8e190a97653b4528af6acde2da46db3b109986ca72795b1077b73fa9979360d"
-    },
-    {
-      "path": "legacy/v0.1/examples/lenses/sociodemography.json",
-      "sha256": "095b7c44c26f6f3bb7c16201ba9da90a7b3edc5dc3bc26780fbdfa7b04ed35ae"
-    },
-    {
-      "path": "legacy/v0.1/examples/queries/late-antiquity-philosophers.json",
-      "sha256": "97e2433f3463e5eae48d502b7f8713199ef8693673f2232faee6adfa937dec11"
+      "path": "lenses-enriched/theophile-themes.json",
+      "sha256": "61035ee94a8c82d74974f39d7e38fc25e56ac36e5d8577c9b073886b8ff94dbc"
     },
     {
       "path": "package.json",
-      "sha256": "be88a5fbc145ba45d10a7f99d7727189fab80b2628f6ef1614f1222328fd48b3"
+      "sha256": "1f0b1e35e101b1eae035ee1c9fc2a2d88aff4f1a72331c02652757640f130954"
     },
     {
       "path": "playwright.config.mjs",
-      "sha256": "d25f7f32981beb997b4f7c61b12387e29edeec9b42873a6e9253105ce567f316"
+      "sha256": "24c195f1bc92ffb93327dfdccdbfdbe348aefb7015a4553591edd9bd34be98a6"
     },
     {
       "path": "requirements-dev.txt",
       "sha256": "756cc9e506ae4ee1a6f6c0507088b5cfc0dc8ba350fb2d2d46f1ffa72033adb6"
+    },
+    {
+      "path": "scripts/build-theophile-enriched-pack.py",
+      "sha256": "0479c95ad364d9ef6db6bfea7e56f5cdc32b2119031c07d35a1f1456e55b3c4b"
     },
     {
       "path": "scripts/create-demo.mjs",
@@ -366,8 +370,16 @@
       "sha256": "28113d261ea225a421b65059429a47d6f6c37a1359011d0439dee13d47784013"
     },
     {
+      "path": "scripts/prepare-playwright-corpus.mjs",
+      "sha256": "0c6ec4d05c229943d8398c12eb2c2ddae7a45cc1db5d8467367c19782fff58ed"
+    },
+    {
       "path": "scripts/smoke-dev.mjs",
       "sha256": "662241d039a3f0afe5bb2bf6bc64628ae1c72b8a22c43ac3546974794ff12318"
+    },
+    {
+      "path": "scripts/update-biblical-corpus.mjs",
+      "sha256": "a4ed2d85abdbf936b5c2d1971813b271fcbd2ee619a32615714667c9f738127b"
     },
     {
       "path": "server/contracts.mjs",
@@ -379,7 +391,7 @@
     },
     {
       "path": "server/index.mjs",
-      "sha256": "a476e707979dc94253fbbd6790696725fb76482352e3857a24dcd6a7cf95ed6d"
+      "sha256": "34fe14939809341c0d9a112e839f7b79053124291cd2e48be50bd78b0c1f00f3"
     },
     {
       "path": "server/integrations/kristal.mjs",
@@ -403,7 +415,7 @@
     },
     {
       "path": "server/navigation/projector.mjs",
-      "sha256": "863cd129473f1d30788dd0e743422e1595a1dc9b302cad0dbca444da7ca963ca"
+      "sha256": "ccab61bd60ca46017a2a792c9d7cea62ec99de2c9045a23f4ababb7d82aed622"
     },
     {
       "path": "server/navigation/salience.mjs",
@@ -411,19 +423,23 @@
     },
     {
       "path": "server/pack.mjs",
-      "sha256": "4b9648caa1f3584a11fc3a74af1240488366e919630cd95ceaefa9e33a3466cb"
+      "sha256": "c19ab86382b54ba0de4a3d519e46eb59ef80e6110f2f70c4366ae5ed931174ce"
+    },
+    {
+      "path": "src/components/Astrolabe.svelte",
+      "sha256": "c8e62ac647827b812d5a790b171782e299f89b0a117e9ea4f3ad946e5d0dfbaa"
     },
     {
       "path": "src/components/Communication.svelte",
-      "sha256": "7ab881ca4c2ab10a7c9cec99f113393accb35f03a23807e3500abda41b3d492a"
+      "sha256": "b17882b7e26528001c2288cb6882a8b0e509e40c710464129dbba4ba3e2f5ac9"
     },
     {
       "path": "src/components/ConstellationView.svelte",
-      "sha256": "e40b7614053cc3e5525f67ecf5d80075823479c7c1bba667a10add344f58e8f8"
+      "sha256": "1d4a75de318151a032e63c5fe1776b067653e33b5f145900aa676ed8c9259c86"
     },
     {
       "path": "src/components/Explorer.svelte",
-      "sha256": "18c47c6e633af09c1606b561fb42902225217102fc4e4e1002f62f81fdca73f0"
+      "sha256": "db9171c2c96804c766b395eaf794e7810780e0d51c96372f21bd8fbcaaf09654"
     },
     {
       "path": "src/components/QueryTree.svelte",
@@ -435,43 +451,55 @@
     },
     {
       "path": "src/lib/constellation/layout.js",
-      "sha256": "20b7ef0f453eb4131471bd8260bdde06cd73e1e270f891c024c4aa1e6e35abd7"
+      "sha256": "de5b91bb77a97c5d94befa9889a84225c87b300cc5058b6ccc4b730c952e6d54"
     },
     {
       "path": "src/pages/index.astro",
-      "sha256": "522b5edf02b024c03c1a66a0578d9c4e75f644084a0cc84308e2135c020affcc"
+      "sha256": "8c021068290775b90f077bd6da9be274de7e8419b75fd57dd7009206de60b535"
     },
     {
       "path": "src/styles/global.css",
-      "sha256": "c03ca4f166e86f6131627eada256c82657457fed0abe4f35d96f0f2319f00b1d"
+      "sha256": "9ad0a5d56045f77ce25f35c462e845a324305eb6c923f4e0fcc71b1c35560c0b"
     },
     {
       "path": "svelte.config.js",
       "sha256": "450f0af4f4c1ecc4c7180f2e364c8a59bfed69dd350fb6b47bce8641c2a37786"
     },
     {
-      "path": "test-pack-LLxJG9/assertions.parquet",
-      "sha256": "6f5962978166e57e6fc667b7a81de8ff87b3f90353331ecbb2c89fd40d5a9022"
-    },
-    {
-      "path": "test-pack-LLxJG9/catalog.json",
-      "sha256": "dec652ab4ff45415ae1a3d76fda8c9f345ec49d566be36385b19308bcd5ecb03"
-    },
-    {
-      "path": "test-pack-LLxJG9/manifest.json",
-      "sha256": "e8de64c201531336b469966c23de2aa61462d1b239a37713cf5be54c66f24543"
-    },
-    {
-      "path": "test-pack-LLxJG9/reader-policy.json",
-      "sha256": "84dcdad76ad338841ecb42d56eb71da503072f9c8adb4b172516dfdd5a8ec061"
-    },
-    {
       "path": "tests/api.test.mjs",
       "sha256": "de16300b43fdccb8a670a40fdf474fc5c562fe19215f7cf6d8637e00df487c98"
     },
     {
+      "path": "tests/browser/app.smoke.spec.mjs",
+      "sha256": "cc3dea7c4051c7c55696a054a44126697b3916bc8a762fd3b9b7980ffbb5d314"
+    },
+    {
+      "path": "tests/browser/astrolabe.spec.mjs",
+      "sha256": "a8b2502f55f5c00d4a6c71f61ccf6ef362b216e4aab7826cdea303639f81d7a2"
+    },
+    {
+      "path": "tests/browser/corpus.spec.mjs",
+      "sha256": "ea99542ad3754060de4cb473481a478f1f17e46a79e60ed932d1e5147e694ccf"
+    },
+    {
       "path": "tests/browser/explorer.spec.mjs",
-      "sha256": "0b773639109a89a4a634653079b76476e3950787e47b47a4f00a44ac64b5d22b"
+      "sha256": "813405894dcf6582de3646d597538f124ecbda7124127c73741a805e7bd54495"
+    },
+    {
+      "path": "tests/browser/fixtures.mjs",
+      "sha256": "37058afc42bf5994e359789f4fad2d7378c8c0a94c82bd1517adec12b1910f6a"
+    },
+    {
+      "path": "tests/browser/navigation.spec.mjs",
+      "sha256": "f5ce6d6327356ee33b0a66165c5580c41a2f48a50ad56c2caed7bd1a25756ab9"
+    },
+    {
+      "path": "tests/browser/responsive.spec.mjs",
+      "sha256": "544259e1eb0d6f8b7e7eb263df87feb3122ff0e83f8bca5278a407e57c201d7f"
+    },
+    {
+      "path": "tests/browser/state.spec.mjs",
+      "sha256": "0d6890f8cfc93b114ca9346334ed348928974da463da58d00a1843349e6b0f84"
     },
     {
       "path": "tests/constellation.test.mjs",
@@ -491,7 +519,7 @@
     },
     {
       "path": "tests/ui/explorer.test.mjs",
-      "sha256": "e68d1199afec1f72c14a43c651ba2055749aa82054fed4d821e79de0815620e8"
+      "sha256": "b03f8b9f7e43542522f3e47803d9ec7ef20f38d1284161c4c1be0921bf6d1044"
     },
     {
       "path": "tools/validate.py",

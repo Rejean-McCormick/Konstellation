@@ -20,8 +20,8 @@ if %NODE_MAJOR% LSS 24 (
 
 pushd "%ROOT%"
 if not exist "package.json" (echo [ERROR] package.json introuvable. & popd & goto :fail)
-if not exist "data\demo.pack.json" (
-  echo [ERROR] data\demo.pack.json introuvable.
+if not exist "data\theophile-biblical.enriched.pack.json" (
+  echo [ERROR] data\theophile-biblical.enriched.pack.json introuvable.
   popd
   goto :fail
 )
@@ -36,7 +36,7 @@ call npx playwright install chromium
 if errorlevel 1 (popd & goto :fail)
 
 echo.
-echo Preparation du corpus de test...
+echo Verification du corpus biblique local...
 node scripts\prepare-playwright-corpus.mjs
 if errorlevel 1 (popd & goto :fail)
 

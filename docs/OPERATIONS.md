@@ -8,8 +8,8 @@
 | `PORT` | `4321` | Port HTTP |
 | `KONSTELLATION_BACKEND_CONFIG` | Non défini | Configuration lecteur Kristal, prioritaire sur PACK |
 | `KONSTELLATION_SA_CONFIG` | Non défini | Configuration service SA et profil publié |
-| `KONSTELLATION_PACK` | `data/demo.pack.json` | Fichier JSON normalisé |
-| `KONSTELLATION_LENSES` | `examples/lenses` | Répertoire des Lens chargées au démarrage |
+| `KONSTELLATION_PACK` | `data/theophile-biblical.enriched.pack.json` si présent, sinon `data/demo.pack.json` | Fichier JSON normalisé |
+| `KONSTELLATION_LENSES` | `lenses-enriched` avec le pack Théophile, sinon `examples/lenses` | Répertoire des Lens chargées au démarrage |
 | `KONSTELLATION_ROLES` | `public` | Rôles statiques de l’instance, séparés par virgules |
 | `KONSTELLATION_CURSOR_SECRET` | Aléatoire par processus | Secret opérateur pour HMAC; le changer invalide les curseurs |
 | `KONSTELLATION_ALLOWED_HOSTS` | `localhost,127.0.0.1,[::1]` | Noms d’hôte permis, sans ports |

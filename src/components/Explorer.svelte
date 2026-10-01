@@ -36,7 +36,7 @@
     selectedIds = [],
     constellationPath = [],
     satelliteLimit = 8;
-  const typeLabels = { human: 'Personnes', person: 'Personnes / personnages', event: 'Événements', group: 'Groupes', term: 'Termes', author: 'Auteurs', position: 'Positions', work: 'Œuvres', source: 'Sources', place: 'Lieux', concept: 'Concepts', theme: 'Thèmes', tradition: 'Traditions', doctrine: 'Doctrines', 'doctrinal-status': 'Statuts doctrinaux', argument: 'Arguments', editorial: 'Éléments éditoriaux' };
+  const typeLabels = { human: 'Personnes', person: 'Personnages bibliques', event: 'Événements', group: 'Groupes', term: 'Termes', author: 'Auteurs', position: 'Positions', work: 'Œuvres', source: 'Sources', place: 'Lieux', concept: 'Concepts', theme: 'Thèmes', tradition: 'Traditions', doctrine: 'Doctrines', 'doctrinal-status': 'Statuts doctrinaux', argument: 'Arguments', editorial: 'Éléments éditoriaux' };
   const statusLabels = {
     sourced: 'Sourcée',
     validated: 'Validée',
@@ -59,13 +59,71 @@
             relation: r.id,
             widget: r.valueKind === 'interval' ? 'year-range' : 'entity-picker',
           }));
-  $: labelMap = Object.fromEntries((boot?.entities || []).map((e) => [e.id, e.label]));
+  function normalizeSearch(value) {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[_–—-]+/g, ' ')
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  function personKey(entity) {
+    return entity?.type === 'person' ? normalizeSearch(entity.label) : '';
+  }
+  $: duplicatePersonLabels = (boot?.entities || []).reduce((counts, entity) => {
+    const key = personKey(entity);
+    if (key) counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+  function displayEntityLabel(entity, counts = duplicatePersonLabels) {
+    if (!entity) return '';
+    const duplicated = entity.type === 'person' && counts[personKey(entity)] > 1;
+    return duplicated && entity.disambiguation
+      ? `${entity.label} — ${entity.disambiguation}`
+      : entity.label;
+  }
+  function entityTypeLabel(entity) {
+    if (entity?.type === 'person' && String(entity.id || '').startsWith('biblical:person:'))
+      return 'Personnage biblique';
+    return typeLabels[entity?.type] || entity?.type;
+  }
+  function catalogScore(entity, rawQuery, counts = duplicatePersonLabels) {
+    const q = normalizeSearch(rawQuery);
+    if (!q) return 0;
+    const label = normalizeSearch(entity.label);
+    const display = normalizeSearch(displayEntityLabel(entity, counts));
+    const aliases = (entity.aliases || []).map(normalizeSearch);
+    const description = normalizeSearch(entity.description);
+    if (label === q) return 160;
+    if (aliases.some((alias) => alias === q)) return 150;
+    if (display.includes(q)) return 125;
+    if (label.startsWith(q)) return 115;
+    if (label.includes(q)) return 105;
+    if (aliases.some((alias) => alias.includes(q))) return 95;
+    if (description.includes(q)) return 65;
+    return 0;
+  }
+  $: labelMap = Object.fromEntries((boot?.entities || []).map((e) => [e.id, displayEntityLabel(e, duplicatePersonLabels)]));
   $: entityMap = Object.fromEntries((boot?.entities || []).map((e) => [e.id, e]));
-  $: rows = (result?.rows || []).filter((row) =>
-    (labelMap[row.entityId] || row.entityId)
-      .toLocaleLowerCase('fr')
-      .includes(search.toLocaleLowerCase('fr')),
-  );
+  $: catalogRanked = search.trim()
+    ? (boot?.entities || [])
+        .map((entity) => ({ entity, score: catalogScore(entity, search, duplicatePersonLabels) }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) =>
+          b.score - a.score ||
+          displayEntityLabel(a.entity, duplicatePersonLabels).localeCompare(displayEntityLabel(b.entity, duplicatePersonLabels), 'fr') ||
+          a.entity.id.localeCompare(b.entity.id),
+        )
+    : [];
+  $: catalogMatchTotal = catalogRanked.length;
+  $: catalogMatches = catalogRanked.slice(0, 12);
+  $: rows = (result?.rows || []).filter((row) => {
+    if (!search.trim()) return true;
+    const entity = entityMap[row.entityId];
+    return catalogScore(entity || { id: row.entityId, label: labelMap[row.entityId] || row.entityId }, search, duplicatePersonLabels) > 0;
+  });
   $: pivots = relations.filter(
     (r) =>
       r.domain.includes(query?.selection.entityType) &&
@@ -837,9 +895,10 @@
           <div class="results-actions">
             <label class="search-input"
               ><span>⌕</span><input
-                aria-label="Chercher dans cette page"
+                aria-label="Chercher dans le corpus"
                 bind:value={search}
-                placeholder="Chercher dans cette page…"
+                placeholder="Chercher dans le corpus…"
+                autocomplete="off"
               /></label
             ><select
               aria-label="Explorer une relation"
@@ -856,6 +915,27 @@
                 >{/each}</select
             >
           </div>
+          {#if search.trim()}
+            <div class="catalog-search-results" aria-live="polite">
+              <div class="catalog-search-head">
+                <strong>Dans tout le corpus</strong>
+                <span>{catalogMatchTotal} résultat{catalogMatchTotal > 1 ? 's' : ''}</span>
+              </div>
+              {#if catalogMatches.length}
+                <div class="catalog-search-grid">
+                  {#each catalogMatches as item}
+                    <button on:click={() => { search = ''; navigateFromAstrolabe(item.entity); }}>
+                      <small>{entityTypeLabel(item.entity)}</small>
+                      <strong>{displayEntityLabel(item.entity)}</strong>
+                      {#if item.entity.description}<span>{item.entity.description}</span>{/if}
+                    </button>
+                  {/each}
+                </div>
+              {:else}
+                <p>Aucune entité du corpus ne correspond à « {search} ».</p>
+              {/if}
+            </div>
+          {/if}
           {#if selectedIds.length}<div class="selection-bar">
               {selectedIds.length} entités cochées
               <button on:click={() => (selectedIds = [])}>Tout désélectionner</button>
@@ -906,7 +986,7 @@
                     <label class="row-checkbox"
                       ><input
                         type="checkbox"
-                        aria-label={'Sélectionner ' + entity?.label}
+                        aria-label={'Sélectionner ' + (labelMap[row.entityId] || entity?.label)}
                         checked={selectedIds.includes(row.entityId)}
                         on:change={() => pick(row.entityId)}
                       /></label
@@ -918,7 +998,7 @@
                           .slice(0, 2)
                           .join('')}</span
                       ><span class="entity-copy"
-                        ><strong>{entity?.label || row.entityId}</strong><small
+                        ><strong>{labelMap[row.entityId] || entity?.label || row.entityId}</strong><small
                           >{entity?.description || typeLabels[entity?.type]}</small
                         ></span
                       ></button
@@ -929,7 +1009,7 @@
                           ? row.witnesses.length + ' témoin' + (row.witnesses.length > 1 ? 's' : '')
                           : 'Dans le catalogue'}</span
                       ><button
-                        aria-label={'Inspecter ' + entity?.label}
+                        aria-label={'Inspecter ' + (labelMap[row.entityId] || entity?.label)}
                         on:click={() => inspect(row.entityId)}>↗</button
                       >
                     </div>

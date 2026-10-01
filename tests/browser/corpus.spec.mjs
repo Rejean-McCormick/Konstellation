@@ -16,9 +16,17 @@ test('@corpus le Biblical Graph expose personnes, œuvres, concepts et tradition
   expect(byType('tradition').length, 'traditions canoniques').toBeGreaterThanOrEqual(3);
 });
 
+
+test('@corpus les perspectives bibliques sont chargées avec le pack enrichi', async ({ request }) => {
+  const boot = await bootstrap(request);
+  expect(boot.lenses.some((lens) => lens.id === 'biblical-people' && lens.rootType === 'person')).toBeTruthy();
+  expect(boot.lenses.some((lens) => lens.id === 'biblical-works' && lens.rootType === 'work')).toBeTruthy();
+  expect(boot.lenses.some((lens) => lens.id === 'biblical-traditions' && lens.rootType === 'tradition')).toBeTruthy();
+});
+
 test('@corpus les caps bibliques essentiels sont réellement indexés', async ({ request }) => {
   const boot = await bootstrap(request);
-  const expected = ['Moïse', 'Hénoch', 'Isaïe', 'Paul de Tarse', 'Pierre', 'Saint-Esprit', 'Résurrection', 'Parousie', 'Iconoclasme'];
+  const expected = ['Moïse', 'Joseph', 'Hénoch', 'Isaïe', 'Paul de Tarse', 'Pierre', 'Saint-Esprit', 'Résurrection', 'Parousie', 'Iconoclasme'];
 
   for (const term of expected) {
     expect(
@@ -44,4 +52,15 @@ test('@corpus-full vérifie BibleData lorsqu’il est réellement chargé', asyn
     `BibleData complet non chargé (${people.length} personnes) : le corpus de base reste testable.`,
   );
   expect(people.length, 'BibleData complet devrait contenir au moins 3000 figures').toBeGreaterThanOrEqual(3000);
+});
+
+
+test('@corpus Joseph est bien un ensemble de personnages bibliques désambiguïsés', async ({ request }) => {
+  const boot = await bootstrap(request);
+  const josephs = boot.entities.filter((entity) => entity.type === 'person' && entity.label === 'Joseph');
+  expect(josephs).toHaveLength(12);
+  expect(josephs.every((entity) => Boolean(entity.disambiguation))).toBeTruthy();
+  expect(josephs.some((entity) => /époux de Marie/i.test(entity.disambiguation))).toBeTruthy();
+  expect(josephs.some((entity) => /Arimathie/i.test(entity.disambiguation))).toBeTruthy();
+  expect(josephs.some((entity) => /Barnabé/i.test(entity.disambiguation))).toBeTruthy();
 });

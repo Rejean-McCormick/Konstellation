@@ -7,10 +7,18 @@ import { SemantikAdapter } from './integrations/semantik.mjs';
 import { Engine } from './engine.mjs';
 import { loadPack, readJson } from './pack.mjs';
 import { ROOT, AppError, fail, validate } from './contracts.mjs';
-export function loadLenses(
-  engine,
-  dir = process.env.KONSTELLATION_LENSES || path.join(ROOT, 'examples/lenses'),
-) {
+export function loadLenses(engine, dir) {
+  if (!dir) {
+    const enrichedDir = path.join(ROOT, 'lenses-enriched');
+    const supportsTheophile = ['author', 'theme', 'position', 'editorial'].every((type) =>
+      engine.pack.registry.entityTypes.includes(type),
+    );
+    dir =
+      process.env.KONSTELLATION_LENSES ||
+      (supportsTheophile && fs.existsSync(enrichedDir)
+        ? enrichedDir
+        : path.join(ROOT, 'examples/lenses'));
+  }
   const lenses = fs
     .readdirSync(dir)
     .filter((n) => n.endsWith('.json'))
