@@ -7,6 +7,7 @@ import { readJson, canonical, hash, validatePack } from '../pack.mjs';
 import { fail } from '../contracts.mjs';
 import { upstream, fetchJson, serviceUrl } from './upstream.mjs';
 import { normalizeKristalPolicy } from './reader-policy.mjs';
+import { importKristalV6State } from './kristal-v6.mjs';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const hex = (x) => String(x || '').replace(/^sha256:/, '');
 function safeFile(root, name) {
@@ -114,6 +115,9 @@ function buildPack(config, catalog, manifest, assertions, policies, metadata) {
     schemaVersion: '0.3',
     assertions,
     policies,
+    ...((config.navigationHints || catalog.navigationHints)
+      ? { navigationHints: config.navigationHints || catalog.navigationHints }
+      : {}),
     integration: {
       adapter: config.adapter,
       runtimePackId: manifest.runtime_pack_id,
@@ -369,10 +373,29 @@ export async function loadKristalHttp(config, base, { fetchImpl = fetch } = {}) 
     projectionHash: hash(rows),
   });
 }
+
+export async function loadKristalV6File(config, base) {
+  const root = path.resolve(base, config.directory || '.');
+  if (typeof config.state !== 'string') fail('INVALID_CONFIG', 'Fichier kristal_state v6 requis.');
+  const filename = safeFile(root, config.state);
+  const stat = fs.statSync(filename);
+  const maxBytes = config.maxBytes || 256 * 1024 * 1024;
+  if (stat.size > maxBytes) fail('PACK_LIMIT', 'Kristal v6 dépasse la taille admise.', 422);
+  const bytes = fs.readFileSync(filename);
+  const digest = sha(bytes);
+  if (config.stateSha256 && digest !== hex(config.stateSha256))
+    fail('PACK_INTEGRITY_FAILED', 'Empreinte du kristal_state v6 incorrecte.', 422);
+  let state;
+  try { state = JSON.parse(bytes); }
+  catch { fail('INVALID_KRISTAL_STATE', 'JSON kristal_state v6 invalide.', 422); }
+  return importKristalV6State(state, config, digest);
+}
+
 export async function loadIntegration(file, options) {
   const config = readJson(file),
     base = path.dirname(path.resolve(file));
   if (config.adapter === 'kristal-runtime-pack-v1') return loadKristalDirectory(config, base);
   if (config.adapter === 'kristal-http-query-v1') return loadKristalHttp(config, base, options);
+  if (config.adapter === 'kristal-state-v6') return loadKristalV6File(config, base);
   fail('UNSUPPORTED_ADAPTER', 'Adaptateur Kristal inconnu.');
 }

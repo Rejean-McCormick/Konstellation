@@ -1,29 +1,53 @@
-# Sémantique de connaissance
+# Autorité, sémantique, provenance et projections
 
-## Politique de lecture
+## 1. Trois niveaux
 
-Appliquer la politique avant les filtres, jointures, compteurs et pagination. Les statuts d’assertion, validation, certitude, reconnaissance et `validated_as` ne se remplacent pas mutuellement. « Validé » ne signifie pas « universellement vrai ». Une assertion admise comme hypothèse reste présentée comme hypothèse.
+| Niveau | Exemple | Autorité |
+|---|---|---|
+| Canonique | `kristal_state` v6, assertions, coordinates, valuations | Kristal |
+| Dérivé | profil d'affordances, score, NavigationPlan, projection timeline | Konstellation, reconstructible |
+| Présentation | layout, icônes, ordre visuel local | UI uniquement |
 
-Le profil strict initial refuse une exécution dont les informations obligatoires de politique sont manquantes. Les autres comportements permis par Kristal nécessitent un profil spécifique qualifié; ils ne constituent pas des fallbacks implicites de Konstellation.
+## 2. Une projection n'est jamais un fait
 
-## Absence et exclusion
+Une timeline peut ordonner des éléments, un DAG peut sélectionner des dépendances et un graphe causal peut dessiner une boucle. Ces structures d'affichage ne deviennent pas de nouvelles assertions.
 
-`missing_in_view` signifie « aucune valeur visible dans cette vue complètement évaluée ». Il n’autorise jamais « cette personne n’a pas de religion ». Une assertion négative explicite est une donnée différente, dont la prise en charge exige un mapping documenté. Un backend incomplet, un timeout ou un dépassement de limite ne produisent pas une preuve d’absence.
+Toute projection doit être reconstruisible à partir des éléments visibles et de la configuration de la recette.
 
-Dans la vue, deux assertions visibles peuvent diverger. `in` correspond dès qu’une assertion visible satisfait le filtre. L’explication identifie ce témoin et signale les conflits connus accessibles; elle n’affirme ni consensus ni absence de conflit lorsqu’aucun marqueur n’est fourni.
+## 3. Evidence et provenance
 
-## Temps
+Konstellation maintient la distinction :
 
-Pour le pilote, `overlaps` accepte des bornes annuelles entières et `match: definite`. Le profil précise la numérotation astronomique des années (année 0), le calendrier de normalisation et la conversion depuis les sources. Aucun parsing des dates anciennes par le Date natif du navigateur.
+- **evidence** : éléments qui soutiennent une assertion/record ;
+- **provenance** : origine, transformation et chaîne de production.
 
-Un intervalle exact [s,e] chevauche [a,b] si s <= b et e >= a, bornes inclusives. Une naissance seule n’est pas une preuve que la personne est encore en vie. Une borne inconnue ne devient pas une infinité.
+L'UI ne doit pas fusionner ces deux notions sous un label générique « source » lorsqu'elles sont distinctes dans Kristal v6.
 
-Si le mapping fournit une naissance incertaine [s_min,s_max] et une fin [e_min,e_max], un chevauchement certain exige s_max <= b et e_min >= a, avec bornes cohérentes. Sinon l’état est inconnu ou non correspondant selon les bornes disponibles; seules les correspondances certaines sont incluses par ce profil. Une future option « possible » nécessitera un opérateur/profil explicite.
+## 4. Conflits
 
-`lifespan` est une relation dérivée, non un fait ajouté au corpus. Sa recette identifie les assertions de dates utilisées, leur compatibilité de scope et d’autorité, la règle de combinaison et sa version. Ne pas combiner arbitrairement une naissance d’une source et un décès contradictoire d’une autre. Si aucune combinaison autorisée n’existe, conserver l’indétermination.
+`conflicts_with` signale une divergence explicite. Konstellation peut :
 
-## Témoins et ResultSet
+- montrer les assertions concernées ;
+- expliquer la nature de la relation ;
+- comparer leurs evidence/provenance visibles.
 
-Chaque résultat peut référencer les assertions ayant satisfait les critères et les liens traversés. Le contrat inclut un chemin de critère, des références d’assertions, des références de provenance et, pour une dérivation, une référence de règle. La preuve d’une absence renvoie au contexte et au critère, sans inventer une assertion.
+Il ne doit pas décider laquelle est vraie sans règle externe explicite.
 
-La vue d’assertion conserve le payload amont et une référence à son contrat; le schéma Konstellation ne prétend pas revalider tous les schémas Kristal. L’adaptateur doit les valider séparément et démontrer le mapping des champs. Si les témoins sont paginés, leur complétude est explicitement signalée.
+## 5. Succession et lineage
+
+- `supersedes` indique un remplacement/révision ;
+- `lineage` indique une dérivation/lignée.
+
+Ni l'un ni l'autre n'implique automatiquement causalité.
+
+## 6. Witnesses
+
+Lorsqu'un élément apparaît parce qu'il satisfait une contrainte relationnelle, Konstellation devrait pouvoir montrer le ou les witnesses qui expliquent la correspondance.
+
+Un witness est une explication de sélection, pas une nouvelle assertion.
+
+## 7. Labels et terminologie
+
+Les labels contextuels peuvent varier par Lens ou navigationHints, mais les identifiants de contrats doivent rester stables.
+
+Exemple : `dependencies` peut être affiché comme « Prérequis », « Dépendances de preuve » ou « Dépendances techniques » selon le contexte, sans changer de sémantique de base.

@@ -9,6 +9,7 @@
   export let path = [];
   export let limit = 8;
   export let inspect = () => {};
+  export let authToken = '';
 
   const VIEW_WIDTH = 1000;
   const VIEW_HEIGHT = 620;
@@ -24,8 +25,7 @@
     requestedKey = '',
     resolvedKey = '',
     resolvedCenterKey = 'root',
-    resolvedPathDepth = 0,
-    arrival = { dx: 0, dy: 0 };
+    resolvedPathDepth = 0;
 
   $: current = path.at(-1) || null;
   $: requestKey = current
@@ -71,7 +71,7 @@
       const payload = JSON.parse(key);
       const response = await fetch('/api/constellation', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}) },
         body: JSON.stringify(payload),
         signal: controller.signal,
       });
@@ -90,27 +90,15 @@
     }
   }
 
-  function targetCenterX(depth) {
-    return depth > 1 ? HISTORY_CENTER_X : BASE_CENTER_X;
-  }
-
   function navigate(node) {
-    const nextDepth = path.length + 1;
-    arrival = {
-      dx: node.x - targetCenterX(nextDepth),
-      dy: node.y - CENTER_Y,
-    };
     const entry = { focus: node.target.focus, groupId: node.target.groupId, label: node.label };
     path = [...path, entry];
     if (entry.focus.kind === 'entity' && !entry.groupId) inspect(entry.focus.id);
   }
 
-  function go(index, fromHistory = false) {
+  function go(index) {
     const nextPath = index < 0 ? [] : path.slice(0, index + 1);
     const nextDepth = nextPath.length;
-    arrival = fromHistory
-      ? { dx: HISTORY_X - targetCenterX(nextDepth), dy: 0 }
-      : { dx: 0, dy: 0 };
     path = nextPath;
 
     if (!nextDepth) {
@@ -170,7 +158,7 @@
         />
       {/if}
 
-      {#each positioned as node, i (nodeKey(node))}
+      {#each positioned as node (nodeKey(node))}
         <line
           class="constellation-edge"
           x1={centerX}
@@ -178,7 +166,6 @@
           x2={node.x}
           y2={node.y}
           pathLength="1"
-          style={`--edge-delay:${Math.min(i * 18, 160)}ms`}
         />
       {/each}
 
@@ -188,12 +175,12 @@
           role="button"
           tabindex="0"
           aria-label={'Revenir à ' + previousEntry.label}
-          style={`transform:translate(${HISTORY_X}px, ${CENTER_Y}px)`}
-          on:click={() => go(resolvedPathDepth - 2, true)}
+          transform={`translate(${HISTORY_X} ${CENTER_Y})`}
+          on:click={() => go(resolvedPathDepth - 2)}
           on:keydown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              go(resolvedPathDepth - 2, true);
+              go(resolvedPathDepth - 2);
             }
           }}
         >
@@ -205,12 +192,9 @@
         </g>
       {/if}
 
-      <g class="constellation-center-frame" style={`transform:translate(${centerX}px, ${CENTER_Y}px)`}>
+      <g class="constellation-center-frame" transform={`translate(${centerX} ${CENTER_Y})`}>
         {#key resolvedCenterKey}
-          <g
-            class="constellation-center constellation-center-motion"
-            style={`--from-x:${arrival.dx}px;--from-y:${arrival.dy}px`}
-          >
+          <g class="constellation-center constellation-center-motion">
             <circle r="76" />
             {#each splitLabel(model.center.label, 18) as line, i}<text y={-5 + i * 20} text-anchor="middle">{line}</text>{/each}
             {#if model.center.kind !== 'group'}<text class="node-kind" y="42" text-anchor="middle">{model.center.kind}</text>{/if}
@@ -218,12 +202,12 @@
         {/key}
       </g>
 
-      {#each positioned as node, i (nodeKey(node))}
+      {#each positioned as node (nodeKey(node))}
         <g
           class={nodeClass(node)}
           role="button"
           tabindex="0"
-          style={`transform:translate(${node.x}px, ${node.y}px);--enter-delay:${Math.min(i * 22, 190)}ms`}
+          transform={`translate(${node.x} ${node.y})`}
           aria-label={'Explorer ' + node.label}
           on:click={() => navigate(node)}
           on:keydown={(e) => {

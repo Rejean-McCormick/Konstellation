@@ -1,50 +1,130 @@
-# Architecture
+# Architecture système de Konstellation 1.0
 
-## Deux composants applicatifs
+## 1. Vue d'ensemble
 
-**Frontend** : shell Astro, explorateur Svelte, rendu des facettes, liste/tableau, aperçu de requête, inspecteur d’assertions, historique. Les composants utilisent un petit catalogue de widgets typés. Un JSON choisit des widgets connus; il ne fournit ni JavaScript ni HTML arbitraire.
+```text
++----------------------------+
+|        Kristal v6          |
+|  état canonique + identité |
++-------------+--------------+
+              |
+              v
++----------------------------+
+| Adapter / Normalizer       |
+| validation + loss report   |
++-------------+--------------+
+              |
+              v
++----------------------------+
+| Query Service              |
+| - Reader Policy            |
+| - Query Engine             |
+| - Structural Introspector  |
+| - Navigation Planner       |
+| - Projection Service       |
++-------------+--------------+
+              |
+              | DTOs + NavigationPlan
+              v
++----------------------------+
+| Konstellation Shell        |
+| - recherche / facettes     |
+| - résultats / inspecteur   |
+| - historique / Lens        |
+| - Renderer Registry        |
++----------------------------+
+```
 
-**Query Service** : chargement des configurations versionnées, validation sémantique, vérification de capacités, contexte d’accès, lecteur de politiques, planification, adaptateur de données, normalisation des résultats et témoins. Un module ACL SA séparé dans ce service peut être ajouté ensuite. ACL signifie ici couche anticorruption; les droits d’accès constituent un mécanisme distinct.
+## 2. Responsabilités
 
-Le plan interne du moteur est éphémère, pas un nouveau format public canonique.
+### Kristal Adapter
 
-## Données déclaratives
+DOIT :
 
-- Registre sémantique : identités, labels, domaine, portée, opérateurs, relations inverses.
-- Profil d’adaptateur de confiance : mappings vers les prédicats amont, recettes dérivées, capacités et limites.
-- Lens : facettes et pivots proposés; aucune permission ni règle épistémique.
-- Reader Policy : objet amont immuable résolu côté service.
+- valider le schéma source ;
+- vérifier l'identité v6 lorsque disponible ;
+- construire les index de lecture nécessaires ;
+- préserver les métadonnées v6 utiles ;
+- déclarer toute perte de représentation.
 
-Une Lens partagée ne peut charger un backend, changer une politique de lecture ou introduire un mapping. Les mappings ne sont pas des équivalences universelles : chaque correspondance vers une source doit documenter ses restrictions et qualifications.
+NE DOIT PAS :
 
-## Interfaces logiques proposées
+- inventer de faits ;
+- convertir silencieusement un type non représentable ;
+- remplacer l'identité canonique du Kristal par celle d'un pack local.
 
-`capabilities(context)` expose les types, relations, opérateurs et profondeurs réellement exécutables.
+### Query Engine
 
-`query(QuerySpec, cursor?)` retourne un ResultSet ou une erreur structurée.
+DOIT :
 
-`facets(QuerySpec, relationIds)` calcule les choix et compteurs sous le même contexte.
+- valider QuerySpec ;
+- appliquer la Reader Policy avant toute sortie ;
+- exécuter sélection, facettes, compteurs et witnesses ;
+- produire un contexte stable et vérifiable.
 
-`entity(entityId, context)` fournit une fiche dans le contexte actif; ouvrir une fiche ne change pas la requête.
+### Structural Introspector
 
-`evidence(assertionRefs, context)` développe des assertions visibles et leurs sources.
+DOIT analyser la structure observable : types, relations, topologie, métadonnées v6, valeurs, coordonnées, cycles, densité, hiérarchie, temporalité et autres signaux.
 
-Ces noms sont un contrat Konstellation proposé, pas des endpoints prétendument présents dans les snapshots.
+Ses résultats sont **dérivés**.
 
-## Isolation
+### Navigation Planner
 
-Les mêmes contrôles d’accès et Reader Policy s’appliquent aux résultats, compteurs, autocomplétion, voisinages, provenance et explications. Un refus d’accès ne doit pas révéler l’existence d’une assertion. Une indisponibilité de politique ne peut être affichée que si les permissions autorisent cette information.
+DOIT :
 
-L’Interaction Kernel reste réservé aux échanges intercomposants qui exigent un profil d’écosystème. Il ne transporte pas chaque clic. L’orchestrateur SA prépare et active les RuntimeSets; il ne participe pas aux requêtes interactives de Konstellation.
+- combiner profils global/local, Lens, focus et hints ;
+- calculer l'applicabilité et le score des recettes ;
+- produire un `NavigationPlan` versionné ;
+- expliquer les raisons d'une recommandation.
 
-## Projection Constellation
+### Projection Service
 
-La v0.5 ajoute trois modules internes au Query Service :
+Produit des DTOs bornés propres à chaque famille de vue : timeline, tree, DAG, flow, etc. Une projection reste reconstructible à partir de l'état visible.
 
-- `NavigationIndex` : index éphémère des assertions **déjà visibles** sous la Reader Policy courante (entités, relations, sources, qualificatifs);
-- `ConstellationProjector` : transforme un focus et une Lens en candidats de navigation sans modifier le graphe de connaissance;
-- `SalienceRanker` : classe et diversifie les candidats de façon déterministe sous un budget de 3 à 25.
+### Renderer Registry
 
-`POST /api/constellation` reçoit `focus`, `context`, `lensRef`, `limit` et éventuellement `groupId`. Il retourne un DTO borné. Le frontend Astro/Svelte ne calcule aucune importance sémantique; `ConstellationView.svelte` reçoit ce DTO et applique seulement un layout SVG déterministe à un ou deux anneaux.
+Associe un `rendererId` connu à un composant UI approuvé, avec ses exigences, budgets et fallbacks.
 
-Cette séparation laisse un seam pour un futur index SQLite/DuckDB ou un autre renderer de réseau sans changer la sémantique publique. Cytoscape/Svelte Flow ne sont pas nécessaires au profil borné v0.5.
+### Shell UI
+
+Le shell reste stable entre les Kristals : recherche, Lens, policy, facettes, résultats, surface principale, inspecteur, historique, provenance et navigation arrière/avant.
+
+## 3. Flux d'ouverture
+
+1. charger et valider la source ;
+2. résoudre Reader Policy et contexte ;
+3. construire les index ;
+4. produire le profil structurel global ;
+5. afficher immédiatement le fallback générique ;
+6. construire le `NavigationPlan` global ;
+7. recalculer localement lorsque Lens, QuerySpec ou focus changent.
+
+## 4. Flux de sélection d'une entité
+
+```text
+User -> Shell: select entity
+Shell -> Query Service: entity(entityId, context)
+Query Service -> Policy: visibility
+Query Service -> Profiler: FocusProfile
+Query Service -> Planner: plan(context, lens, focus)
+Planner -> Shell: NavigationPlan
+Shell -> Projection Service: project(primaryRecipe)
+Projection Service -> Shell: bounded DTO + explanation
+Shell -> Renderer: render
+```
+
+Aucune mutation de QuerySpec n'a lieu tant que l'utilisateur ne déclenche pas explicitement un filtre ou un pivot.
+
+## 5. Dégradation gracieuse
+
+Un Kristal inconnu doit au minimum permettre :
+
+- recherche ;
+- facettes ;
+- liste ;
+- tableau ;
+- Constellation générique ;
+- inspecteur ;
+- provenance/evidence si disponible.
+
+Chaque structure supplémentaire découverte enrichit l'expérience, mais n'est jamais nécessaire pour rendre le corpus navigable.

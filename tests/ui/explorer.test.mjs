@@ -36,6 +36,12 @@ beforeEach(() => {
           case '/api/constellation':
             value = engine.constellation(data, lenses);
             break;
+          case '/api/navigation/plan':
+            value = engine.navigationPlan(data, lenses);
+            break;
+          case '/api/navigation/project':
+            value = engine.navigationProjection(data, lenses);
+            break;
           case '/api/validate-state':
             validate('exploration-state', data);
             engine.check(data.query);

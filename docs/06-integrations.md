@@ -1,21 +1,85 @@
-# Intégrations
+# Intégrations et frontières externes
 
-## Kristal : réutiliser avant de projeter
+## 1. Types d'intégration
 
-Le snapshot kristal-framework décrit v5.0.0-rc.2 comme candidat; ses documents de requête et Reader Policy sont des spécifications, pas la preuve d’un lecteur de production installé. Le Query Contract prévoit motifs de triples, ordre/pagination déterministes, métadonnées et jointures contraintes optionnelles.
+Konstellation peut consommer :
 
-Premier travail d’intégration : identifier un Runtime Pack réel et son lecteur, vérifier manifest, empreintes, schéma, politiques supportées, sortie portant les statuts, résolution de provenance et limites. Construire une matrice pour les opérations Konstellation. Une composition locale de primitives n’est acceptable que si elle reste complète et bornée; paginer une étape intermédiaire ne donne pas le droit d’en omettre le reste.
+- un `kristal_state` v6 direct ;
+- un Runtime Pack Kristal ;
+- un pack JSON normalisé ;
+- une projection HTTP paginée ;
+- des Reader Policies ;
+- une intégration SemantiK/SA explicitement configurée.
 
-Si une projection devient nécessaire, son manifeste enregistre inputs, contrats, hash, règles et version de l’exporteur. Conserver identités d’assertion, portée, provenance, evidence, validation, certitude, autorité, reconnaissance, conflits et lineage. Une table de triples « truthy » seule ne suffit pas pour les usages épistémiques définis ici.
+## 2. Règle de frontière
 
-Aucun Runtime Pack amont n’est muté. Les sauvegardes, Lens utilisateur et sessions restent l’état opérationnel de Konstellation. Une mise à jour du corpus prépare une nouvelle projection et un contexte distinct; elle ne remplace pas silencieusement celui d’une requête sauvegardée.
+Les intégrations externes peuvent fournir données, policy et métadonnées. Elles ne peuvent pas injecter :
 
-## SA : intégration tardive et explicite
+- composant Svelte ;
+- JavaScript exécutable ;
+- HTML de confiance ;
+- permissions implicites ;
+- mutation silencieuse de QuerySpec.
 
-Le snapshot SA contient un pipeline implémenté selon son document de statut. Son entrée canonique inclut `request_schema_version`, `semantic_graph`, `obligations`, `communication_context`, `presentation_constraints`, `requested_capability_profile` et éventuellement `runtime_selector`.
+## 3. Kristal v6 direct
 
-L’adaptateur Konstellation → SA reste à développer. Il sélectionne un périmètre explicite : requête, une fiche ou la page affichée. Il ne demande pas « résumer toute la collection » en transmettant seulement la page courante. Il transporte sources, polarité et statuts communicativement nécessaires dans des obligations obligatoires.
+Configuration de référence :
 
-Une réalisation réussie exige la couverture de toutes les obligations. Le RuntimeSet exact, le profil et la langue doivent être admis; un schéma valide n’en constitue pas la preuve. Si le profil manque, l’interface conserve les résultats structurés et indique l’indisponibilité de la formulation SA. Aucun pseudo-GF ou changement de langue silencieux.
+```json
+{
+  "adapter": "kristal-state-v6",
+  "state": "kristal-v6-state.json",
+  "requireIdentity": true
+}
+```
 
-Le SemantiK Runtime Orchestrator reste en amont de l’activation des artefacts linguistiques. Konstellation ne reconstruit ni ne promeut un RuntimeSet pendant une navigation.
+L'adaptateur :
+
+1. valide le schéma ;
+2. vérifie l'identité lorsque déclarée ;
+3. projette seulement les structures représentables sans perte ;
+4. préserve les métadonnées v6 utiles ;
+5. déclare les pertes ;
+6. dérive les affordances.
+
+## 4. navigationHints
+
+Les hints sont des métadonnées de planification non factuelles.
+
+Forme recommandée :
+
+```json
+{
+  "schemaVersion": "0.1",
+  "affordances": {
+    "temporal": {"score": 1, "reason": "dates canoniques"},
+    "lineage": 0.9
+  },
+  "relationAffordances": {
+    "derived_from": ["lineage", "dependency"]
+  },
+  "preferredRecipes": ["timeline", "evolution"],
+  "recipeLabels": {
+    "evolution": "Trajectoire"
+  }
+}
+```
+
+Les aliases `capabilities` et `relationCapabilities` existent pour compatibilité v0.6 mais la terminologie cible est `affordances`.
+
+## 5. SemantiK / SA
+
+Une formulation ou communication externe doit rester explicitement déclenchée. Le serveur recalcule les résultats à partir de QuerySpec ; il ne considère jamais un résultat fourni par le client comme vérité.
+
+## 6. Erreurs d'intégration
+
+Les erreurs doivent être structurées et distinguer au minimum :
+
+- schéma invalide ;
+- identité invalide ;
+- policy incompatible ;
+- capacité externe indisponible ;
+- projection non supportée ;
+- perte d'import ;
+- timeout ;
+- source inaccessible.

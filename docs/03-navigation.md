@@ -1,47 +1,140 @@
-# Navigation et Lens
+# Navigation adaptative
 
-## Écran initial
+## 1. Idée centrale
 
-L’utilisateur choisit une entrée lisible (« Histoire intellectuelle », « Sociodémographie »). Le type racine peut rester discret. Une catégorie qui ajoute une contrainte doit toutefois produire un critère visible : « Philosophe » n’est pas une simple décoration si elle filtre les résultats.
+Konstellation n'associe pas une interface à un domaine. Il reconnaît des **affordances structurelles** et compose des recettes de navigation réutilisables.
 
-La v0.2 des Lens propose un type racine, des facettes et des pivots; elle n’exécute pas de filtres cachés. Les raccourcis avec critères sont des requêtes enregistrées visibles, séparées des Lens.
+```text
+structure visible
+  -> affordances
+  -> recettes applicables
+  -> NavigationPlan
+  -> projection
+  -> renderer
+```
 
-## Surface principale
+## 2. Vocabulaire d'affordances
 
-1. Angle d’exploration et politique de lecture, affichés séparément.
-2. Facettes : relation, opérateur, valeurs; état disponible, indisponible ou vide.
-3. Aperçu des critères avec suppression individuelle et réinitialisation.
-4. Résultats et inspecteur « Pourquoi cette correspondance ? ».
-5. Chemin des pivots avec retour/annulation.
+Le vocabulaire cible comprend au minimum :
 
-Une relation est proposée à partir de la Lens et du registre; sa disponibilité provient des capacités du backend. Une facette disponible sans résultat n’est pas une facette non supportée. Ne pas réordonner constamment les facettes en fonction des résultats : garder la structure de la Lens stable.
+- `network`
+- `temporal`
+- `hierarchy`
+- `dependency`
+- `sequence`
+- `stateMachine`
+- `conditionalTransition`
+- `causal`
+- `signedCausal`
+- `cycle`
+- `spatial`
+- `multiScale`
+- `multiplex`
+- `proof`
+- `argumentation`
+- `multidimensional`
+- `quantitative`
+- `evidential`
+- `provenance`
+- `versioned`
+- `eventStream`
+- `resourceAllocation`
+- `classification`
+- `conflict`
+- `succession`
+- `lineage`
+- `actionability`
+- `stateful`
 
-## Changement de Lens
+Un score d'affordance mesure **la pertinence navigationnelle**, pas la vérité, la qualité ou l'importance scientifique.
 
-À type racine identique, changer la Lens ne change aucun filtre. Les filtres absents de la nouvelle Lens restent visibles dans une zone « Autres critères actifs ». Si le type racine diffère, proposer explicitement une nouvelle exploration ou un pivot compatible. Une Lens ne modifie jamais automatiquement la Reader Policy.
+## 3. Sources de signal
 
-Un changement de politique réévalue toute la requête et invalide les curseurs. Les résultats et le contexte actif portent la même révision; une réponse réseau ancienne ne remplace pas l’état récent.
+Ordre de préférence :
 
-## Compteurs
+1. structure canonique explicite du Kristal ;
+2. `navigationHints` validés ;
+3. schémas de types/relations ;
+4. topologie observée ;
+5. heuristiques lexicales en fallback.
 
-Dans une même facette, plusieurs valeurs signifient OR. Entre facettes, AND. Pour calculer les compteurs d’une facette, retirer ses propres filtres **au niveau de sélection courant**, tout en conservant les autres contraintes, les sous-sélections et la politique. Compter les entités distinctes. Des totaux peuvent se chevaucher : leur somme n’est pas nécessairement le total.
+Les hints doivent renforcer une structure cohérente, pas inventer une structure absente.
 
-Les valeurs multivaluées se dédupliquent. Aucun compteur tronqué n’est présenté comme exact. Le premier profil peut renvoyer « non calculé » et charger les compteurs à la demande; le résultat principal ne doit pas attendre tous les compteurs.
+## 4. Profils multi-portée
 
-## Accessibilité et volume
+Konstellation peut calculer :
 
-Tout le parcours fonctionne au clavier et dans une vue structurée sans graphe. Le graphe relationnel se limite d’abord au voisinage demandé, avec budget de nœuds et mention de troncature. Ses limites ne changent jamais la requête de résultats. Charger le voisinage est une inspection; filtrer à partir d’un voisin est une action distincte.
+- profil global du pack ;
+- profil par type d'entité ;
+- profil d'un result set ;
+- profil du focus courant.
 
-L’état sauvegardé associe QuerySpec, référence de Lens et préférences visuelles. Une URL contient un état compact non sensible, ou une référence de sauvegarde soumise aux permissions. Elle n’inclut ni tokens d’accès ni corpus privé embarqué. Si une release n’est plus disponible, afficher l’indisponibilité et proposer explicitement une migration.
+Le planner combine ces profils plutôt que de choisir une UI une fois pour toutes à l'ouverture.
 
-Le schéma `exploration-state` livré sérialise le point courant. L’historique annuler/rétablir est une liste locale bornée de ces snapshots (100 entrées proposées); il n’est pas inclus dans le fichier partagé de cette première version. Restaurer un fichier recharge son point courant, pas toute une session passée.
+## 5. Recettes
 
-## Constellation v0.5
+Recettes génériques principales :
 
-La vue Constellation est une **inspection navigable**, pas un autre langage de requête. Elle conserve la QuerySpec courante et place un focus au centre. Un clic peut ouvrir un groupe de navigation (par exemple « Pensée » ou « Œuvres et sources ») ou recentrer une entité/source/valeur. Le fil d’Ariane permet de revenir au focus précédent sans réécrire silencieusement la sélection.
+| Recette | Affordances principales | Intention |
+|---|---|---|
+| `catalogue` | universelle | Parcourir la sélection |
+| `constellation` | network | Explorer le voisinage |
+| `timeline` | temporal | Explorer dans le temps |
+| `hierarchy` | hierarchy | Parcourir une structure parent/enfant |
+| `dependencies` | dependency | Comprendre prérequis et dérivations |
+| `path` | sequence/stateMachine/conditionalTransition | Suivre un parcours |
+| `feedback` | causal + cycle | Comprendre une boucle |
+| `proofs` | proof | Explorer preuve/réfutation/dépendances |
+| `arguments` | argumentation | Comparer positions et arguments |
+| `dimensions` | multidimensional | Comparer des profils |
+| `states` | stateful/eventStream | Explorer états et changements |
+| `evolution` | lineage/succession/versioned | Suivre une lignée ou révision |
+| `divergences` | conflict | Examiner les conflits explicites |
+| `traceability` | evidential/provenance | Suivre évidence et provenance |
+| `action-context` | actionability | Comprendre conditions de décision/action |
+| `table` | universelle | Comparer de façon tabulaire |
 
-Le nombre maximal de satellites est réglable de 3 à 25. La sélection est faite côté Query Service. Une Lens peut déclarer `constellation.groups` avec une priorité éditoriale et une source `relations` ou `qualifiers`. Si elle ne le fait pas, le service construit des groupes explicables à partir des relations visibles, des qualificatifs préservés et des sources.
+La cible 1.0 ajoute explicitement les recettes `multiscale` et `spatial` lorsque les renderers correspondants sont disponibles.
 
-La saillance est déterministe. Elle combine priorité de Lens, nombre d’assertions, nombre d’entités atteignables et diversité des sources, puis applique une pénalité de redondance de type maximal-marginal-relevance. Le score signifie uniquement « utile à afficher dans cette exploration »; il ne mesure ni vérité, ni importance historique intrinsèque.
+## 6. Planner
 
-Les qualificatifs servent d’index de navigation. Par exemple un `corpus:theme` peut mener d’un auteur vers « Grâce », puis vers les auteurs et positions portant ce même thème. Cette projection ne crée aucune nouvelle assertion et reste entièrement soumise à la Reader Policy active.
+Conceptuellement :
+
+```text
+score(recipe) =
+  applicabilité(structure)
+  + force(affordances)
+  + préférence Lens/hints
+  + pertinence focus
+  - coût projection
+  - redondance avec recettes déjà proposées
+```
+
+Une recette requise est rejetée si ses affordances minimales sont sous le seuil d'applicabilité.
+
+## 7. NavigationPlan
+
+Le plan doit contenir :
+
+- version du schéma ;
+- mode ;
+- `derived: true` ;
+- sémantique explicite `navigation-affordances-not-kristal-authority` ;
+- type et Lens ;
+- recette primaire ;
+- vues alternatives ;
+- actions contextuelles ;
+- profil d'affordances ;
+- raisons et relations structurantes.
+
+## 8. Intentions UX
+
+L'UI ne doit pas obligatoirement exposer les noms techniques des renderers. Elle peut parler en intentions :
+
+- « Suivre la trajectoire »
+- « Voir les prérequis »
+- « Comprendre la preuve »
+- « Changer d'échelle »
+- « Examiner les divergences »
+
+Le `recipeId` reste stable sous ces labels contextuels.

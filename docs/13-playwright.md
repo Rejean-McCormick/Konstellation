@@ -1,54 +1,62 @@
-# Playwright — système de test E2E
+# Playwright et validation navigateur
 
-Konstellation possède maintenant un harnais Playwright destiné à tester l’application comme un utilisateur réel et à détecter les régressions qui échappent aux tests unitaires.
+## Objectif
 
-## Lancement Windows
+Playwright couvre les comportements que les tests unitaires/DOM ne qualifient pas : navigation réelle, layout, clavier, responsive, téléchargement, historique et intégration frontend/API.
 
-Double-cliquer sur `Test_Konstellation.cmd`.
+## Suites 1.0 minimales
 
-Le menu propose :
+### Smoke
 
-- **Test rapide** : démarrage, API `/health` et `/bootstrap`, absence de `Failed to fetch`.
-- **Astrolabe** : Moïse, faute `ressurection`, Saint-Esprit, parousie, iconoclaste et eudiste.
-- **Suite complète** : corpus, Astrolabe, navigation, inspecteur, sauvegarde/import-export et responsive mobile.
-- **Playwright UI** : mode interactif pour rejouer chaque étape visuellement.
-- **Rapport** : ouvre `playwright-report/index.html`.
+- page charge ;
+- bootstrap valide ;
+- recherche ;
+- sélection d'une entité ;
+- inspecteur ;
+- navigation de base.
 
-Le runner utilise le port `4323` afin de ne pas perturber l’instance normale sur `4321`.
+### Adaptive navigation
 
-## Diagnostics automatiques
+- le plan recommandé apparaît ;
+- changement de recette ;
+- mode pinned ;
+- changement de focus ;
+- fallback si la recette devient inapplicable.
 
-À chaque échec Playwright conserve :
+### Renderers
 
-- une capture d’écran ;
-- une vidéo ;
-- une trace Playwright ;
-- `diagnostics.json` contenant les erreurs JavaScript, `console.error`, requêtes réseau échouées et réponses HTTP 5xx.
+Pour chaque renderer :
 
-Une régression comme l’alerte **Failed to fetch** est donc un échec explicite du test de démarrage et des tests de parcours.
+- état normal ;
+- vide ;
+- troncation/pagination ;
+- erreur ;
+- clavier ;
+- mobile ;
+- fallback accessible.
 
-## Corpus biblique
+### Policy
 
-La suite vérifie notamment :
+- changement de policy ;
+- absence de fuite dans facets/autocomplete/projection/traceability ;
+- invalidation de contexte.
 
-- présence des types `person`, `work`, `concept`, `tradition` ;
-- au moins 100 œuvres ;
-- présence/alias de Moïse, Hénoch, Isaïe, Paul de Tarse et Pierre ;
-- Saint-Esprit, Résurrection, Parousie et Iconoclasme ;
-- Genèse, Matthieu, 1 Hénoch, Évangile de Thomas et Didachè ;
-- au moins 3000 figures lorsque `KONSTELLATION_EXPECT_FULL_BIBLE=1`.
+### Persistance
 
-Si le test `@corpus-full` échoue, relancer `Update_Biblical_Corpus.cmd` puis la suite.
+- sauvegarde ;
+- import/export ;
+- lien partageable ;
+- migration d'un état ancien.
 
-## Commandes npm
+## Environnement
 
-```text
-npm run test:e2e
-npm run test:e2e:smoke
-npm run test:e2e:astrolabe
-npm run test:e2e:corpus
-npm run test:e2e:ui
-npm run test:e2e:report
-```
+La CI 1.0 doit exécuter Playwright avec la version Node supportée par `package.json`, sur un build produit avec `npm ci` et le lockfile du repo.
 
-Pour tester volontairement une instance déjà lancée : définir `PLAYWRIGHT_BASE_URL`, par exemple `http://127.0.0.1:4321`. Dans ce mode Playwright ne démarre pas son propre serveur.
+## Artefacts
+
+Conserver sur échec :
+
+- screenshot ;
+- trace ;
+- vidéo pour scénarios critiques ;
+- logs API corrélés si disponibles.

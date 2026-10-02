@@ -1,15 +1,87 @@
-# Rapport de validation — 2026-09-26
+# Stratégie de validation du système final
 
-Résultat : **32 vérifications réussies**, Python 3.12 et jsonschema 4.26.0.
+Ce document décrit **comment valider Konstellation 1.0**. Les rapports `VALIDATION-v0.x.md` restent historiques.
 
-- 5 schémas Draft 2020-12 valides.
-- Registre et relations inverses cohérents.
-- 3 Lens et leurs références contrôlées.
-- 2 QuerySpec, état d’exploration et ResultSet validés.
-- 11 requêtes invalides rejetées (types, opérateurs, champs, bornes, budgets).
-- 8 vérifications synthétiques : pagination séparée de la population, pivot complet, déduplication, exclusion multivaluée, absence dans la vue, présence positive, date incomplète et corrélation sur le même auteur.
-- Liens Markdown actifs vérifiés localement.
+## 1. Niveaux de validation
 
-Les exemples `fixture:*` illustrent des contrats; ils ne sont ni des assertions historiques ni un pack Kristal. Le ResultSet est un exemple de forme indépendant des 120 entités générées par les tests.
+### Contrats
 
-Non qualifiés : politiques Kristal réelles, contrôles d’accès et caches, pagination backend, projection, frontend, adaptation SA, performances et déterminisme interlangage. Les scénarios correspondants figurent au plan de livraison. Le passage des tests synthétiques ne constitue pas une certification d’intégration.
+- JSON Schema valide ;
+- examples valides ;
+- refus des propriétés non prévues lorsque `additionalProperties: false` ;
+- migration versionnée.
+
+### Moteur
+
+- sélection déterministe ;
+- policy appliquée partout ;
+- facettes exactes ;
+- witnesses corrects ;
+- cursors/fingerprints cohérents.
+
+### Profiler
+
+- détection positive ;
+- détection négative ;
+- hints cohérents ;
+- pas de confusion domaine/structure ;
+- complexité bornée.
+
+### Planner
+
+- applicabilité ;
+- classement déterministe ;
+- raisons explicables ;
+- fallback ;
+- mode pinned/adaptive.
+
+### Projections
+
+- aucune fuite de données policy ;
+- DTO borné ;
+- provenance/witnesses ;
+- troncature explicite ;
+- reconstruction possible.
+
+### Renderers
+
+- clavier ;
+- responsive ;
+- empty/error/loading states ;
+- fallback accessible ;
+- aucune mutation cachée de query.
+
+### E2E
+
+- changement Lens ;
+- changement policy ;
+- navigation entre recettes ;
+- restauration d'exploration ;
+- import Kristal v6 ;
+- corpus multi-Kristal.
+
+## 2. Golden corpus
+
+Le corpus de validation doit contenir des cas structuraux volontairement distincts. Voir [21-testing-golden-corpus.md](21-testing-golden-corpus.md).
+
+## 3. Tests négatifs obligatoires
+
+Exemples :
+
+- Math ne doit pas recevoir une timeline sans signal temporel ;
+- un simple graphe avec cycles non causaux ne doit pas être présenté comme feedback causal ;
+- `actionability=automatic` ne doit jamais créer un bouton d'exécution ;
+- une source masquée par Reader Policy ne doit pas réapparaître dans traceability ;
+- un hint `temporal: 1` sans structure temporelle cohérente doit être rejeté, plafonné ou signalé.
+
+## 4. Validation production
+
+Une architecture correcte n'est pas équivalente à une release production. La qualification 1.0 exige aussi :
+
+- build reproductible ;
+- Playwright ;
+- benchmarks ;
+- observabilité ;
+- sécurité ;
+- runbooks ;
+- packaging/signature/checksum.

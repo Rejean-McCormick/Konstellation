@@ -1,29 +1,89 @@
-# Exécution et performances
+# Exécution, projections et Renderer Registry
 
-## Pipeline
+## 1. Pipeline d'exécution
 
-Validation structurelle → résolution immuable → accès → validation sémantique/capacités → vue sous Reader Policy → plan borné → exécution → déduplication → ordre total → pagination → témoins.
+```text
+QuerySpec + Reader Policy
+  -> ResultSet visible
+  -> NavigationPlan
+  -> Projection request(recipeId, focus, query)
+  -> versioned projection DTO
+  -> Renderer Registry
+  -> approved renderer
+```
 
-Un backend ne couvrant pas un opérateur le refuse. Il ne l’ignore pas et ne passe pas silencieusement sur une requête moins restrictive. La qualification doit vérifier l’ordre effectif, même si le moteur optimise physiquement le plan.
+## 2. Séparation des responsabilités
 
-## Identités et cache
+### Planner
 
-Le profil de canonicalisation local du prototype trie les clés d’objets, conserve l’ordre des tableaux, emploie UTF-8 et JSON compact, sans nombres flottants dans QuerySpec. Les producteurs doivent maintenir les IDs exacts. Le protocole de production devra verrouiller la canonicalisation interlangage; le validateur Python ne démontre pas cette propriété.
+Décide **quoi proposer**.
 
-L’identité sémantique dépend de la sélection et des quatre références de contexte. L’identité de page ajoute ordre, taille et position. Le cache d’exécution ajoute la partition d’autorisation et sa révision; les credentials eux-mêmes ne sont jamais sérialisés dans QuerySpec. Les ACL actuelles prévalent sur la possibilité historique de rejouer une requête.
+### Projection Service
 
-Les hash sont calculés par le service; le client ne fait pas autorité. Les traductions de labels, coordonnées du graphe et panneaux ouverts ne changent pas l’identité sémantique. La v0.2 n’essaie pas de prouver l’équivalence de deux arbres différents.
+Décide **quelles données bornées fournir à la recette**.
 
-## Pagination et erreurs
+### Renderer
 
-Le curseur opaque est lié à la requête, au contexte, à l’ordre, à la taille de page et à la partition d’accès. Toute incompatibilité le rend invalide. Ne pas retenir un offset dans une collection changeante. Le tri stable par ID simplifie le premier profil; un futur tri par label devra épingler langue, collation, version et tie-breaker par ID.
+Décide **comment représenter ces données**.
 
-Erreurs proposées : `INVALID_QUERY`, `UNKNOWN_RELATION`, `TYPE_MISMATCH`, `UNSUPPORTED_CAPABILITY`, `CONTEXT_UNAVAILABLE`, `POLICY_UNEVALUABLE`, `CURSOR_MISMATCH`, `BUDGET_EXCEEDED`, `TIMEOUT`, `ACCESS_DENIED`.
+Un renderer ne doit pas recalculer des règles de policy ni exécuter des requêtes cachées hors contrat.
 
-Le profil v0.2 exige des résultats complets pour l'évaluation sémantique; une page complète n'est pas la totalité des résultats. Un budget de jointure dépassé fait échouer la requête, sans résultat partiel présenté comme complet. Un timeout dépend de conditions opérationnelles : il ne justifie pas une promesse d’erreurs identiques dans toutes les conditions matérielles.
+## 3. Renderer Registry 1.0 implémenté
 
-## Budgets proposés, à mesurer
+| Renderer | Recettes principales | État 1.0 RC |
+|---|---|---|
+| `list` | catalogue | implémenté |
+| `table` | table | implémenté |
+| `constellation` | constellation/arguments | implémenté, générique et sans branche domaine |
+| `timeline-lineage` | timeline/evolution | implémenté |
+| `tree` | hierarchy | implémenté |
+| `dag-proof` | dependencies/proofs | implémenté |
+| `flow-path` | path | implémenté |
+| `causal-feedback` | feedback | implémenté |
+| `matrix-profile` | dimensions | implémenté |
+| `state-flow` | states/action-context | implémenté ; `actionability` reste informatif |
+| `multiscale-layer` | multiscale/multiplex | implémenté |
+| `spatial` | spatial | implémenté |
+| `traceability` | traceability/divergences | implémenté |
 
-Sur un environnement de référence consigné et un corpus pilote figé : viser p95 < 500 ms pour les filtres simples et < 1 s pour un pivot, hors rendu SA. Ce sont des objectifs, pas des mesures. Consigner nombre d’entités/assertions, distribution des degrés, profondeur, politique, CPU/RAM, cache froid/chaud et concurrence. Inclure un cas de relation très connectée et de nombreuses assertions rejetées par politique.
+Chaque renderer spécialisé consomme un DTO de projection versionné et borné. La qualification navigateur complète reste un gate de release distinct de l’état d’implémentation source ; voir [VALIDATION-v1.0-RC.md](VALIDATION-v1.0-RC.md).
 
-Démarrer par annulation des requêtes obsolètes, regroupement des changements rapides de facettes, index existants et compteurs à la demande. Ajouter cache, index dérivés ou moteur RDF seulement après diagnostic. Vérifier résultats et témoins identiques sur un jeu de conformité avant tout changement d’adaptateur.
+## 4. Contrat RendererDefinition cible
+
+```json
+{
+  "id": "dag-proof",
+  "supportedRecipes": ["dependencies", "proofs"],
+  "requiresAffordances": ["dependency"],
+  "benefitsFrom": ["proof", "hierarchy"],
+  "maxRecommendedItems": 500,
+  "projectionKind": "dag",
+  "accessibilityFallback": "table",
+  "supportsKeyboard": true,
+  "supportsExport": true
+}
+```
+
+## 5. Règles de registry
+
+Le registry DOIT :
+
+- être défini dans le code ou une configuration opérateur de confiance ;
+- refuser un `rendererId` inconnu ;
+- déclarer son fallback ;
+- déclarer ses budgets ;
+- déclarer les recettes supportées ;
+- disposer d'un chemin accessible clavier/lecteur d'écran.
+
+## 6. Bornage
+
+Tout renderer réseau doit appliquer au moins une stratégie :
+
+- pagination ;
+- voisinage N-hops borné ;
+- top-K déterministe ;
+- agrégation ;
+- LOD selon zoom ;
+- virtualisation.
+
+Le frontend ne doit jamais demander « tout le graphe » sans limite.

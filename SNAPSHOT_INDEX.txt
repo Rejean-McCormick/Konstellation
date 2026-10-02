@@ -1,6 +1,10 @@
 SmartSnap snapshot file index
-Files included: 133
+Files included: 146
 
+.backup-constellation-motion-20260928-172932/src/components/ConstellationView.svelte
+.backup-constellation-motion-20260928-172932/src/lib/constellation/layout.js
+.backup-constellation-motion-20260928-172932/src/styles/global.css
+.backup-constellation-motion-20260928-172932/tests/ui/explorer.test.mjs
 .gitignore
 .prettierrc.json
 .smartignore
@@ -20,6 +24,7 @@ astro.config.mjs
 contracts/constellation-response.schema.json
 contracts/exploration-state.schema.json
 contracts/lens.schema.json
+contracts/navigation-hints.schema.json
 contracts/query-spec.schema.json
 contracts/relation-registry.schema.json
 contracts/result-set.schema.json
@@ -48,6 +53,7 @@ docs/10-validation-report.md
 docs/11-astrolabe.md
 docs/13-playwright.md
 docs/14-theophile-enrichment.md
+docs/15-adaptive-navigation.md
 docs/DESIGN-v0.2-README.md
 docs/IMPLEMENTATION.md
 docs/IMPORT.md
@@ -56,6 +62,7 @@ docs/OPERATIONS.md
 docs/VALIDATION-v0.3.md
 docs/VALIDATION-v0.4.md
 docs/VALIDATION-v0.5.md
+docs/VALIDATION-v0.6.md
 docs/adr/ADR-0005-bounded-selection-tree.md
 docs/input-snapshots.json
 examples/exploration.json
@@ -105,9 +112,13 @@ server/integrations/reader-policy.mjs
 server/integrations/semantik.mjs
 server/integrations/upstream.mjs
 server/navigation/index.mjs
+server/navigation/planner.mjs
+server/navigation/profiler.mjs
+server/navigation/projection.mjs
 server/navigation/projector.mjs
 server/navigation/salience.mjs
 server/pack.mjs
+src/components/AdaptiveProjectionView.svelte
 src/components/Astrolabe.svelte
 src/components/Communication.svelte
 src/components/ConstellationView.svelte
@@ -131,8 +142,8 @@ tests/constellation.test.mjs
 tests/engine.test.mjs
 tests/import.test.mjs
 tests/integrations.test.mjs
+tests/navigation-adaptive.test.mjs
+tests/navigation-variety.test.mjs
 tests/ui/explorer.test.mjs
 tools/validate.py
 vitest.config.mjs
-
-Index file: SNAPSHOT_INDEX.txt

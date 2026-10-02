@@ -1,45 +1,182 @@
-# Implémentation v0.5
+# État d’implémentation — Konstellation 1.0 RC
 
-## Surface livrée
+Ce document est la source de vérité sur l’état **réel du code**. La spécification 1.0 est implémentée dans cette branche sous le numéro `1.0.0-rc.2`. Le suffixe RC est conservé tant que tous les gates opérationnels de [25-release-1.0.md](25-release-1.0.md) ne sont pas exécutés avec succès dans l’environnement de release supporté.
 
-Le moteur Node traite les QuerySpec 0.2. Il utilise les opérateurs `exists`, `missing_in_view`, `in`, `none_of` et `overlaps`, les conjonctions, les liens existentiels corrélés et les IDs explicites. Les traversées inverses proviennent du registre. Les témoins constituent une preuve suffisante choisie de manière déterministe; `witnessesComplete` signifie que ce parcours de preuve est complet, pas que toutes les assertions alternatives ont été énumérées. L’inspecteur donne les assertions visibles complémentaires.
+## Résumé
 
-Le pack normalisé est chargé et validé une fois au démarrage. Son hash de contenu, celui du registre, du profil d’exécution et de la politique constituent le contexte. La version d’adaptateur dans le profil doit être incrémentée à chaque changement sémantique. L’ordre stable est celui des identifiants selon la comparaison ECMAScript des chaînes. La canonicalisation JSON triée est locale à cette implémentation; l’interopérabilité avec d’autres implémentations de hash n’est pas certifiée.
+Implémenté :
 
-Les facettes retirent leurs filtres propres uniquement au niveau courant. Elles conservent les sous-sélections. Une relation sans inverse reste filtrable mais n’est pas offerte comme pivot. La vue Constellation expose de 3 à 25 satellites selon la préférence utilisateur; le moteur de sélection conserve la population entière. Les satellites sont projetés côté service depuis les relations, sources et qualificatifs visibles, puis classés de façon déterministe.
+- lecture native Kristal v6 avec `kristal_state` comme autorité canonique ;
+- QuerySpec/Lens/Reader Policy séparés ;
+- introspection structurelle globale, par type, result set et focus ;
+- affordances 1.0 explicables et policy-scoped ;
+- `navigationHints` 1.0 déclaratifs, avec compatibilité des anciennes clés ;
+- `NavigationPlan` 1.0 versionné et validé ;
+- Renderer Registry fermé et validé ;
+- projections natives pour toutes les familles prioritaires 1.0 ;
+- shell adaptatif Svelte avec fallback accessible et LOD ;
+- ExplorationState 1.0 + migration 0.2 ;
+- auth multi-principal pour profils partagés, scopes, rate limiting, CSP par profil ;
+- health/readiness/version, erreurs corrélables, logs JSON et métriques ;
+- golden tests positifs/négatifs, test DAG profond et benchmark 10k/100k/1M + scénarios structurels ;
+- gates statiques frontend : aucun `style=`/`style:`, aucun sink HTML/dynamic-code (`{@html}`, `innerHTML`, `eval`, `new Function`), SVG interactifs nommés et focusables, blocs structuraux équilibrés, CSS Astro externalisé ;
+- aucun branchement runtime sur un domaine ou Kristal nommé.
 
-L’état de sélection appartient à QuerySpec. Lens, vue, panneau et identité inspectée appartiennent à ExplorationState. Les 100 snapshots d’historique restent en mémoire; seuls les points sauvegardés sont persistés dans localStorage. La sauvegarde exportée n’inclut pas l’historique complet. Le chemin de constellation et sa limite de satellites appartiennent à ExplorationState. Les coordonnées SVG sont déterministes et ne sont pas persistées.
+Non qualifié dans ce snapshot :
 
-## Lecture et permissions
+- `npm ci` reproductible, car `package-lock.json` est absent du snapshot amont ;
+- compilation Astro/Svelte sous Node `>=24.15.0`, l’environnement courant étant Node 22.16.0 sans `node_modules` ;
+- suite Vitest complète ;
+- Playwright complet ;
+- qualification accessibilité navigateur ;
+- qualification des SLOs HTTP/rendering sur matériel de production.
 
-Le profil `konstellation.normalized-reader.v1` exige des listes explicites pour statuts, certitudes, statuts de validation, modes validés et autorités. `*` signifie explicitement « toute valeur ». Une liste vide n’admet rien. Les sources peuvent être obligatoires. Un `domain` optionnel restreint la portée. Tout champ de politique non reconnu est rejeté; un profil amont complexe doit être adapté et qualifié, jamais ignoré.
+Ces points empêchent de publier honnêtement `1.0.0` final, mais ne sont plus des gaps d’architecture ou de code métier.
 
-Les rôles sont des permissions statiques de l’instance. Les entités, assertions et sources peuvent porter `roles`. L’utilisateur du serveur dispose des rôles configurés côté opérateur; il ne peut les choisir via HTTP. Les caches et curseurs comprennent cette partition. Le catalogue d’entités et sa classification sont des métadonnées de publication du pack, distinctes de ses assertions : ils respectent les rôles mais ne disparaissent pas automatiquement quand une politique masque toutes les assertions. Une évolution vers une classification intégralement justifiée par assertions exige un profil supplémentaire.
+## Matrice d’implémentation
 
-Aucun service d’authentification ou environnement multitenant n’est livré. L’instance écoute par défaut sur 127.0.0.1. Les Host et Origin sont vérifiés. Un déploiement partagé demande authentification, isolation par utilisateur et qualification du périmètre; changer simplement HOST n’ajoute pas ces fonctions.
-
-## Capacités amont
-
-| Intégration | Statut |
+| Fonction | État RC 1.0 |
 |---|---|
-| Pack local normalisé | Exécutable, validé au chargement |
-| Import SES v5, identités explicites, objets item/string/entier sans unité | Exécutable et testé |
-| Qualificatifs arbitraires, dates amont, quantités avec unités | Refus explicite; recette dédiée nécessaire |
-| Vérification du content_hash SES pour le profil d’exclusion pris en charge | Implémentée; absence de content_hash consignée, aucune signature prétendue vérifiée |
-| Runtime Pack Kristal | Lecture Parquet/JSON et projection HTTP, mappings explicites et contrôles d’intégrité |
-| ReaderPolicies Kristal v5 | Profil exécutable documenté dans INTEGRATIONS.md; extensions inconnues refusées |
-| RDF/Oxigraph, QLever | Non nécessaires au moteur livré; futurs adaptateurs |
-| SA/GF | Génération, export, découverte, validation, rendu et contrôle de couverture; service externe à configurer |
-| Interaction Kernel | Pas de profil exigé par le fonctionnement local; pas de bus UI |
+| QuerySpec 0.2 | conservé, stable |
+| Lens 0.2 | conservée + génération générique automatique |
+| Reader Policy | appliquée avant query/facets/entity/evidence/constellation/plan/projection |
+| Kristal v6 adapter | natif, loss report + métadonnées structurelles |
+| StructuralProfiler | global/type/result-set/focus, agrégats indexés |
+| Navigation affordances | 28 affordances 1.0, evidence explicable |
+| NavigationHints | contrat 1.0, aucun code exécutable |
+| NavigationPlan | contrat 1.0, `derived=true` |
+| Renderer Registry | contrat 1.0, fermé, budgets/fallbacks/LOD |
+| Liste | implémentée |
+| Tableau | implémenté |
+| Constellation | implémentée, domain-neutral |
+| Timeline / Evolution | `timeline-lineage` |
+| Hiérarchie | `tree` |
+| Dépendances / Preuves | `dag-proof` |
+| Parcours | `flow-path` |
+| Boucles | `causal-feedback` |
+| Dimensions | `matrix-profile` |
+| États / Action context | `state-flow` |
+| Divergences / Traçabilité | `traceability` |
+| Multi-échelle | `multiscale-layer` |
+| Spatial | `spatial` |
+| ExplorationState | 1.0 + migration 0.2 |
+| Auth partagé | tokens multi-principaux + rôles + scopes |
+| Observabilité | logs JSON, requestId, métriques p50/p95/p99 |
+| Release automation | `release:preflight` + `release:check` |
+| Reproductibilité | manifest SHA-256 déterministe + SBOM CycloneDX ; lockfile obligatoire pour promotion finale |
+| Runbooks prod | startup, rollback, backup/restore, incident, threat model, upgrade |
 
-## Limites opérationnelles
+## Introspection policy-scoped
 
-Le backend charge un pack en mémoire et publie le catalogue autorisé au démarrage de l’interface. Cette implémentation vise un corpus local ciblé, pas un graphe de milliards de triples. Les budgets sont de 3 traversées, 32 filtres, 16 liens, 100 valeurs/IDs par liste, 100 résultats par page et 64 Kio par requête HTTP. Le moteur refuse plus de 2 millions d’opérations ou un calcul dépassant environ 3 secondes (contrôle périodique). Un cache de 64 requêtes est conservé par instance.
+Le profiler utilisé par le planner est construit sur l’état **déjà visible** selon Reader Policy et rôles. Les relations sans assertions visibles ne contribuent pas aux affordances policy-scoped. Les sources, preuves, conflits et lignées invisibles ne peuvent pas réapparaître comme compteur, score, raison ou projection.
 
-Une opération synchrone peut bloquer brièvement le processus Node dans ce budget; une séparation en workers ou un backend indexé devra précéder une mise à l’échelle multiutilisateur. Les totaux sont exacts lorsque la requête réussit; aucun résultat tronqué n’est présenté comme complet.
+Ordre des signaux :
 
-Les facets de plus de 100 valeurs montrent les premières valeurs; les IDs supplémentaires restent accessibles via QuerySpec. La recherche de la barre de résultats est explicitement limitée à la page affichée. Une recherche plein texte globale n’est pas annoncée.
+```text
+structure canonique explicite
+  > hints déclaratifs compatibles
+  > schéma/topologie observés
+  > heuristiques lexicales de fallback
+```
 
-## Choix frontend
+En mode non restreint, les hints peuvent renforcer une structure observée. En mode policy-scoped, les scores/raisons globaux ainsi que les hints de présentation (`preferredRecipes`, `recipeLabels`) sont ignorés ; seuls les mappings sémantiques de relations effectivement visibles peuvent aider à classifier la structure. Ainsi un score, un texte ou un ordre déclaré ne constitue pas un canal latéral.
 
-Le frontend conserve une seule implémentation interactive Svelte. La Constellation est un SVG borné sans bibliothèque supplémentaire; le Query Service, et non le composant graphique, choisit les satellites. L’interface est en français; les labels français et anglais restent dans les configurations. La traduction intégrale de l’interface reste distincte des langues publiées par le service SA configuré.
+## Planner 1.0
+
+Le planner combine :
+
+```text
+KristalProfile
+  + TypeProfile
+  + ResultSetProfile
+  + FocusProfile
+  + Lens
+  + coût/budget
+  -> NavigationPlan 1.0
+```
+
+Sans focus, un échantillon déterministe borné du result set visible alimente `forResultSet()`. Avec focus, `forFocus()` prévaut. Le résultat contient recettes, renderer IDs, raisons, relations structurantes et actions contextuelles.
+
+## Projections 1.0
+
+`server/navigation/projection.mjs` fournit des DTOs bornés et validés pour :
+
+- `timeline-lineage` ;
+- `tree` ;
+- `dag` ;
+- `flow` ;
+- `causal-feedback` ;
+- `matrix` ;
+- `state-flow` ;
+- `traceability` ;
+- `multiscale` ;
+- `spatial`.
+
+Les graphes utilisent `nodeBudget`/`edgeBudget`, les séquences/records utilisent pagination/cursors lorsque pertinent, et le frontend permet expansion progressive ou fallback tabulaire. Les DTOs publics sanitizés n’exposent pas les payloads upstream bruts : `actionability`, `lineage`, `valuations` et `coordinates` sont réduits à des formes publiques strictement nécessaires au renderer.
+
+## Sécurité
+
+Profils supportés : `local`, `lan`, `shared`, `public`.
+
+- `local` : principal local explicite, bind local par défaut ;
+- profils non locaux : principal authentifié obligatoire sauf opt-in `KONSTELLATION_ANONYMOUS_READONLY=true` ;
+- `KONSTELLATION_AUTH_TOKENS` mappe des tokens vers `{id, roles, scopes}` ;
+- ancien `KONSTELLATION_AUTH_TOKEN` conservé pour compatibilité ;
+- moteurs/caches sont isolés par ensemble de rôles ;
+- cursors sont liés à l’accessRef ;
+- `actionability` n’est jamais transformé en permission/exécution ;
+- CSP publique n’utilise pas `unsafe-inline` ; Astro externalise les feuilles de style et le source Svelte interdit les attributs/directives de style inline ;
+- headers de défense en profondeur : `Permissions-Policy`, COOP/CORP, `nosniff`, `no-referrer`, frame denial et cross-domain policy ;
+- l’identité du corpus n’est exposée par `/api/version` que si `KONSTELLATION_EXPOSE_CORPUS_IDENTITY=true`.
+
+## Performance validée dans cet environnement
+
+Commande :
+
+```bash
+node scripts/benchmark-navigation.mjs --full
+```
+
+Dernier résultat observé dans ce conteneur :
+
+| Assertions | Profiler | Planner |
+|---:|---:|---:|
+| 10k mixte | ~40 ms | ~3 ms |
+| 100k mixte | ~78 ms | ~5 ms |
+| 1M mixte | ~753 ms | ~27 ms |
+| 100k dense | ~87 ms | <1 ms |
+| 100k timeline | ~91 ms | <1 ms |
+| 100k DAG profond | ~175 ms | ~27 ms |
+| 100k multi-échelle | ~1030 ms | ~14 ms |
+| 100k forte cardinalité | ~109 ms | <1 ms |
+
+Ces mesures sont des résultats de développement, pas des SLOs contractuels. Les plafonds de régression automatisés sont dans `benchmarks/navigation-baseline.json`.
+
+## Tests exécutables sans dépendances dans ce snapshot
+
+Le corpus navigation dependency-free passe actuellement 24/24 :
+
+```bash
+node --test \
+  tests/navigation-adaptive.test.mjs \
+  tests/navigation-variety.test.mjs \
+  tests/kristal-v6-navigation.test.mjs \
+  tests/navigation-golden-1.0.test.mjs
+```
+
+Des tests supplémentaires 1.0 couvrent contracts, sécurité, Lens génériques et non-fuite policy ; ils font partie de `npm test` et nécessitent les dépendances du projet.
+
+## Gate de release
+
+```bash
+npm run release:preflight
+npm run release:check
+```
+
+Dans l’environnement courant, le preflight échoue volontairement sur :
+
+1. Node 22.16.0 au lieu de `>=24.15.0` ;
+2. absence de `package-lock.json` ;
+3. SBOM marqué incomplet, conséquence directe de l’absence de lockfile.
+
+Aucun contournement artificiel n’est ajouté au repo. La promotion `1.0.0-rc.2 -> 1.0.0` doit avoir lieu seulement après exécution réussie de `npm ci`, tests Node, Vitest, build, Playwright et benchmark complet sous Node supporté.

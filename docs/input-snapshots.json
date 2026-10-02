@@ -22,5 +22,16 @@
   {
     "file": "Code_snapshot_kristal-framework(9).zip",
     "sha256": "b5c9fc56ba5f75d155f9f0769d8f2c196e32f9f2702c9d9d133e7226e9635294"
+  },
+  {
+    "file": "Code_snapshot_Koali_Scenario_Mosaic_Index.zip",
+    "sha256": "8391a70fd69bd998ff6061e1ba318813e786fe1b6f6234d26f1d7fa2e322ddad",
+    "contains": [
+      "Code_snapshot_kristal-framework.zip",
+      "Code_snapshot_kristal-reference.zip",
+      "Code_snapshot_SemantiK_Architect.zip",
+      "Code_snapshot_Interaction-Kernel.zip",
+      "Code_snapshot_Koali_Scenario_Mosaic.zip"
+    ]
   }
 ]

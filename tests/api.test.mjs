@@ -18,7 +18,8 @@ test('HTTP API serves working queries, validation and explicit SA unavailability
       });
   const boot = await (await get('/api/bootstrap')).json();
   assert.equal(boot.synthetic, true);
-  assert(boot.lenses.length === 3);
+  assert(boot.lenses.length >= boot.registry.entityTypes.length);
+  const lensRef = boot.lenses.find((lens) => lens.rootType === 'human')?.id || boot.lenses[0].id;
   const q = {
     schemaVersion: '0.2',
     context: boot.context,
@@ -33,13 +34,34 @@ test('HTTP API serves working queries, validation and explicit SA unavailability
   const constellation = await post('/api/constellation', {
     focus: { kind: 'entity', id: result.rows[0].entityId },
     context: q.context,
-    lensRef: 'intellectual-history',
+    lensRef,
     limit: 8,
   });
   assert.equal(constellation.status, 200);
   const constellationBody = await constellation.json();
   assert.equal(constellationBody.schemaVersion, '0.1');
   assert(constellationBody.satellites.length > 0);
+  const navigation = await post('/api/navigation/plan', {
+    query: q,
+    lensRef,
+    selectedEntityId: null,
+  });
+  assert.equal(navigation.status, 200);
+  const navigationBody = await navigation.json();
+  assert.equal(navigationBody.schemaVersion, '1.0');
+  assert(navigationBody.views.some((view) => view.id === 'timeline'));
+  assert(navigationBody.views.some((view) => view.id === 'constellation'));
+  const timeline = await post('/api/navigation/project', {
+    query: q,
+    lensRef,
+    recipeId: 'timeline',
+    selectedEntityId: null,
+  });
+  assert.equal(timeline.status, 200);
+  const timelineBody = await timeline.json();
+  assert.equal(timelineBody.rendererId, 'timeline-lineage');
+  assert.equal(timelineBody.projectionKind, 'timeline-lineage');
+  assert(timelineBody.items.length > 0);
   assert.equal(
     (await post('/api/query', { query: q }, { Origin: 'https://untrusted.example' })).status,
     403,
@@ -55,7 +77,7 @@ test('HTTP API serves working queries, validation and explicit SA unavailability
   const state = {
     schemaVersion: '0.2',
     query: q,
-    lensRef: 'intellectual-history',
+    lensRef,
     view: 'list',
     selectedEntityId: null,
     openPanels: ['filters'],

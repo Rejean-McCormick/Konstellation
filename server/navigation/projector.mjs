@@ -3,40 +3,9 @@ import { fail, validate } from '../contracts.mjs';
 import { NavigationIndex } from './index.mjs';
 import { rankCandidates } from './salience.mjs';
 
-const specialQualifierLabels = {
-  'corpus:theme': { fr: 'Pensée', en: 'Thought' },
-  'corpus:source': { fr: 'Œuvres et sources', en: 'Works and sources' },
-  'corpus:source_date': { fr: 'Repères chronologiques', en: 'Chronology' },
-  'corpus:genre': { fr: 'Genres documentaires', en: 'Document genres' },
-  'corpus:auteur': { fr: 'Auteurs et instances', en: 'Authors and sources' },
-  'corpus:position_source': { fr: 'Positions sources', en: 'Source positions' },
-  'corpus:relation_positionnelle': { fr: 'Nature du dialogue', en: 'Relation type' },
-};
-
-const specialRelationLabels = {
-  'corpus:position_documentee': 'Positions documentées',
-  'corpus:complement': 'Compléments',
-  'corpus:continuite_documentee': 'Continuités documentées',
-  'corpus:convergence': 'Convergences',
-  'corpus:distinction': 'Distinctions',
-  'corpus:divergence_historique': 'Divergences historiques',
-  'corpus:limite_interpretative': 'Limites interprétatives',
-  'corpus:rapprochement': 'Rapprochements',
-  'corpus:reception_contrastee': 'Réceptions contrastées',
-  'corpus:reception_explicite': 'Réceptions explicites',
-  'corpus:reception_partielle': 'Réceptions partielles',
-  'corpus:relecture_spirituelle': 'Relectures spirituelles',
-  'corpus:tension_a_interpreter': 'Tensions à interpréter',
-  'corpus:appuie_sur_position': 'Positions mobilisées par la question',
-  'corpus:mobilise_theme': 'Idées et thèmes mobilisés',
-  'corpus:met_en_dialogue_auteur': 'Auteurs mis en dialogue par la question',
-  'corpus:auteurs_mis_en_dialogue': 'Auteurs mis en dialogue',
-  'corpus:reconstruction_argumentative': 'Reconstruction argumentative',
-};
-
 const titleCase = (s) =>
   String(s || '')
-    .replace(/^corpus:/, '')
+    .replace(/^.*:/, '')
     .replace(/[_-]+/g, ' ')
     .replace(/\b\p{L}/gu, (m) => m.toUpperCase());
 
@@ -51,30 +20,16 @@ const humanize = (s) => {
 
 function relationLabel(relation) {
   if (!relation) return 'Relation';
-  if (specialRelationLabels[relation.id]) return specialRelationLabels[relation.id];
-  const raw = relation.label?.fr || relation.id;
+  const raw = relation.label?.fr || relation.label?.en || relation.id;
   return /[_:]/.test(raw) ? humanize(raw.replace(/^.*:/, '')) : raw;
 }
 
 function linkedLabel(engine, values, fallback) {
   const types = [...new Set(values.map((id) => engine.entities.get(id)?.type).filter(Boolean))];
   if (types.length !== 1) return fallback;
-  return {
-    author: 'Auteurs liés',
-    human: 'Personnes liées',
-    person: 'Personnages liés',
-    position: 'Positions liées',
-    work: 'Œuvres liées',
-    source: 'Sources liées',
-    theme: 'Thèmes liés',
-    concept: 'Concepts liés',
-    place: 'Lieux liés',
-    tradition: 'Traditions liées',
-    doctrine: 'Doctrines liées',
-    editorial: 'Questions liées',
-    argument: 'Arguments liés',
-    'doctrinal-status': 'Statuts doctrinaux liés',
-  }[types[0]] || fallback;
+  const type = types[0];
+  const label = engine.profiler?.entityTypeLabels?.[type] || humanize(type);
+  return `${label} · liés`;
 }
 
 const unique = (xs) => [...new Set(xs)];
@@ -109,12 +64,13 @@ function resolveFocus(engine, index, focus) {
   if (!focus || typeof focus !== 'object') fail('INVALID_QUERY', 'Focus de constellation requis.');
   if (focus.kind === 'entity') {
     const entity = engine.entities.get(focus.id);
-    if (!entity) fail('NOT_FOUND', 'Entité de constellation indisponible.', 404);
+    if (!entity || !index.state.entityIds?.has(focus.id)) fail('NOT_FOUND', 'Entité de constellation indisponible.', 404);
     return { focus, id: focusKey(focus), kind: 'entity', label: entityLabel(entity), description: entity.description || '' };
   }
   if (focus.kind === 'source') {
     const source = engine.sources.get(focus.id);
-    if (!source) fail('NOT_FOUND', 'Source de constellation indisponible.', 404);
+    const sourceVisible = index.bySource.has(focus.id) || index.byQualifierItem.has(focus.id);
+    if (!source || !sourceVisible) fail('NOT_FOUND', 'Source de constellation indisponible.', 404);
     return { focus, id: focusKey(focus), kind: 'source', label: source.title, description: source.description || '' };
   }
   if (focus.kind === 'qualifier') {
@@ -249,11 +205,11 @@ function automaticGroupDefinitions(engine, index, focus, lens) {
     if ((focus.kind === 'entity' || focus.kind === 'source') && qualifier.id === focus.id) continue;
     const item = qualifiers.get(qualifier.predicate) || {
       id: `q:${qualifier.predicate}`,
-      label: specialQualifierLabels[qualifier.predicate] || {
+      label: {
         fr: qualifier.predicateLabel || titleCase(qualifier.predicate),
         en: qualifier.predicateLabel || titleCase(qualifier.predicate),
       },
-      priority: qualifier.predicate === 'corpus:theme' ? 1 : qualifier.predicate === 'corpus:source' ? 0.95 : 0.55,
+      priority: qualifier.id && engine.sources.has(qualifier.id) ? 0.95 : qualifier.id && engine.entities.has(qualifier.id) ? 0.78 : 0.55,
       source: { kind: 'qualifiers', ids: [qualifier.predicate] },
       configured: false,
     };
@@ -302,7 +258,7 @@ function automaticGroupDefinitions(engine, index, focus, lens) {
     }
     groups.push(...network.values());
   }
-  const sourceAlreadyRepresented = claimedQualifiers.has('corpus:source') || qualifiers.has('corpus:source');
+  const sourceAlreadyRepresented = index.qualifiers(assertions).some(({ qualifier }) => qualifier.id && engine.sources.has(qualifier.id));
   if (focus.kind !== 'source' && sourceIds(assertions).length && !sourceAlreadyRepresented)
     groups.push({ id: 'sources', label: { fr: 'Sources', en: 'Sources' }, priority: 0.35, source: { kind: 'sources' } });
   return groups;

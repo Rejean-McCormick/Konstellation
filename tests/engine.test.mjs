@@ -256,3 +256,34 @@ test('witnesses preserve statement identity, sources and derived rule', () => {
   assert.equal(result.rows[0].witnesses[0].ruleRef, 'demo:interval-v1');
   assert(result.assertions[0].payload.sourceRefs.length);
 });
+
+test('Reader Policy cannot leak hidden-only entities through query, bootstrap or entity endpoint', () => {
+  const pack = fixture();
+  const human = pack.entities.find((entity) => entity.type === 'human');
+  const concept = pack.entities.find((entity) => entity.type === 'concept');
+  const sourceRef = pack.assertions.find((a) => a.sourceRefs?.length)?.sourceRefs?.[0];
+  const template = pack.assertions.find((a) => a.subject === human.id && a.relation === 'field_of_work') || pack.assertions[0];
+  const hiddenId = 'human:policy-hidden-only';
+  pack.entities.push({ ...human, id: hiddenId, label: 'Hidden by documented policy' });
+  pack.assertions.push({
+    ...template,
+    id: 'assertion:policy-hidden-only',
+    subject: hiddenId,
+    relation: 'field_of_work',
+    value: concept.id,
+    status: 'disputed',
+    sourceRefs: sourceRef ? [sourceRef] : template.sourceRefs,
+  });
+  const engine = new Engine(pack);
+  const documented = [...engine.policies].find(([, policy]) => policy.id === 'demo:documented')?.[0];
+  const research = [...engine.policies].find(([, policy]) => policy.id === 'demo:research')?.[0];
+  const documentedContext = engine.context(documented);
+  const researchContext = engine.context(research);
+  const documentedQuery = { ...base(engine), context: documentedContext, pageSize: 100 };
+  const researchQuery = { ...base(engine), context: researchContext, pageSize: 100 };
+  assert(!engine.query(documentedQuery).rows.some((row) => row.entityId === hiddenId));
+  assert(!engine.bootstrap([], documentedContext).entities.some((entity) => entity.id === hiddenId));
+  assert.throws(() => engine.entity(hiddenId, documentedContext), /Entité indisponible/);
+  assert(engine.query(researchQuery).rows.some((row) => row.entityId === hiddenId));
+  assert(engine.bootstrap([], researchContext).entities.some((entity) => entity.id === hiddenId));
+});

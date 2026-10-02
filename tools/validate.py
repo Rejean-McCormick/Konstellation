@@ -3,6 +3,7 @@ import copy
 import json
 from pathlib import Path
 from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[1]
 def read(path):
@@ -10,12 +11,16 @@ def read(path):
 
 SCHEMAS = {p.stem.removesuffix('.schema'): json.loads(p.read_text())
            for p in (ROOT / 'contracts').glob('*.json')}
+SCHEMA_REGISTRY = Registry()
+for _schema in SCHEMAS.values():
+    if _schema.get('$id'):
+        SCHEMA_REGISTRY = SCHEMA_REGISTRY.with_resource(_schema['$id'], Resource.from_contents(_schema))
 REGISTRY = read('examples/registry.json')
 RELATIONS = {r['id']: r for r in REGISTRY['relations']}
 TYPES = set(REGISTRY['entityTypes'])
 
 def shape(kind, value):
-    Draft202012Validator(SCHEMAS[kind]).validate(value)
+    Draft202012Validator(SCHEMAS[kind], registry=SCHEMA_REGISTRY).validate(value)
 
 def validate_query(q):
     shape('query-spec', q)
@@ -123,6 +128,52 @@ def main():
     for p in (ROOT / 'examples/queries').glob('*.json'):
         validate_query(json.loads(p.read_text())); checks += 1
     shape('exploration-state', read('examples/exploration.json')); checks += 1
+
+    # Navigation Projection 1.0: every controlled family has a positive fixture,
+    # and the public DTO rejects renderer/recipe mismatches and raw upstream metadata.
+    projection_requirements = {
+        'timeline-lineage': 'items', 'tree': 'roots', 'dag': 'acyclic', 'flow': 'transitions',
+        'causal-feedback': 'cycles', 'matrix': 'cells', 'state-flow': 'semantics',
+        'traceability': 'edges', 'multiscale': 'memberships', 'spatial': 'points',
+    }
+    projection_fixtures = {}
+    for kind, required in projection_requirements.items():
+        fixture = read(f'examples/projections/{kind}.json')
+        assert fixture['projectionKind'] == kind
+        shape('navigation-projection', fixture); checks += 1
+        projection_fixtures[kind] = fixture
+        bad_projection = copy.deepcopy(fixture); bad_projection.pop(required)
+        try: shape('navigation-projection', bad_projection)
+        except __import__('jsonschema').ValidationError: checks += 1
+        else: raise AssertionError(f'Projection {kind} accepted without {required}')
+
+    bad_projection = copy.deepcopy(projection_fixtures['dag']); bad_projection['rendererId'] = 'spatial'
+    try: shape('navigation-projection', bad_projection)
+    except __import__('jsonschema').ValidationError: checks += 1
+    else: raise AssertionError('DAG accepted with spatial renderer')
+
+    bad_projection = copy.deepcopy(projection_fixtures['tree']); bad_projection['recipeId'] = 'proofs'
+    try: shape('navigation-projection', bad_projection)
+    except __import__('jsonschema').ValidationError: checks += 1
+    else: raise AssertionError('Tree accepted with proof recipe')
+
+    bad_projection = copy.deepcopy(projection_fixtures['state-flow'])
+    bad_projection['records'][0]['actionability']['policy_refs'] = ['secret:policy']
+    try: shape('navigation-projection', bad_projection)
+    except __import__('jsonschema').ValidationError: checks += 1
+    else: raise AssertionError('Projection exposed raw actionability policy refs')
+
+    bad_projection = copy.deepcopy(projection_fixtures['timeline-lineage'])
+    bad_projection['links'][0]['value']['source_artifacts'] = ['secret:artifact']
+    try: shape('navigation-projection', bad_projection)
+    except __import__('jsonschema').ValidationError: checks += 1
+    else: raise AssertionError('Projection exposed raw lineage artifact refs')
+
+    bad_projection = copy.deepcopy(projection_fixtures['flow']); bad_projection['raw'] = {'secret': True}
+    try: shape('navigation-projection', bad_projection)
+    except __import__('jsonschema').ValidationError: checks += 1
+    else: raise AssertionError('Projection accepted unknown top-level payload')
+
     result = read('examples/result.json'); shape('result-set', result)
     evidence = {a['assertionRef'] for a in result['assertions']}
     for row in result['rows']:

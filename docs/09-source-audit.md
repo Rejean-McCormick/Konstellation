@@ -1,18 +1,63 @@
-# Audit des sources de cette révision
+# Audit des sources et références d'architecture
 
-Lecture effectuée directement dans les ZIP joints. Les empreintes des archives disponibles sont dans `input-snapshots.json`; leur présence dans ce manifeste n’implique pas un audit exhaustif de chaque dépôt.
+## 1. Références utilisées
 
-| Source inspectée | Constat utilisé |
-|---|---|
-| Konstellation v0.1 : README, architecture, vision, modèle de requête, Lens, registre, frontières et QuerySpec schema | Point de départ déclaratif, mais requête plate et opérateurs peu contraints |
-| kristal-framework : README | Spécification et contrats v5, candidat rc.2; pas base opérationnelle mutable |
-| Kristal `04-query/query-contract.md` : sections modèle, métadonnées, politiques, ordre, limites et pagination | Surface locale déjà définie; jointures optionnelles et pas de SPARQL général requis |
-| Kristal `04-query/reader-policy-profiles.md` : modes et modèle de politique | Visibilité distincte de validation/certitude et accès; labels préservés |
-| Kristal `02-schemas/structured-epistemic-state.schema.json` : extraits d’identités, objets et provenance | Ne pas réinventer les types amont ni les réduire à des labels |
-| SA `03_DOMAIN_MODEL_LOCK.md`, `15_ECOSYSTEM_BOUNDARIES.md`, README | CommunicationRequest, obligations intégrales, frontières d’autorité |
-| SA `22_IMPLEMENTATION_STATUS.md` | Pipeline déclaré implémenté, ACL produit et RuntimeSets qualifiés nécessaires |
-| SemantiK Runtime Orchestrator README | Orchestration release/activation, hors parcours de requête |
+La conception finale de Konstellation s'appuie sur les contrats et snapshots de l'écosystème, notamment :
 
-Les archives EncyKlopedia et kOA ont été inventoriées, sans audit détaillé de leurs implémentations. Cette révision ne prétend donc ni qualifier leur pipeline de bout en bout, ni fournir un mapping RDF conforme. Aucun test des runtimes amont ni benchmark de performance n’a été exécuté.
+- Kristal Standard / `kristal-framework` ;
+- `kristal-reference` ;
+- Interaction Kernel ;
+- SemantiK Architect ;
+- SemantiK Runtime Orchestrator ;
+- Koali / Scenario / Mosaic / Index ;
+- Konnaxion ;
+- Orgo ;
+- Kristal Kollection ;
+- exemples de Kristals Math, HumanBody, HistoryTech, ScolQc, HospitalOps, Power et autres corpus disponibles.
 
-Les schémas, APIs Konstellation, limites et décisions v0.2 sont **proposés par cette révision**, pas attribués aux dépôts amont.
+## 2. Enseignements structurants
+
+### Kristal v6
+
+Le centre canonique est `kristal_state`, incluant notamment :
+
+- `coordinates` ;
+- `valuations` ;
+- `record_role` ;
+- `actionability` ;
+- conflits ;
+- succession ;
+- lineage ;
+- evidence ;
+- provenance.
+
+Les timelines, pathways, indexes et graphes d'interface sont des **vues dérivées**.
+
+### SemantiK / runtime
+
+Le terme **capability** est déjà utilisé pour des promesses ou capacités runtime. Konstellation emploie donc le terme **navigation affordance / affordance de navigation** pour ses observations dérivées.
+
+### Actionability
+
+`automatic` n'est pas une autorisation d'exécution. Cette distinction est normative dans Konstellation.
+
+## 3. Sources de vérité dans le repo
+
+Ordre de priorité documentaire :
+
+1. schémas sous `contracts/` pour les formats effectivement implémentés ;
+2. ADRs pour les décisions d'architecture ;
+3. docs 1.0 pour la cible normative ;
+4. `IMPLEMENTATION.md` pour le delta entre code et cible ;
+5. rapports `VALIDATION-v0.x.md` pour l'historique.
+
+## 4. Règle d'audit futur
+
+Lorsqu'un contrat upstream change :
+
+1. enregistrer la version exacte ;
+2. comparer le schéma ;
+3. identifier les hypothèses Konstellation affectées ;
+4. mettre à jour l'adaptateur ;
+5. ajouter/mettre à jour un ADR si la frontière d'autorité change ;
+6. ajouter des tests de compatibilité.

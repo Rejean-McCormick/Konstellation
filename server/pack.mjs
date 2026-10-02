@@ -34,6 +34,7 @@ export function validatePack(pack) {
     'Unsupported pack structure',
   );
   validate('relation-registry', pack.registry);
+  if (pack.navigationHints) validate('navigation-hints', pack.navigationHints);
   need(
     typeof pack.title === 'string' &&
       typeof pack.description === 'string' &&
@@ -128,6 +129,7 @@ export function validatePack(pack) {
         'rejected',
         'retracted',
         'superseded',
+        'unspecified',
       ].includes(a.status),
       'Assertion status required',
     );
@@ -184,11 +186,6 @@ export function validatePack(pack) {
   return pack;
 }
 export function loadPack(file) {
-  if (!file) {
-    const enriched = path.join(ROOT, 'data/theophile-biblical.enriched.pack.json');
-    file =
-      process.env.KONSTELLATION_PACK ||
-      (fs.existsSync(enriched) ? enriched : path.join(ROOT, 'data/demo.pack.json'));
-  }
+  if (!file) file = process.env.KONSTELLATION_PACK || path.join(ROOT, 'data/demo.pack.json');
   return validatePack(readJson(file));
 }

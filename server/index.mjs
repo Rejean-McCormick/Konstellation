@@ -7,203 +7,181 @@ import { SemantikAdapter } from './integrations/semantik.mjs';
 import { Engine } from './engine.mjs';
 import { loadPack, readJson } from './pack.mjs';
 import { ROOT, AppError, fail, validate } from './contracts.mjs';
+import { loadConfig, cspFor } from './config.mjs';
+import { authenticate, requireScope } from './auth.mjs';
+import { requestId, increment, observe, gauge, metricsSnapshot, log } from './observability.mjs';
+import { versionInfo } from './version.mjs';
+
 export function loadLenses(engine, dir) {
-  if (!dir) {
-    const enrichedDir = path.join(ROOT, 'lenses-enriched');
-    const supportsTheophile = ['author', 'theme', 'position', 'editorial'].every((type) =>
-      engine.pack.registry.entityTypes.includes(type),
-    );
-    dir =
-      process.env.KONSTELLATION_LENSES ||
-      (supportsTheophile && fs.existsSync(enrichedDir)
-        ? enrichedDir
-        : path.join(ROOT, 'examples/lenses'));
+  const configured = [];
+  dir ||= process.env.KONSTELLATION_LENSES || null;
+  if (dir) {
+    if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) fail('INVALID_CONFIG', 'Répertoire de Lens introuvable.', 500);
+    for (const name of fs.readdirSync(dir).filter((n) => n.endsWith('.json')).sort()) configured.push(readJson(path.join(dir, name)));
   }
-  const lenses = fs
-    .readdirSync(dir)
-    .filter((n) => n.endsWith('.json'))
-    .sort()
-    .map((n) => readJson(path.join(dir, n)));
-  for (const lens of lenses) {
+  const validateLens = (lens) => {
     validate('lens', lens);
-    if (!engine.pack.registry.entityTypes.includes(lens.rootType))
-      fail('INVALID_PACK', 'Lens root is unknown');
-    const constellationRelations = (lens.constellation?.groups || [])
-      .filter((g) => g.source.kind === 'relations')
-      .flatMap((g) => g.source.ids);
+    if (!engine.pack.registry.entityTypes.includes(lens.rootType)) fail('INVALID_PACK', 'Lens root is unknown');
+    const constellationRelations = (lens.constellation?.groups || []).filter((g) => g.source.kind === 'relations').flatMap((g) => g.source.ids);
     for (const id of [...lens.facets.map((f) => f.relation), ...lens.pivots, ...constellationRelations])
-      if (!engine.relations.get(id)?.domain.includes(lens.rootType))
-        fail('INVALID_PACK', 'Lens relation mismatch');
-  }
-  return lenses;
+      if (!engine.relations.get(id)?.domain.includes(lens.rootType)) fail('INVALID_PACK', 'Lens relation mismatch');
+    return lens;
+  };
+  configured.forEach(validateLens);
+  const covered = new Set(configured.map((lens) => lens.rootType));
+  const generic = engine.pack.registry.entityTypes.filter((type) => !covered.has(type)).map((type) => {
+    const relations = engine.pack.registry.relations.filter((relation) => relation.domain.includes(type));
+    const facets = relations.slice(0, 24).map((relation) => ({
+      relation: relation.id,
+      widget: relation.valueKind === 'interval' ? 'year-range' : relation.valueKind === 'entity' ? 'entity-picker' : 'presence',
+    }));
+    const pivots = relations.filter((relation) => relation.valueKind === 'entity').slice(0, 16).map((relation) => relation.id);
+    const label = engine.profiler.entityTypeLabels[type] || type.replace(/[_:.-]+/g,' ').split(/\s+/).filter(Boolean).map((word)=>word.charAt(0).toLocaleUpperCase('fr')+word.slice(1)).join(' ');
+    return validateLens({
+      schemaVersion:'0.2', id:`type:${type}`, label:{fr:label,en:label}, rootType:type, facets, pivots,
+      constellation:{defaultSatelliteCount:8,groups:[]},
+    });
+  });
+  return [...configured, ...generic];
 }
+
 async function body(req) {
-  let size = 0;
-  const chunks = [];
-  for await (const chunk of req) {
-    size += chunk.length;
-    if (size > 65536) fail('PAYLOAD_TOO_LARGE', 'Requête limitée à 64 Kio.', 413);
-    chunks.push(chunk);
-  }
-  try {
-    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
-  } catch {
-    fail('INVALID_QUERY', 'JSON invalide.');
-  }
+  let size = 0; const chunks = [];
+  for await (const chunk of req) { size += chunk.length; if (size > 65536) fail('PAYLOAD_TOO_LARGE', 'Requête limitée à 64 Kio.', 413); chunks.push(chunk); }
+  try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { fail('INVALID_QUERY', 'JSON invalide.'); }
 }
-const types = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.svg': 'image/svg+xml',
-  '.json': 'application/json; charset=utf-8',
-  '.png': 'image/png',
-  '.ico': 'image/x-icon',
-  '.woff2': 'font/woff2',
-};
+
+const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.json':'application/json; charset=utf-8','.png':'image/png','.ico':'image/x-icon','.woff2':'font/woff2'};
+
+function rateLimiter(limit) {
+  const windows = new Map();
+  return (key) => {
+    const now=Date.now(), minute=Math.floor(now/60000), old=windows.get(key);
+    const row=old?.minute===minute?old:{minute,count:0}; row.count++; windows.set(key,row);
+    if (windows.size>10000) for(const [k,v] of windows) if(v.minute<minute-2) windows.delete(k);
+    return row.count<=limit;
+  };
+}
+
 export function createServer({
-  engine = new Engine(loadPack(), {
-    roles: (process.env.KONSTELLATION_ROLES || 'public').split(','),
-    ...(process.env.KONSTELLATION_CURSOR_SECRET
-      ? { secret: process.env.KONSTELLATION_CURSOR_SECRET }
-      : {}),
-  }),
+  engine = new Engine(loadPack(), { roles:(process.env.KONSTELLATION_ROLES||'public').split(','), ...(process.env.KONSTELLATION_CURSOR_SECRET?{secret:process.env.KONSTELLATION_CURSOR_SECRET}:{}) }),
   lenses,
   semantik = new SemantikAdapter(),
-  dist = path.join(ROOT, 'dist'),
+  dist = path.join(ROOT,'dist'),
+  config = loadConfig(),
 } = {}) {
   lenses ||= loadLenses(engine);
-  const server = http.createServer(async (req, res) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Referrer-Policy', 'no-referrer');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader(
-      'Content-Security-Policy',
-      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
-    );
-    const send = (data, status = 200) => {
-      res.writeHead(status, {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'no-store',
-      });
-      res.end(JSON.stringify(data));
-    };
+  // Readiness means more than “the JSON parsed”: build the default policy scope
+  // and its navigation profile before accepting traffic. Invalid policy/index
+  // state therefore prevents startup instead of degrading silently later.
+  const readinessContext = engine.context();
+  engine.scope(readinessContext);
+  engine.visibleProfiler(readinessContext);
+  const allowRate = rateLimiter(config.rateLimitPerMinute);
+  const engineByRoles = new Map([[engine.roles.join(','), engine]]);
+  const engineFor = (principal) => {
+    const roles = [...new Set(principal?.roles || ['public'])].sort();
+    const key = roles.join(',');
+    if (!engineByRoles.has(key)) {
+      engineByRoles.set(key, new Engine(engine.pack, {
+        roles,
+        secret: engine.secret,
+        maxOperations: engine.limits.maxOperations,
+        deadlineMs: engine.limits.deadlineMs,
+        cacheSize: engine.cacheSize,
+      }));
+    }
+    return engineByRoles.get(key);
+  };
+  const server = http.createServer(async (req,res) => {
+    const started=performance.now(); const rid=requestId(req.headers['x-request-id']);
+    res.setHeader('X-Request-ID',rid); res.setHeader('X-Content-Type-Options','nosniff'); res.setHeader('Referrer-Policy','no-referrer'); res.setHeader('X-Frame-Options','DENY'); res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=(), payment=(), usb=()'); res.setHeader('Cross-Origin-Opener-Policy','same-origin'); res.setHeader('Cross-Origin-Resource-Policy','same-origin'); res.setHeader('X-Permitted-Cross-Domain-Policies','none'); res.setHeader('Content-Security-Policy',cspFor(config));
+    let endpoint='static', status=200, principal=null;
+    const send=(data,code=200)=>{status=code; res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Request-ID':rid}); res.end(JSON.stringify(data));};
     try {
-      const url = new URL(req.url, 'http://localhost');
-      const hostname = new URL('http://' + req.headers.host).hostname;
-      const allowedHosts = (
-        process.env.KONSTELLATION_ALLOWED_HOSTS || 'localhost,127.0.0.1,[::1]'
-      ).split(',');
-      if (!allowedHosts.includes(hostname)) fail('ACCESS_DENIED', 'Hôte non autorisé.', 403);
+      const url=new URL(req.url,'http://localhost'); endpoint=url.pathname;
+      const hostHeader=req.headers.host || ''; let hostname=''; try{hostname=new URL('http://'+hostHeader).hostname;}catch{fail('ACCESS_DENIED','Hôte invalide.',403);}
+      if (!config.allowedHosts.includes(hostname) && !config.allowedHosts.includes('*')) fail('ACCESS_DENIED','Hôte non autorisé.',403);
       if (url.pathname.startsWith('/api/')) {
-        // Local single-user deployment. Cross-origin requests never gain a read surface.
-        const origin = req.headers.origin;
-        if (
-          origin &&
-          new URL(origin).host !== req.headers.host &&
-          origin !== process.env.KONSTELLATION_DEV_ORIGIN
-        )
-          fail('ACCESS_DENIED', 'Origine non autorisée.', 403);
-        if (req.headers['sec-fetch-site'] === 'cross-site')
-          fail('ACCESS_DENIED', 'Requête intersite refusée.', 403);
-        if (req.method === 'GET' && url.pathname === '/api/health')
-          return send({ status: 'ok', version: '0.5.0' });
-        if (req.method === 'GET' && ['/api/bootstrap', '/api/capabilities'].includes(url.pathname)) {
-          const communication = await semantik.capabilities();
-          const boot = engine.bootstrap(lenses);
-          boot.capabilities.sa = communication.available;
-          return send(url.pathname === '/api/bootstrap' ? {...boot, communication} : {...boot.capabilities, communication});
+        const origin=req.headers.origin;
+        if(origin){
+          let originHost=''; try{originHost=new URL(origin).host;}catch{fail('ACCESS_DENIED','Origine invalide.',403);}
+          if(originHost!==hostHeader && origin!==config.devOrigin) fail('ACCESS_DENIED','Origine non autorisée.',403);
         }
-        if (req.method !== 'POST') fail('NOT_FOUND', 'Endpoint introuvable.', 404);
-        if (!req.headers['content-type']?.startsWith('application/json'))
-          fail('INVALID_QUERY', 'Content-Type application/json requis.', 415);
-        const b = await body(req);
-        if (!b || typeof b !== 'object' || Array.isArray(b))
-          fail('INVALID_QUERY', 'Objet JSON requis.');
-        switch (url.pathname) {
-          case '/api/query':
-            return send(engine.query(b.query, b.cursor));
-          case '/api/facets':
-            return send(engine.facets(b.query, b.relations));
-          case '/api/entity':
-            return send(engine.entity(b.id, b.context));
-          case '/api/constellation':
-            return send(engine.constellation(b, lenses));
-          case '/api/evidence':
-            return send(engine.evidence(b.ids, b.context));
-          case '/api/validate-state': {
-            validate('exploration-state', b);
-            engine.check(b.query);
-            engine.scope(b.query.context);
-            if (
-              !lenses.some(
-                (l) => l.id === b.lensRef && l.rootType === b.query.selection.entityType,
-              ) &&
-              b.lensRef !== 'type:' + b.query.selection.entityType
-            )
-              fail('INVALID_QUERY', 'Lens indisponible.');
-            return send({ valid: true });
+        if(req.headers['sec-fetch-site']==='cross-site') fail('ACCESS_DENIED','Requête intersite refusée.',403);
+        const remote=req.socket.remoteAddress || 'unknown';
+        if(req.method==='GET' && url.pathname==='/api/health') return send({status:'ok',version:versionInfo().version,requestId:rid});
+        if(req.method==='GET' && url.pathname==='/api/ready') return send({status:'ready',version:versionInfo().version,corpusLoaded:Boolean(engine?.pack),registryLoaded:Boolean(engine?.relations?.size),policyLoaded:Boolean(engine?.policies?.size),lensesLoaded:Array.isArray(lenses),scopeIndexReady:Boolean(engine?.scopeCache?.size),navigationProfileReady:Boolean(engine?.policyProfilerCache?.size),requestId:rid});
+        if(req.method==='GET' && url.pathname==='/api/version') return send({...versionInfo(engine,{exposeCorpusIdentity:config.exposeCorpusIdentity}),requestId:rid});
+        if(!allowRate(`${remote}|preauth`)) fail('RATE_LIMITED','Trop de requêtes.',429);
+        principal = authenticate(req, config);
+        if(!allowRate(`${remote}|${principal.id}`)) fail('RATE_LIMITED','Trop de requêtes.',429);
+        const requestEngine = principal ? engineFor(principal) : engine;
+        if(req.method==='GET' && url.pathname==='/api/metrics') { requireScope(principal,'metrics'); return send(metricsSnapshot()); }
+        if(req.method==='GET' && ['/api/bootstrap','/api/capabilities'].includes(url.pathname)) {
+          requireScope(principal,'read');
+          const requestedPolicyRef=url.searchParams.get('readerPolicyRef');
+          const bootContext=requestedPolicyRef ? requestEngine.context(requestedPolicyRef) : requestEngine.context();
+          // scope() validates the requested policy before any registry/Lens metadata is exposed.
+          requestEngine.scope(bootContext);
+          const communication=await semantik.capabilities(); const bootStart=performance.now(); const boot=requestEngine.bootstrap(lenses,bootContext); observe('bootstrap_duration_ms',performance.now()-bootStart); boot.capabilities.sa=communication.available;
+          return send(url.pathname==='/api/bootstrap'?{...boot,communication,principal:{id:principal.id,roles:principal.roles,scopes:principal.scopes}}:{...boot.capabilities,communication});
+        }
+        if(req.method!=='POST') fail('NOT_FOUND','Endpoint introuvable.',404);
+        if(url.pathname.startsWith('/api/sa')) requireScope(principal,'sa'); else requireScope(principal,'read');
+        if(!req.headers['content-type']?.startsWith('application/json')) fail('INVALID_QUERY','Content-Type application/json requis.',415);
+        const b=await body(req); if(!b||typeof b!=='object'||Array.isArray(b)) fail('INVALID_QUERY','Objet JSON requis.');
+        switch(url.pathname){
+          case '/api/query': {
+            const t=performance.now(); const value=requestEngine.query(b.query,b.cursor); observe('query_evaluation_duration_ms',performance.now()-t); observe('result_set_size',value.total?.value||0); return send(value);
           }
-          case '/api/sa/request':
-            return send(semantik.request(engine, b));
-          case '/api/sa':
-            return send(await semantik.render(engine, b));
-          default:
-            fail('NOT_FOUND', 'Endpoint introuvable.', 404);
+          case '/api/facets': return send(requestEngine.facets(b.query,b.relations));
+          case '/api/entity': return send(requestEngine.entity(b.id,b.context));
+          case '/api/constellation': return send(requestEngine.constellation(b,lenses));
+          case '/api/navigation/plan': {
+            const t=performance.now(); const value=requestEngine.navigationPlan(b,lenses); observe('navigation_planning_duration_ms',performance.now()-t); increment('navigation_recipe_selected_total',{recipe:value.primaryRecipeId}); return send(value);
+          }
+          case '/api/navigation/project': {
+            const t=performance.now(); const value=requestEngine.navigationProjection(b,lenses); observe('navigation_projection_duration_ms',performance.now()-t,{renderer:value.rendererId}); increment('navigation_projection_total',{recipe:value.recipeId,renderer:value.rendererId,truncated:Boolean(value.truncated)}); return send(value);
+          }
+          case '/api/evidence': return send(requestEngine.evidence(b.ids,b.context));
+          case '/api/validate-state': {
+            const migrated=requestEngine.migrateExplorationState(b,lenses); requestEngine.check(migrated.state.query); requestEngine.scope(migrated.state.query.context);
+            return send({valid:true,...migrated});
+          }
+          case '/api/sa/request': return send(semantik.request(requestEngine,b));
+          case '/api/sa': return send(await semantik.render(requestEngine,b));
+          default: fail('NOT_FOUND','Endpoint introuvable.',404);
         }
       }
-      if (!['GET', 'HEAD'].includes(req.method)) fail('NOT_FOUND', 'Introuvable.', 404);
-      const pathname = decodeURIComponent(url.pathname);
-      const file = path.resolve(dist, '.' + (pathname === '/' ? '/index.html' : pathname));
-      if (!file.startsWith(path.resolve(dist) + path.sep)) fail('NOT_FOUND', 'Introuvable.', 404);
-      if (!fs.existsSync(file) || !fs.statSync(file).isFile())
-        fail('NOT_FOUND', 'Page introuvable. Exécutez npm run build.', 404);
-      res.writeHead(200, {
-        'Content-Type': types[path.extname(file)] || 'application/octet-stream',
-        'Cache-Control': pathname.startsWith('/_astro/')
-          ? 'public, max-age=31536000, immutable'
-          : 'no-cache',
-      });
-      if (req.method === 'HEAD') return res.end();
-      fs.createReadStream(file).pipe(res);
-    } catch (error) {
-      if (res.headersSent) {
-        res.destroy();
-        return;
-      }
-      const known = error instanceof AppError;
-      send(
-        {
-          error: {
-            code: known ? error.code : 'INTERNAL_ERROR',
-            message: known ? error.message : 'Erreur interne.',
-          },
-        },
-        known ? error.status : 500,
-      );
-      if (!known) console.error(error);
+      if(!['GET','HEAD'].includes(req.method)) fail('NOT_FOUND','Introuvable.',404);
+      const pathname=decodeURIComponent(url.pathname); const file=path.resolve(dist,'.'+(pathname==='/'?'/index.html':pathname));
+      if(!file.startsWith(path.resolve(dist)+path.sep)) fail('NOT_FOUND','Introuvable.',404);
+      if(!fs.existsSync(file)||!fs.statSync(file).isFile()) fail('NOT_FOUND','Page introuvable. Exécutez npm run build.',404);
+      res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':pathname.startsWith('/_astro/')?'public, max-age=31536000, immutable':'no-cache','X-Request-ID':rid});
+      if(req.method==='HEAD') return res.end(); fs.createReadStream(file).pipe(res);
+    } catch(error) {
+      if(res.headersSent){res.destroy();return;} const known=error instanceof AppError; status=known?error.status:500;
+      increment('http_errors_total',{endpoint,code:known?error.code:'INTERNAL_ERROR'});
+      log(known&&status<500?'warn':'error','request_error',{requestId:rid,principalId:principal?.id||null,endpoint,status,code:known?error.code:'INTERNAL_ERROR',message:known?error.message:String(error?.message||error)});
+      send({error:{code:known?error.code:'INTERNAL_ERROR',message:known?error.message:'Erreur interne.',requestId:rid,...(known&&error.details?{details:error.details}:{})}},status);
+    } finally {
+      const duration=performance.now()-started; increment('http_requests_total',{endpoint,status}); observe('http_request_duration_ms',duration,{endpoint,status}); gauge('process_heap_used_bytes',process.memoryUsage().heapUsed);
+      log('info','request_complete',{requestId:rid,principalId:principal?.id||null,endpoint,status,durationMs:Math.round(duration*100)/100});
     }
   });
-  server.requestTimeout = 10000;
-  server.headersTimeout = 12000;
+  server.requestTimeout=10000; server.headersTimeout=12000;
+  server.on('close',()=>log('info','server_closed'));
   return server;
 }
-if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  const host = process.env.HOST || '127.0.0.1',
-    port = Number(process.env.PORT || 4321);
-  const pack = process.env.KONSTELLATION_BACKEND_CONFIG
-    ? await loadIntegration(process.env.KONSTELLATION_BACKEND_CONFIG)
-    : loadPack();
-  const engine = new Engine(pack, {
-    roles: (process.env.KONSTELLATION_ROLES || 'public').split(','),
-    ...(process.env.KONSTELLATION_CURSOR_SECRET
-      ? { secret: process.env.KONSTELLATION_CURSOR_SECRET }
-      : {}),
-  });
-  const semantik = new SemantikAdapter(
-    process.env.KONSTELLATION_SA_CONFIG ? readJson(process.env.KONSTELLATION_SA_CONFIG) : null,
-  );
-  createServer({ engine, semantik }).listen(port, host, () =>
-    console.log(`Konstellation http://${host}:${port}`),
-  );
+
+if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1])){
+  const config=loadConfig();
+  const pack=process.env.KONSTELLATION_BACKEND_CONFIG?await loadIntegration(process.env.KONSTELLATION_BACKEND_CONFIG):loadPack();
+  const engine=new Engine(pack,{roles:(process.env.KONSTELLATION_ROLES||'public').split(','),...(process.env.KONSTELLATION_CURSOR_SECRET?{secret:process.env.KONSTELLATION_CURSOR_SECRET}:{})});
+  const semantik=new SemantikAdapter(process.env.KONSTELLATION_SA_CONFIG?readJson(process.env.KONSTELLATION_SA_CONFIG):null);
+  const server=createServer({engine,semantik,config});
+  const shutdown=(signal)=>{log('info','shutdown_requested',{signal}); server.close(()=>process.exit(0)); setTimeout(()=>process.exit(1),5000).unref();};
+  process.on('SIGTERM',()=>shutdown('SIGTERM')); process.on('SIGINT',()=>shutdown('SIGINT'));
+  server.listen(config.port,config.host,()=>log('info','server_started',{host:config.host,port:config.port,profile:config.deploymentProfile}));
 }

@@ -1,3 +1,53 @@
+# Changelog
+
+## 1.0.0-rc.2 — 2026-10-02
+
+- Durcissement final du contrat `navigation-projection` 1.0 : formes internes strictes par famille, liaison `projectionKind`/renderer/recipe, `nextCursor`/`totalCandidates` explicites et fixtures positives/négatives hors-ligne.
+- Sanitization des DTOs publics : `actionability`, `lineage`, `valuations` et `coordinates` n’exposent plus les payloads upstream bruts ou champs internes inutiles.
+- Correction des producteurs Traceability et StateFlow pour respecter les DTOs stricts.
+- Réparation du validateur Python hors-ligne avec registry URN JSON Schema ; 62 contrôles passent sans accès réseau.
+- Améliorations accessibilité : Tree avec navigation clavier type ARIA tree, noms accessibles sur SVG interactifs, structure Timeline/Matrix/Traceability corrigée.
+- Compatibilité CSP publique renforcée : suppression des `style=`/`style:` Svelte, transformations SVG natives, classes d’indentation déterministes et `build.inlineStylesheets=never`.
+- Nouveau gate statique `check:svelte-structure`, intégré au preflight, couvrant structure Svelte, interactions SVG et styles inline interdits.
+- Nouveau gate `check:frontend-security` contre raw HTML/dynamic code, styles/scripts inline et imports CSS distants ; headers HTTP de défense en profondeur ajoutés.
+- Découplage de `AppError`/`fail()` vers `server/errors.mjs` afin que auth/config soient testables sans charger Ajv ; 5 tests sécurité dependency-free passent.
+- Benchmark complet requalifié jusqu’à 1M assertions, tous les scénarios sous baseline.
+- Documentation d’implémentation/validation mise à jour avec les résultats réellement exécutés.
+
+## 1.0.0-rc.1 — 2026-10-02
+
+- Implémentation complète de la navigation adaptative 1.0 : profils global/type/result-set/focus, NavigationPlan 1.0 et registre fermé de renderers.
+- Ajout des renderers/projections `timeline-lineage`, `tree`, `dag-proof`, `flow-path`, `causal-feedback`, `matrix-profile`, `state-flow`, `traceability`, `multiscale-layer` et `spatial`.
+- Alignement Kristal v6 : coordinates, valuations, record_role, actionability, conflits, succession, lineage, evidence/provenance restent des signaux dérivés sans changer l’autorité canonique.
+- Reader Policy appliquée à toutes les surfaces secondaires, y compris introspection, recommandations et projections ; indexes d’entités/assertions policy-scoped.
+- Auth multi-principal rôles/scopes, profils de déploiement, rate limiting, CSP publique, health/readiness/version, logs JSON et métriques.
+- ExplorationState 1.0 avec migration 0.2 ; `navigationHints` 1.0 avec compatibilité legacy.
+- Golden corpus 1.0 étendu (24 tests dependency-free), tests sécurité/policy/Lens et benchmark 10k/100k/1M + dense/timeline/DAG profond/multi-échelle/forte cardinalité.
+- Contrats de projection 1.0 stricts par famille avec 10 fixtures officielles ; fallback frontend piloté par `accessibilityFallback` du Renderer Registry.
+- Renderers spécialisés enrichis avec visualisations natives déterministes (timeline, DAG, flow, feedback, multi-échelle, spatial) et fallback textuel accessible, sans dépendance graphique externe.
+- Bootstrap, validation QuerySpec, Lens/facettes et navigation sont désormais policy-scoped jusque dans le schéma exposé, supprimant les oracles type/ID/relation.
+- Cache des scopes Reader Policy, préchauffage readiness, détection de cycles itérative et suppression fail-closed des labels/préférences de navigation sous policy.
+- Manifest source SHA-256, SBOM CycloneDX, checks de synchronisation et checksums exposables par `/api/version`.
+- Runbooks threat model et backup/restore ajoutés aux opérations de production.
+- Release gates automatisés (`release:preflight`, `release:check`) et vérification des liens docs.
+- Le package reste RC tant que Node 24 + lockfile + build/Vitest/Playwright n’ont pas été qualifiés dans l’environnement de release.
+
+## Documentation 1.0 — 2026-10-02
+
+- Ajout d'une documentation complète native au repo dans `docs/`.
+- Réécriture des docs cœur comme spécification normative Konstellation 1.0.
+- Ajout Renderer Registry, performance/LOD, sécurité, observabilité, golden corpus, déploiement, API, extension guide et gates de release.
+- Ajout ADR-0006 à ADR-0010 et guides utilisateur/intégrateur/développeur/opérateur.
+- Clarification permanente de la distinction baseline v0.7 / cible production 1.0.
+
+# v0.7.0 — 2026-10-01
+
+Alignement natif sur Kristal Standard 6.0 : lecteur direct `kristal_state`, vérification d’identité `kristal.v6:jcs-rfc8785`, projection locale explicitement dérivée et pertes déclarées, introspection des `coordinates`, `valuations`, `record_role`, `actionability`, conflits, succession, lineage, évidence et provenance. La terminologie du planner devient **affordances structurelles** pour ne pas confondre ses scores UI avec les capability manifests de runtime. Ajout des recettes États, Évolution, Divergences, Traçabilité et Décisions & action. `actionability` reste strictement distincte d’une autorité d’exécution.
+
+# v0.6.0 — 2026-10-01
+
+Konstellation devient un navigateur adaptatif de Kristals : profil structurel indépendant du domaine, Navigation Planner, recettes Chronologie/Hiérarchie/Dépendances/Parcours/Boucles/Preuves/Positions/Comparer, endpoints `/api/navigation/plan` et `/api/navigation/project`, projection adaptative bornée, interface pilotée par le plan et Astrolabe générique. Ajout de `navigationHints` déclaratifs validés pour permettre aux Kristals de publier leurs affordances sans code UI. Les anciennes vues Liste/Tableau/Constellation et les états v0.2 restent compatibles.
+
 ## Correctifs Graphe biblique / recherche — 2026-09-30
 
 - Le pack Théophile + graphe biblique devient le corpus local par défaut du serveur et du lanceur; aucun repli silencieux vers un ancien corpus externe.

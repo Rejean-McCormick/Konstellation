@@ -1,34 +1,81 @@
-# Plan de livraison
+# Plan de qualification vers Konstellation 1.0.0
 
-Les étapes ont des critères de sortie, sans calendrier arbitraire.
+La source `1.0.0-rc.2` implémente les contrats, affordances, projections spécialisées, renderers et hardening runtime décrits par cette documentation. Le travail restant avant de retirer le suffixe RC est un **travail de qualification reproductible dans l’environnement de release**, pas une nouvelle refonte architecturale.
 
-| Étape | Livrable | Critère de sortie |
-|---|---|---|
-| 0. Qualification amont | Pack, lecteur, policies et matrice de capacités | Distinguer réellement supporté / composable / absent; décision argumentée sur projection |
-| 1. Contrats et noyau | QuerySpec validé, registre, transformations pures et vecteurs | Filtres multivalués, pivots complets, limites et absence testés |
-| 2. Première verticale | Deux Lens, facettes, liste, inspecteur, retour, sauvegarde | Même moteur pour histoire intellectuelle et sociodémographie; aucun branchement par domaine |
-| 3. Véritable lecture Kristal | Adaptateur, politiques, statuts et témoins | Résultats attendus sur pack figé; aucune fuite via compteurs ou provenance |
-| 4. Qualification opérationnelle | Mesures, annulation, pagination, gestion d’erreurs | Rejeu stable, limites explicites, budgets documentés et UX d’indisponibilité |
-| 5. SA optionnel | ACL produit et profil linguistique qualifié | Sources/statuts conservés et couverture intégrale; panne SA sans perte d’exploration |
-| 6. Extensions guidées par usage | Graphe avancé, éditeur de Lens ou nouveau backend | Besoin démontré et conformité conservée |
+## Phase A — Contrats (implémentée)
 
-La verticale peut commencer sur données synthétiques clairement étiquetées; elle ne doit jamais être présentée comme une connexion Kristal réelle.
+- figer `NavigationPlan` 1.0 ;
+- stabiliser le vocabulaire des affordances ;
+- stabiliser les DTOs de projection par famille ;
+- définir les règles de compatibilité/migration ;
+- normaliser `navigationHints` sous le vocabulaire `affordances`.
 
-## Scénarios d’acceptation prioritaires
+### Gate
 
-1. Recherche de personnes par période et domaine; motif de correspondance inspectable.
-2. Changement de Lens sans suppression des filtres invisibles dans la nouvelle Lens.
-3. Pivot sur 120 personnes avec page de 50 : les œuvres des 70 autres participent au résultat.
-4. Œuvre à plusieurs auteurs : au moins un même auteur doit satisfaire toute la sous-sélection.
-5. Deux valeurs d’une relation, dont X : `none_of X` exclut l’entité, même si l’autre valeur diffère.
-6. Valeur cachée par politique : pas de correspondance positive ni de compteur révélateur; absence formulée dans la vue.
-7. Pack ou politique changé : curseur rejeté, ancienne requête non remappée silencieusement.
-8. Date incomplète : pas de naissance transformée en période de vie infinie.
-9. Relation non supportée : diagnostic distinct de zéro résultat.
-10. Deux assertions contradictoires : témoin et statuts conservés; pas de synthèse factuelle inventée.
-11. Historique : Retour restaure la requête exacte, contrairement à un pivot inverse.
-12. Réponse réseau obsolète ignorée; navigation clavier complète.
+Tous les schémas publics sont versionnés et validés par tests.
 
-## Definition of done v1
+## Phase B — Renderers structurels (implémentée)
 
-Un utilisateur choisit une Lens, filtre, comprend les correspondances, pivote sur la sélection entière, consulte la provenance et restaure une exploration. Tout résultat vient d’un contexte identifiable. Les capacités manquantes sont explicites. SA et l’éditeur de graphes ne conditionnent pas cette première livraison.
+Les familles suivantes sont implémentées et doivent rester couvertes par les tests de release :
+
+1. `tree` ;
+2. `dag-proof` ;
+3. `flow-path` ;
+4. `causal-feedback` ;
+5. `timeline-lineage` ;
+6. `matrix-profile` ;
+7. `multiscale-layer` ;
+8. `spatial` selon priorité réelle.
+
+Chaque renderer doit avoir :
+
+- projection DTO dédiée ;
+- limites et LOD ;
+- fallback accessible ;
+- export ;
+- tests unitaires et navigateur.
+
+## Phase C — Golden corpus (implémentée et extensible)
+
+Les fixtures stables couvrent au minimum :
+
+- Math ;
+- HumanBody ;
+- HistoryTech ;
+- ScolQc ;
+- HospitalOps ;
+- Power ;
+- Catho ;
+- un Kristal incomplet/générique ;
+- un Kristal v6 riche en metadata ;
+- un corpus volumineux synthétique.
+
+Le corpus doit inclure des attentes positives **et négatives**.
+
+## Phase D — Scalabilité (implémentée, à requalifier à chaque release)
+
+- remplacer les hard caps ad hoc par une stratégie uniforme de pagination/LOD ;
+- virtualiser listes/tables volumineuses ;
+- introduire des index persistants optionnels ;
+- benchmarker 10k, 100k, 1M records/assertions ;
+- fixer des seuils de régression.
+
+## Phase E — Production hardening (implémentée côté source ; qualification restante)
+
+- lockfile obligatoire ;
+- CI Node 24.15+ ;
+- `npm ci` ;
+- build Astro/Svelte ;
+- gate statique Svelte/CSP/accessibilité ;
+- Playwright complet ;
+- logs structurés ;
+- métriques ;
+- readiness ;
+- `/api/version` ;
+- SBOM/checksums ;
+- runbooks ;
+- threat model selon profil de déploiement.
+
+## Phase F — Qualification et release 1.0.0
+
+La release est produite uniquement lorsque tous les gates de [25-release-1.0.md](25-release-1.0.md) applicables au profil de déploiement sont verts.

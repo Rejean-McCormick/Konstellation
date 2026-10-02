@@ -4,9 +4,10 @@
   import Astrolabe from './Astrolabe.svelte';
   import QueryTree from './QueryTree.svelte';
   import ConstellationView from './ConstellationView.svelte';
+  import AdaptiveProjectionView from './AdaptiveProjectionView.svelte';
   let boot = null,
     query = null,
-    lensId = 'intellectual-history',
+    lensId = '',
     view = 'list',
     result = null,
     facets = {},
@@ -15,7 +16,12 @@
     notice = '',
     selected = null,
     detail = null,
-    detailBusy = false;
+    detailBusy = false,
+    navigationPlan = null,
+    navigationRecipe = 'catalogue',
+    navigationPinned = false,
+    authToken = '',
+    authRequired = false;
   let search = '',
     history = [],
     future = [],
@@ -28,6 +34,7 @@
     epochTo = '',
     queryController,
     detailController,
+    navigationController,
     revision = 0,
     currentCursor = null;
   let jsonInput = '',
@@ -36,7 +43,28 @@
     selectedIds = [],
     constellationPath = [],
     satelliteLimit = 8;
-  const typeLabels = { human: 'Personnes', person: 'Personnages bibliques', event: 'Événements', group: 'Groupes', term: 'Termes', author: 'Auteurs', position: 'Positions', work: 'Œuvres', source: 'Sources', place: 'Lieux', concept: 'Concepts', theme: 'Thèmes', tradition: 'Traditions', doctrine: 'Doctrines', 'doctrinal-status': 'Statuts doctrinaux', argument: 'Arguments', editorial: 'Éléments éditoriaux' };
+  const typeLabels = {};
+  function humanizeType(value) {
+    const text = String(value || '')
+      .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+      .replace(/[_:./-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return text ? text.charAt(0).toUpperCase() + text.slice(1) : '';
+  }
+  function typeLabel(type) {
+    return typeLabels[type] || boot?.structuralProfile?.entityTypeLabels?.[type] || humanizeType(type);
+  }
+  const capabilityLabels = {
+    temporal: 'temporel', hierarchy: 'hiérarchique', dependency: 'dépendances', sequence: 'séquentiel',
+    stateMachine: 'états', conditionalTransition: 'transitions', causal: 'causal', cycle: 'cyclique',
+    proof: 'preuves', argumentation: 'argumentatif', multidimensional: 'multidimensionnel',
+    multiScale: 'multi-échelle', multiplex: 'multiplexe', spatial: 'spatial', quantitative: 'quantitatif',
+    provenance: 'provenance', evidential: 'preuves/sources', versioned: 'versionné', resourceAllocation: 'ressources',
+  };
+  function capabilityLabel(id) {
+    return capabilityLabels[id] || humanizeType(id).toLowerCase();
+  }
   const statusLabels = {
     sourced: 'Sourcée',
     validated: 'Validée',
@@ -85,9 +113,7 @@
       : entity.label;
   }
   function entityTypeLabel(entity) {
-    if (entity?.type === 'person' && String(entity.id || '').startsWith('biblical:person:'))
-      return 'Personnage biblique';
-    return typeLabels[entity?.type] || entity?.type;
+    return typeLabel(entity?.type) || entity?.type;
   }
   function catalogScore(entity, rawQuery, counts = duplicatePersonLabels) {
     const q = normalizeSearch(rawQuery);
@@ -136,6 +162,10 @@
   $: activeCount = countFilters(query?.selection);
   $: if (query) jsonInput = JSON.stringify(query, null, 2);
   $: policy = boot?.policies.find((p) => p.ref === query?.context.readerPolicyRef);
+  $: currentNavigationView = navigationPlan?.views?.find((item) => item.id === navigationRecipe) || null;
+  $: navigationCapabilities = Object.entries(navigationPlan?.profile?.affordances || {})
+    .sort((a, b) => b[1].score - a[1].score)
+    .slice(0, 4);
   function countFilters(s) {
     return s
       ? s.filters.length +
@@ -151,15 +181,26 @@
     return isOpaqueRef(sid) ? 'Source documentée' : sid;
   };
   async function api(path, body, signal) {
+    const headers = body === undefined ? {} : { 'Content-Type': 'application/json' };
+    if (authToken) headers.Authorization = `Bearer ${authToken}`;
     const r = await fetch('/api/' + path, {
       method: body === undefined ? 'GET' : 'POST',
-      headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
+      headers,
       body: body === undefined ? undefined : JSON.stringify(body),
       signal,
     });
     const j = await r.json();
-    if (!r.ok) throw Error(j.error?.message || 'La requête a échoué.');
+    if (!r.ok) { const e = Error(j.error?.message || 'La requête a échoué.'); e.status = r.status; e.code = j.error?.code; throw e; }
     return j;
+  }
+  async function bootstrapForPolicy(readerPolicyRef) {
+    const suffix = readerPolicyRef ? `?readerPolicyRef=${encodeURIComponent(readerPolicyRef)}` : '';
+    return api(`bootstrap${suffix}`);
+  }
+  async function refreshBootstrap(readerPolicyRef) {
+    const nextBoot = await bootstrapForPolicy(readerPolicyRef);
+    boot = nextBoot;
+    return nextBoot;
   }
   const FACET_BATCH_SIZE = 32;
   async function loadFacets(queryValue, relationIds, signal) {
@@ -171,16 +212,69 @@
     }
     return merged;
   }
+  function rendererView(rendererId) {
+    if (rendererId === 'table') return 'table';
+    if (rendererId === 'constellation') return 'constellation';
+    if (rendererId === 'list') return 'list';
+    return 'adaptive';
+  }
+  function applyNavigationRecipe(recipe, pin = true) {
+    if (!recipe) return;
+    navigationRecipe = recipe.id;
+    navigationPinned = pin;
+    view = rendererView(recipe.rendererId || recipe.renderer);
+    if (view === 'constellation' && selected && !constellationPath.length)
+      constellationPath = [{ focus: { kind: 'entity', id: selected }, groupId: null, label: labelMap[selected] || selected }];
+  }
+  function fallbackAdaptive() {
+    const currentRendererId = currentNavigationView?.rendererId;
+    const renderer = boot?.navigation?.rendererCatalog?.find((item) => item.id === currentRendererId);
+    const fallbackRendererId = renderer?.accessibilityFallback || 'table';
+    const fallbackView =
+      navigationPlan?.views?.find((item) => item.rendererId === fallbackRendererId) ||
+      navigationPlan?.views?.find((item) => item.id === 'table') ||
+      navigationPlan?.views?.find((item) => item.id === 'catalogue');
+    if (fallbackView) applyNavigationRecipe(fallbackView, true);
+    else view = fallbackRendererId === 'list' ? 'list' : 'table';
+  }
+  async function loadNavigationPlan(queryValue = query, selectedValue = selected) {
+    navigationController?.abort();
+    navigationController = new AbortController();
+    const signal = navigationController.signal;
+    try {
+      const nextPlan = await api('navigation/plan', {
+        query: queryValue,
+        lensRef: lensId,
+        selectedEntityId: selectedValue || null,
+        resultSize: !selectedValue && result?.total?.kind === 'exact' ? result.total.value : null,
+      }, signal);
+      navigationPlan = nextPlan;
+      const current = nextPlan.views.find((item) => item.id === navigationRecipe);
+      const chosen = current || nextPlan.views.find((item) => item.id === nextPlan.primaryRecipeId) || nextPlan.views[0];
+      applyNavigationRecipe(chosen, navigationPinned && !!current);
+    } catch (e) {
+      if (e.name !== 'AbortError') {
+        navigationPlan = {
+          views: [
+            { id: 'catalogue', label: 'Liste', rendererId: 'list', icon: '▤', reason: 'Vue générique' },
+            { id: 'table', label: 'Tableau', rendererId: 'table', icon: '▦', reason: 'Vue générique' },
+            { id: 'constellation', label: 'Constellation', rendererId: 'constellation', icon: '◈', reason: 'Vue générique' },
+          ],
+          primaryRecipeId: 'catalogue',
+          profile: { affordances: {} },
+        };
+      }
+    }
+  }
   function state() {
     return {
-      schemaVersion: '0.2',
+      schemaVersion: '1.0',
       query: clone(query),
       lensRef: lensId,
-      view,
-      selectedEntityId: selected,
-      openPanels: showQuery ? ['filters', 'query'] : ['filters'],
-      layout: [],
-      constellation: { satelliteLimit, path: clone(constellationPath) },
+      readerPolicyRef: query.context.readerPolicyRef,
+      focus: selected ? { kind: 'entity', id: selected } : null,
+      navigation: { recipeId: navigationRecipe, mode: navigationPinned ? 'pinned' : 'adaptive' },
+      history: { openQuery: showQuery, constellationPath: clone(constellationPath), satelliteLimit },
     };
   }
   function syncDates() {
@@ -220,6 +314,7 @@
           }
         }
       }
+      if (current === revision) await loadNavigationPlan(query, selected);
     } catch (e) {
       if (e.name !== 'AbortError' && current === revision) {
         error = e.message;
@@ -231,7 +326,7 @@
     }
   }
   async function commit(next, options = {}) {
-    history = [...history.slice(-99), state()];
+    history = [...history.slice(-99), options.historyState || state()];
     future = [];
     query = next;
     result = null;
@@ -243,22 +338,29 @@
     syncDates();
     await run();
   }
-  async function restore(s, record = true) {
-    await api('validate-state', s);
+  async function restore(input, record = true) {
+    const validation = await api('validate-state', input);
+    const s = validation.state || input;
     if (record) {
       history = [...history.slice(-99), state()];
       future = [];
     }
+    if (!boot || boot.context?.readerPolicyRef !== s.query?.context?.readerPolicyRef)
+      await refreshBootstrap(s.query?.context?.readerPolicyRef);
     query = clone(s.query);
-    lensId = s.lensRef;
-    view = s.view === 'graph' ? 'constellation' : s.view;
-    constellationPath = clone(s.constellation?.path || []);
-    satelliteLimit = s.constellation?.satelliteLimit || 8;
-    showQuery = s.openPanels.includes('query');
+    lensId = boot?.lenses.some((item) => item.id === s.lensRef && item.rootType === query.selection.entityType)
+      ? s.lensRef
+      : boot?.lenses.find((item) => item.rootType === query.selection.entityType)?.id || `type:${query.selection.entityType}`;
+    navigationRecipe = s.navigation?.recipeId || 'catalogue';
+    navigationPinned = s.navigation?.mode === 'pinned';
+    view = navigationRecipe === 'constellation' ? 'constellation' : navigationRecipe === 'table' ? 'table' : navigationRecipe === 'catalogue' ? 'list' : 'adaptive';
+    constellationPath = clone(s.history?.constellationPath || []);
+    satelliteLimit = s.history?.satelliteLimit || 8;
+    showQuery = Boolean(s.history?.openQuery);
     resetDetail();
     syncDates();
     await run();
-    if (s.selectedEntityId) await inspect(s.selectedEntityId);
+    if (s.focus?.kind === 'entity' && s.focus.id) await inspect(s.focus.id);
   }
   async function undo() {
     if (!history.length) return;
@@ -279,7 +381,7 @@
     if (nextLens.rootType !== query.selection.entityType) {
       notice =
         'Cette perspective ouvre une nouvelle sélection de ' +
-        (typeLabels[nextLens.rootType] || nextLens.rootType).toLowerCase() +
+        (typeLabel(nextLens.rootType) || nextLens.rootType).toLowerCase() +
         '. Votre parcours reste accessible avec Retour.';
       const next = clone(query);
       next.selection = { entityType: nextLens.rootType, filters: [], links: [] };
@@ -289,25 +391,37 @@
       future = [];
       lensId = id;
       constellationPath = [];
+      navigationPinned = false;
       await run();
     }
   }
   async function changePolicy(ref) {
+    const previousState = state();
+    const nextBoot = await refreshBootstrap(ref);
     const next = clone(query);
-    next.context.readerPolicyRef = ref;
+    next.context = clone(nextBoot.context);
     next.pageSize = Math.min(
       next.pageSize,
-      boot.policies.find((p) => p.ref === ref)?.maxPageSize || 100,
+      nextBoot.policies.find((p) => p.ref === ref)?.maxPageSize || 100,
     );
-    await commit(next);
+    if (!nextBoot.registry.entityTypes.includes(next.selection.entityType)) {
+      const fallbackLens = nextBoot.lenses[0];
+      const fallbackType = fallbackLens?.rootType || nextBoot.registry.entityTypes[0];
+      if (!fallbackType) throw Error('Aucun type visible pour cette politique de lecture.');
+      next.selection = { entityType: fallbackType, filters: [], links: [] };
+      lensId = fallbackLens?.id || `type:${fallbackType}`;
+      notice = 'La sélection précédente n’est pas visible avec cette politique. Konstellation a ouvert le premier espace disponible.';
+    } else if (!nextBoot.lenses.some((item) => item.id === lensId && item.rootType === next.selection.entityType)) {
+      lensId = nextBoot.lenses.find((item) => item.rootType === next.selection.entityType)?.id || `type:${next.selection.entityType}`;
+    }
+    await commit(next, { historyState: previousState });
   }
   function relation(id) {
     return relations.find((r) => r.id === id);
   }
   function openConstellation() {
-    view = 'constellation';
-    if (selected && !constellationPath.length)
-      constellationPath = [{ focus: { kind: 'entity', id: selected }, groupId: null, label: labelMap[selected] || selected }];
+    const recipe = navigationPlan?.views?.find((item) => item.id === 'constellation') || { id: 'constellation', rendererId: 'constellation' };
+    applyNavigationRecipe(recipe, true);
   }
   function filterFor(id) {
     return query.selection.filters.find((f) => f.relation === id);
@@ -380,6 +494,8 @@
     next.selection = { entityType: entity.type, ids: [entity.id], filters: [], links: [] };
     const nextLens = boot.lenses.find((l) => l.rootType === entity.type)?.id || 'type:' + entity.type;
     view = 'list';
+    navigationRecipe = 'catalogue';
+    navigationPinned = false;
     showQuery = false;
     await commit(next, { lens: nextLens });
     await tick();
@@ -394,7 +510,10 @@
     detailBusy = true;
     try {
       const value = await api('entity', { id, context: query.context }, detailController.signal);
-      if (selected === id) detail = value;
+      if (selected === id) {
+        detail = value;
+        await loadNavigationPlan(query, id);
+      }
     } catch (e) {
       if (e.name !== 'AbortError') error = e.message;
     } finally {
@@ -507,11 +626,10 @@
     let alive = true;
     (async () => {
       try {
+        authToken = sessionStorage.getItem('konstellation.auth.token') || '';
         boot = await api('bootstrap');
         if (!alive) return;
-        lensId = boot.lenses.some((l) => l.id === 'intellectual-history')
-          ? 'intellectual-history'
-          : boot.lenses[0].id;
+        lensId = boot.lenses[0]?.id || `type:${boot.registry.entityTypes[0]}`;
         query = {
           schemaVersion: '0.2',
           context: boot.context,
@@ -548,7 +666,8 @@
           }
         } else await run();
       } catch (e) {
-        error = e.message;
+        authRequired = e.status === 401;
+        error = authRequired ? '' : e.message;
         busy = false;
       }
     })();
@@ -556,6 +675,7 @@
       alive = false;
       queryController?.abort();
       detailController?.abort();
+      navigationController?.abort();
     };
   });
 </script>
@@ -574,21 +694,29 @@
         >Mes explorations <span class="nav-count">{saved.length}</span></button
       ><button on:click={() => (showSource = !showSource)}>À propos du corpus</button>
     </nav>
-    <span class="local-indicator"><i></i> Espace local</span>
+    <span class="local-indicator"><i></i> {boot?.principal?.id || 'Espace local'}</span>
   </header>
   {#if !boot || !query}<main class="loading-screen">
       <div class="brand-mark"><img src="/brand-logo.svg" alt="Konstellation" class="loading-logo" /></div>
       <h1>Ouvrir de nouvelles perspectives.</h1>
-      <p>{error || 'Chargement du corpus et des relations…'}</p>
-      {#if error}<button on:click={() => location.reload()}>Réessayer</button>{/if}
+      {#if authRequired}
+        <p>Cette instance Konstellation requiert une authentification.</p>
+        <form class="auth-form" on:submit|preventDefault={() => { sessionStorage.setItem('konstellation.auth.token', authToken.trim()); location.reload(); }}>
+          <label>Jeton d’accès<input type="password" bind:value={authToken} autocomplete="current-password" required /></label>
+          <button class="button primary" type="submit">Ouvrir Konstellation</button>
+        </form>
+      {:else}
+        <p>{error || 'Chargement du corpus et des relations…'}</p>
+        {#if error}<button on:click={() => location.reload()}>Réessayer</button>{/if}
+      {/if}
     </main>
   {:else}
     <main>
       <section class="intro">
         <div>
           <div class="eyebrow">EXPLORATEUR DE CONNAISSANCES <span> / </span> {boot.title}</div>
-          <h1>Suivez le fil des idées<span>.</span></h1>
-          <p>Une personne, une époque, une relation. Construisez votre propre chemin.</p>
+          <h1>Explorez la structure des connaissances<span>.</span></h1>
+          <p>Konstellation détecte les formes du Kristal et propose les parcours, vues et comparaisons les plus pertinents.</p>
         </div>
         <div class="intro-actions">
           <button class="button subtle-button" on:click={share}>↗ Partager</button><button
@@ -597,7 +725,7 @@
           >
         </div>
       </section>
-      <Astrolabe entities={boot.entities} onNavigate={errorGuard(navigateFromAstrolabe)} />
+      <Astrolabe entities={boot.entities} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />
       {#if boot.synthetic}<div class="demo-banner">
           <span class="tiny-star">✦</span><strong>Corpus de démonstration</strong><span
             >Notices illustratives et relations synthétiques. Aucune validation historique
@@ -669,7 +797,7 @@
             {#each saved as item}<div>
                 <button on:click={errorGuard(() => restore(item.state))}
                   >{item.name}<small
-                    >{typeLabels[item.state.query?.selection?.entityType] || 'Exploration'}</small
+                    >{typeLabel(item.state.query?.selection?.entityType) || 'Exploration'}</small
                   ></button
                 ><button aria-label={'Supprimer ' + item.name} on:click={() => removeSaved(item.id)}
                   >×</button
@@ -685,7 +813,7 @@
               value={lensId}
               on:change={(e) => changeLens(e.target.value)}
               >{#if !boot.lenses.some((l) => l.id === lensId)}<option value={lensId}
-                  >{typeLabels[query.selection.entityType]}</option
+                  >{typeLabel(query.selection.entityType)}</option
                 >{/if}{#each boot.lenses as l}<option value={l.id}>{l.label.fr}</option
                 >{/each}</select
             ></span
@@ -824,7 +952,7 @@
             </div>
             <div class="breadcrumb">
               <span>Explorer</span><span>/</span><strong
-                >{typeLabels[query.selection.entityType] || query.selection.entityType}</strong
+                >{typeLabel(query.selection.entityType) || query.selection.entityType}</strong
               >{#if query.selection.links.length}<span class="pivot-tag"
                   >via {query.selection.links.length} relation</span
                 >{/if}
@@ -870,28 +998,39 @@
                 {query.selection.links.length ? 'UN NOUVEAU POINT DE VUE' : 'VOTRE SÉLECTION'}
               </div>
               <h2>
-                {typeLabels[query.selection.entityType] || query.selection.entityType}<span
+                {typeLabel(query.selection.entityType) || query.selection.entityType}<span
                   class="result-count">{result?.total.value ?? '—'}</span
                 >
               </h2>
               <p>{busy ? 'Mise à jour de la sélection…' : policy?.description}</p>
             </div>
-            <div class="view-switch" aria-label="Affichage">
-              <button
-                class:active={view === 'list'}
-                aria-pressed={view === 'list'}
-                on:click={() => (view = 'list')}>▤ <span>Liste</span></button
-              ><button
-                class:active={view === 'table'}
-                aria-pressed={view === 'table'}
-                on:click={() => (view = 'table')}>▦ <span>Tableau</span></button
-              ><button
-                class:active={view === 'constellation' || view === 'graph'}
-                aria-pressed={view === 'constellation' || view === 'graph'}
-                on:click={openConstellation}>◈ <span>Constellation</span></button
-              >
+            <div class="view-switch adaptive-switch" aria-label="Affichage">
+              {#if navigationPlan?.views?.length}
+                {#each navigationPlan.views as item}
+                  <button
+                    class:active={navigationRecipe === item.id}
+                    class:recommended={navigationPlan.primaryRecipeId === item.id && navigationRecipe !== item.id}
+                    aria-pressed={navigationRecipe === item.id}
+                    title={item.reason || item.description}
+                    on:click={() => applyNavigationRecipe(item, true)}>{item.icon} <span>{item.label}</span></button
+                  >
+                {/each}
+              {:else}
+                <button class:active={view === 'list'} aria-pressed={view === 'list'} on:click={() => (view = 'list')}>▤ <span>Liste</span></button>
+                <button class:active={view === 'table'} aria-pressed={view === 'table'} on:click={() => (view = 'table')}>▦ <span>Tableau</span></button>
+                <button class:active={view === 'constellation' || view === 'graph'} aria-pressed={view === 'constellation' || view === 'graph'} on:click={openConstellation}>◈ <span>Constellation</span></button>
+              {/if}
             </div>
           </div>
+          {#if navigationPlan}
+            <div class="navigation-signals" aria-label="Affordances structurelles détectées">
+              <span class="navigation-mode">✦ Navigation adaptative · affordances</span>
+              {#each navigationCapabilities as capability}
+                <span class="capability-chip" title={(capability[1].evidence || []).join(' · ')}>{capabilityLabel(capability[0])}</span>
+              {/each}
+              {#if currentNavigationView?.reason}<small>{currentNavigationView.reason}</small>{/if}
+            </div>
+          {/if}
           <div class="results-actions">
             <label class="search-input"
               ><span>⌕</span><input
@@ -951,15 +1090,25 @@
                 <h3>Aucune correspondance dans cette vue.</h3>
                 <p>Essayez d’élargir un filtre ou de changer la politique de lecture.</p>
               </div>
+            {:else if view === 'adaptive' && currentNavigationView}<AdaptiveProjectionView
+                {query}
+                lensRef={lensId}
+                recipe={currentNavigationView}
+                selectedEntityId={selected}
+                inspect={(id) => inspect(id)}
+                fallback={fallbackAdaptive}
+                {authToken}
+              />
             {:else if view === 'constellation' || view === 'graph'}<ConstellationView
                 {rows}
                 labels={labelMap}
-                rootLabel={typeLabels[query.selection.entityType] || query.selection.entityType}
+                rootLabel={typeLabel(query.selection.entityType) || query.selection.entityType}
                 context={query.context}
                 lensRef={lensId}
                 bind:path={constellationPath}
                 bind:limit={satelliteLimit}
                 inspect={(id) => inspect(id)}
+                {authToken}
               />
             {:else if view === 'table'}<div class="table-wrap">
                 <table>
@@ -970,7 +1119,7 @@
                   ><tbody
                     >{#each rows as row}<tr class:selected={selected === row.entityId}
                         ><td>{labelMap[row.entityId]}</td><td
-                          >{typeLabels[query.selection.entityType]}</td
+                          >{typeLabel(query.selection.entityType)}</td
                         ><td>{row.witnesses.length}</td><td
                           ><button class="text-button" on:click={() => inspect(row.entityId)}
                             >Sources →</button
@@ -999,7 +1148,7 @@
                           .join('')}</span
                       ><span class="entity-copy"
                         ><strong>{labelMap[row.entityId] || entity?.label || row.entityId}</strong><small
-                          >{entity?.description || typeLabels[entity?.type]}</small
+                          >{entity?.description || typeLabel(entity?.type)}</small
                         ></span
                       ></button
                     >

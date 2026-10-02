@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="query-branch" style={`--depth:${depth}`}>
+<div class={`query-branch query-depth-${Math.min(depth, 3)}`}>
   <div class="query-node">
     <span class="node-dot"></span><strong
       >{types[selection.entityType] || selection.entityType}</strong

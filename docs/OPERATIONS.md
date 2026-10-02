@@ -1,46 +1,50 @@
-# Exécution locale et API
+# Opérations Konstellation 1.0
 
 ## Configuration
 
-| Variable | Valeur par défaut | Rôle |
-|---|---|---|
-| `HOST` | `127.0.0.1` | Interface d’écoute |
-| `PORT` | `4321` | Port HTTP |
-| `KONSTELLATION_BACKEND_CONFIG` | Non défini | Configuration lecteur Kristal, prioritaire sur PACK |
-| `KONSTELLATION_SA_CONFIG` | Non défini | Configuration service SA et profil publié |
-| `KONSTELLATION_PACK` | `data/theophile-biblical.enriched.pack.json` si présent, sinon `data/demo.pack.json` | Fichier JSON normalisé |
-| `KONSTELLATION_LENSES` | `lenses-enriched` avec le pack Théophile, sinon `examples/lenses` | Répertoire des Lens chargées au démarrage |
-| `KONSTELLATION_ROLES` | `public` | Rôles statiques de l’instance, séparés par virgules |
-| `KONSTELLATION_CURSOR_SECRET` | Aléatoire par processus | Secret opérateur pour HMAC; le changer invalide les curseurs |
-| `KONSTELLATION_ALLOWED_HOSTS` | `localhost,127.0.0.1,[::1]` | Noms d’hôte permis, sans ports |
+Voir [22-deployment.md](22-deployment.md) pour la table complète. Les variables structurantes sont `KONSTELLATION_DEPLOYMENT_PROFILE`, `KONSTELLATION_AUTH_TOKENS`, `KONSTELLATION_ALLOWED_HOSTS`, `KONSTELLATION_PACK`, `KONSTELLATION_LENSES`, `KONSTELLATION_CURSOR_SECRET` et `KONSTELLATION_BUILD_ID`.
 
-Le serveur ne charge pas automatiquement `.env`; définir les variables dans le processus de lancement. `npm run dev` lance l’API en 4322 et Astro en 4321 avec proxy local. `npm start` sert le frontend construit et l’API sur le même port.
+## Démarrage qualifié
 
-L’arrêt/redémarrage recharge le pack et les Lens. Un nouveau hash de pack invalide les anciens contextes; il n’est pas remappé vers les nouvelles données. Une exploration ancienne n’est restaurable que si son contexte exact est chargé.
+```bash
+npm ci
+npm run release:preflight
+npm run build
+npm start
+```
 
-## API JSON
+Vérifier ensuite :
 
-Toutes les réponses d’erreur utilisent `{ "error": { "code": "...", "message": "..." } }`. Les POST exigent `Content-Type: application/json` et une limite de 64 Kio.
+```text
+GET /api/health
+GET /api/ready
+GET /api/version
+```
 
-| Méthode et chemin | Entrée | Sortie |
-|---|---|---|
-| GET `/api/health` | — | Statut et version |
-| GET `/api/bootstrap` | — | Métadonnées autorisées, registre, Lens, politiques, contexte, capacités |
-| POST `/api/query` | `{query, cursor?}` | ResultSet 0.2 |
-| POST `/api/facets` | `{query, relations}` | Compteurs exacts sous le même contexte |
-| POST `/api/entity` | `{id, context}` | Entité, assertions et sources visibles |
-| POST `/api/evidence` | `{ids, context}` | Assertions visibles par identité |
-| POST `/api/validate-state` | ExplorationState 0.2 | `{valid:true}` ou erreur |
-| POST `/api/sa` | Options de communication (voir ci-dessous) | CommunicationResult contrôlé ou erreur explicite |
+## Shutdown
 
-La sortie API ne contient pas les payloads SES bruts conservés pour audit dans le pack. Les références de conflit inaccessibles sont retirées. Les contrats complets du frontend se trouvent dans `contracts/`.
+Le processus écoute SIGTERM/SIGINT, arrête d’accepter de nouvelles connexions via `server.close()` et force la sortie après un délai de sécurité de 5 s.
 
-## Reproductibilité
+## Incident projection
 
-Conserver le pack exact, le registre, les Lens, package-lock.json et la version du code. `npm ci` utilise les dépendances verrouillées. La construction statique ne nécessite aucun accès réseau à l’exécution; toutes les fontes utilisent la pile système. Sans intégration configurée, les données et requêtes restent locales. Les intégrations HTTP configurées contactent les services décrits dans INTEGRATIONS.md.
+1. relever `requestId`, version, recipe et renderer ;
+2. utiliser le fallback accessible sans modifier QuerySpec/focus ;
+3. examiner `navigation_projection_duration_ms`, `navigation_projection_total` et erreurs ;
+4. corriger projection/renderer sans modifier le canon ;
+5. rejouer golden test + E2E.
 
-Les liens partageables contiennent l’état de requête dans le fragment d’URL. Ils ne distribuent pas le corpus et ne confèrent aucune permission. Pour un contenu confidentiel, privilégier une exportation contrôlée; le bouton de partage n’est pas un mécanisme d’autorisation.
+## Incident policy / fuite suspectée
 
-## Communication et capacités
+1. retirer l’instance du trafic ;
+2. conserver logs/requestIds sans copier les payloads sensibles ;
+3. reproduire avec le même ensemble de rôles et Reader Policy ;
+4. vérifier query, bootstrap, entity, evidence, plan, projection et explication ;
+5. ajouter un test de non-régression avant remise en service.
 
-GET `/api/capabilities` retourne les capacités par relation et celles de SA. POST `/api/sa/request` génère une CommunicationRequest. POST `/api/sa` la valide et la réalise via le service configuré. Entrée : `{query, cursor?, entityId?, action: "query"|"page"|"entity", language?, locale?}`. Le serveur recalcule les résultats; aucun texte ni résultat fourni par le client n’est tenu pour vrai. Voir INTEGRATIONS.md.
+## Saturation / latence
+
+Examiner mémoire, result set size, cache hit/miss, temps planning/projection et taux de troncation. Réduire LOD/budgets ou affiner la sélection avant d’augmenter arbitrairement les caps.
+
+## Rollback
+
+Rollback atomique code + lockfile + build + contrats + configuration. Les projections sont reconstructibles : ne jamais restaurer un dérivé comme vérité canonique.

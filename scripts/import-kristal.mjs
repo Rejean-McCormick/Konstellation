@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { ROOT, ajv, fail } from '../server/contracts.mjs';
 import { readJson, canonical, hash, validatePack } from '../server/pack.mjs';
+import { importKristalV6State, isKristalV6State } from '../server/integrations/kristal-v6.mjs';
 const upstreamSchema = readJson(
   path.join(ROOT, 'contracts/upstream/structured-epistemic-state.schema.json'),
 );
@@ -125,6 +126,7 @@ export function importState(state, config, inputSha256 = 'not-provided') {
     assertions,
     sources: [...normalizedSources.values()],
     policies: config.policies,
+    ...(config.navigationHints ? { navigationHints: config.navigationHints } : {}),
     importRecord: {
       inputSha256,
       stateId: state.state_id,
@@ -137,17 +139,23 @@ export function importState(state, config, inputSha256 = 'not-provided') {
   };
   return validatePack(pack);
 }
+
+export function importAnyState(state, config, inputSha256 = 'not-provided') {
+  if (isKristalV6State(state)) return importKristalV6State(state, config || {}, inputSha256);
+  return importState(state, config, inputSha256);
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   const [input, mapping, output] = process.argv.slice(2);
   if (!input || !mapping || !output) {
-    console.error('Usage: npm run pack:import -- state.json mapping.json output.pack.json');
+    console.error('Usage: npm run pack:import -- state.json mapping-or-config.json output.pack.json');
     process.exitCode = 1;
   } else {
     try {
       if (fs.existsSync(output))
         fail('OUTPUT_EXISTS', 'Choose a new output path; existing packs are immutable.');
       const bytes = fs.readFileSync(input);
-      const pack = importState(
+      const pack = importAnyState(
         JSON.parse(bytes),
         readJson(mapping),
         createHash('sha256').update(bytes).digest('hex'),
