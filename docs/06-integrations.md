@@ -5,6 +5,7 @@
 Konstellation peut consommer :
 
 - un `kristal_state` v6 direct ;
+- un domaine d'une `Kristal-Kollection` ;
 - un Runtime Pack Kristal ;
 - un pack JSON normalisé ;
 - une projection HTTP paginée ;
@@ -42,7 +43,21 @@ L'adaptateur :
 5. déclare les pertes ;
 6. dérive les affordances.
 
-## 4. navigationHints
+## 4. Kristal-Kollection
+
+```json
+{
+  "adapter": "kristal-kollection-v1",
+  "directory": "/chemin/vers/Kristal-Kollection",
+  "kristal": "Time"
+}
+```
+
+L'adaptateur sélectionne un dossier `domains/Kristal-*`, découvre son état v6 et conserve les
+écarts au contrat strict sous forme de diagnostics. Il ne corrige pas silencieusement un hash
+canonique divergent et ne transforme pas une variante de collection en artefact v6 validé.
+
+## 5. navigationHints
 
 Les hints sont des métadonnées de planification non factuelles.
 
@@ -67,11 +82,11 @@ Forme recommandée :
 
 Les aliases `capabilities` et `relationCapabilities` existent pour compatibilité v0.6 mais la terminologie cible est `affordances`.
 
-## 5. SemantiK / SA
+## 6. SemantiK / SA
 
 Une formulation ou communication externe doit rester explicitement déclenchée. Le serveur recalcule les résultats à partir de QuerySpec ; il ne considère jamais un résultat fourni par le client comme vérité.
 
-## 6. Erreurs d'intégration
+## 7. Erreurs d'intégration
 
 Les erreurs doivent être structurées et distinguer au minimum :
 

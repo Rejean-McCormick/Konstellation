@@ -21,7 +21,11 @@
     navigationRecipe = 'catalogue',
     navigationPinned = false,
     authToken = '',
-    authRequired = false;
+    authRequired = false,
+    kristal = '',
+    kristalSelectable = false,
+    kristals = [],
+    switchingKristal = false;
   let search = '',
     history = [],
     future = [],
@@ -183,6 +187,7 @@
   async function api(path, body, signal) {
     const headers = body === undefined ? {} : { 'Content-Type': 'application/json' };
     if (authToken) headers.Authorization = `Bearer ${authToken}`;
+    if (kristal) headers['X-Konstellation-Kristal'] = kristal;
     const r = await fetch('/api/' + path, {
       method: body === undefined ? 'GET' : 'POST',
       headers,
@@ -201,6 +206,64 @@
     const nextBoot = await bootstrapForPolicy(readerPolicyRef);
     boot = nextBoot;
     return nextBoot;
+  }
+  function initializeExploration(nextBoot) {
+    const nextLensId = nextBoot.lenses[0]?.id || `type:${nextBoot.registry.entityTypes[0]}`;
+    const firstLens = nextBoot.lenses.find((l) => l.id === nextLensId);
+    const entityType = firstLens?.rootType || nextBoot.registry.entityTypes[0];
+    if (!entityType) throw Error('Ce Kristal ne contient aucun type exploratoire visible.');
+    boot = nextBoot;
+    lensId = nextLensId;
+    query = {
+      schemaVersion: '0.2',
+      context: nextBoot.context,
+      selection: { entityType, filters: [], links: [] },
+      order: 'entity_id_asc',
+      pageSize:
+        boot.policies.find((p) => p.ref === boot.context.readerPolicyRef)?.defaultPageSize || 24,
+    };
+    result = null;
+    facets = {};
+    history = [];
+    future = [];
+    search = '';
+    selected = null;
+    detail = null;
+    selectedIds = [];
+    constellationPath = [];
+    navigationPlan = null;
+    navigationRecipe = 'catalogue';
+    navigationPinned = false;
+    currentCursor = null;
+    syncDates();
+  }
+  async function changeKristal(next) {
+    if (!kristalSelectable || !next || next === kristal || switchingKristal) return;
+    const target = kristals.find((item) => item.id === next && item.available);
+    if (!target) throw Error('Ce Kristal n’est pas disponible dans la collection.');
+    const previous = kristal;
+    queryController?.abort();
+    detailController?.abort();
+    navigationController?.abort();
+    revision++;
+    switchingKristal = true;
+    busy = true;
+    error = '';
+    notice = '';
+    kristal = next;
+    try {
+      const nextBoot = await api('bootstrap');
+      initializeExploration(nextBoot);
+      try { localStorage.setItem('konstellation.kristal.v1', kristal); } catch {}
+      await run();
+      notice = `Kristal « ${target.label} » chargé.`;
+    } catch (e) {
+      kristal = previous;
+      error = e.message;
+      busy = false;
+    } finally {
+      switchingKristal = false;
+    }
   }
   const FACET_BATCH_SIZE = 32;
   async function loadFacets(queryValue, relationIds, signal) {
@@ -269,6 +332,7 @@
   function state() {
     return {
       schemaVersion: '1.0',
+      ...(kristal ? { kristalRef: kristal } : {}),
       query: clone(query),
       lensRef: lensId,
       readerPolicyRef: query.context.readerPolicyRef,
@@ -339,12 +403,26 @@
     await run();
   }
   async function restore(input, record = true) {
-    const validation = await api('validate-state', input);
-    const s = validation.state || input;
-    if (record) {
-      history = [...history.slice(-99), state()];
-      future = [];
-    }
+    const previousKristal = kristal;
+    const previousBoot = boot;
+    const previousState = record && query ? state() : null;
+    const targetKristal = input?.kristalRef;
+    try {
+      if (targetKristal && targetKristal !== kristal) {
+        const target = kristals.find((item) => item.id === targetKristal && item.available);
+        if (!target) throw Error(`Le Kristal « ${targetKristal} » de cette exploration n’est pas disponible.`);
+        kristal = targetKristal;
+        boot = await api('bootstrap');
+      }
+      const validation = await api('validate-state', input);
+      const s = validation.state || input;
+      if (record) {
+        history = [...history.slice(-99), previousState || state()];
+        future = [];
+      }
+      if (kristal !== previousKristal) {
+        try { localStorage.setItem('konstellation.kristal.v1', kristal); } catch {}
+      }
     if (!boot || boot.context?.readerPolicyRef !== s.query?.context?.readerPolicyRef)
       await refreshBootstrap(s.query?.context?.readerPolicyRef);
     query = clone(s.query);
@@ -360,7 +438,12 @@
     resetDetail();
     syncDates();
     await run();
-    if (s.focus?.kind === 'entity' && s.focus.id) await inspect(s.focus.id);
+      if (s.focus?.kind === 'entity' && s.focus.id) await inspect(s.focus.id);
+    } catch (e) {
+      kristal = previousKristal;
+      boot = previousBoot;
+      throw e;
+    }
   }
   async function undo() {
     if (!history.length) return;
@@ -568,7 +651,7 @@
         throw Error('Exploration trop longue pour un lien. Utilisez Exporter.');
       const url = location.origin + location.pathname + '#exploration=' + encodeURIComponent(value);
       await navigator.clipboard.writeText(url);
-      notice = 'Lien copié. Il requiert le même corpus et les mêmes permissions.';
+      notice = 'Lien copié. Le Kristal sélectionné est conservé dans l’exploration.';
     } catch (e) {
       error = e.message;
     }
@@ -627,22 +710,19 @@
     (async () => {
       try {
         authToken = sessionStorage.getItem('konstellation.auth.token') || '';
+        const collection = await api('kristals');
+        kristalSelectable = Boolean(collection.selectable);
+        kristals = Array.isArray(collection.items) ? collection.items : [];
+        if (kristalSelectable) {
+          let remembered = '';
+          try { remembered = localStorage.getItem('konstellation.kristal.v1') || ''; } catch {}
+          kristal = kristals.some((item) => item.id === remembered && item.available)
+            ? remembered
+            : collection.current || collection.defaultKristal || kristals.find((item) => item.available)?.id || '';
+        }
         boot = await api('bootstrap');
         if (!alive) return;
-        lensId = boot.lenses[0]?.id || `type:${boot.registry.entityTypes[0]}`;
-        query = {
-          schemaVersion: '0.2',
-          context: boot.context,
-          selection: {
-            entityType: boot.lenses.find((l) => l.id === lensId).rootType,
-            filters: [],
-            links: [],
-          },
-          order: 'entity_id_asc',
-          pageSize:
-            boot.policies.find((p) => p.ref === boot.context.readerPolicyRef)?.defaultPageSize ||
-            24,
-        };
+        initializeExploration(boot);
         try {
           const v = JSON.parse(localStorage.getItem('konstellation.saved.v1') || '[]');
           saved = Array.isArray(v)
@@ -806,7 +886,19 @@
           </div>
         </section>{/if}
       <section class="context-bar" aria-label="Contexte de lecture">
-        <label
+        {#if kristalSelectable}<label
+          ><span class="context-icon">✦</span><span
+            ><small>KRISTAL</small><select
+              aria-label="Kristal"
+              value={kristal}
+              disabled={switchingKristal || busy}
+              on:change={(e) => changeKristal(e.target.value)}
+              >{#each kristals as item}<option value={item.id} disabled={!item.available}
+                  >{item.label}{item.available ? '' : ' — indisponible'}</option
+                >{/each}</select
+            ></span
+          ></label
+        >{/if}<label
           ><span class="context-icon">◈</span><span
             ><small>PERSPECTIVE</small><select
               aria-label="Perspective"
@@ -842,6 +934,8 @@
         entityId={selected}
         capabilities={boot.communication}
         disabled={busy || !!error}
+        {authToken}
+        {kristal}
       />
       <div class="workspace">
         <aside class="filters-panel" aria-label="Filtres">
@@ -1098,6 +1192,7 @@
                 inspect={(id) => inspect(id)}
                 fallback={fallbackAdaptive}
                 {authToken}
+                {kristal}
               />
             {:else if view === 'constellation' || view === 'graph'}<ConstellationView
                 {rows}
@@ -1109,6 +1204,7 @@
                 bind:limit={satelliteLimit}
                 inspect={(id) => inspect(id)}
                 {authToken}
+                {kristal}
               />
             {:else if view === 'table'}<div class="table-wrap">
                 <table>

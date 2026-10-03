@@ -5,8 +5,8 @@
   "canonicalTruth": "upstream-kristal-state",
   "navigationPlanSchema": "1.0",
   "projectionSchema": "1.0",
-  "fileCount": 229,
-  "contentSha256": "c208fd0d7e0c4626d13c62d3881b59098e502a98782d68023963b5e95d7466e3",
+  "fileCount": 232,
+  "contentSha256": "abfa942202d624f4133791a2f11ce8ac7d5c95d6b4d07ab662ee030bb742cd54",
   "files": [
     {
       "path": ".github/workflows/ci.yml",
@@ -50,8 +50,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "d0ae062b5445218899608692c45d66a2d72b584c6361a08d5094409f0faa33c9",
-      "size": 10822
+      "sha256": "1c0ce89b64143543d5763b2b70ad7bb5f353063b19635f4c25020f8eb80df6d2",
+      "size": 11565
     },
     {
       "path": "contracts/constellation-response.schema.json",
@@ -112,6 +112,11 @@
       "path": "contracts/upstream/communication_result.schema.json",
       "sha256": "c9964d4a0f57712ab36600173b717473bef0ff2e6c4fa5413bd7ebe91f3d0454",
       "size": 4919
+    },
+    {
+      "path": "contracts/upstream/kristal-state-v6-compatible.schema.json",
+      "sha256": "67b2e9e2877d781bb6772218e0fff8c9cb46fe628552ea0fa08b5bfe0a92122b",
+      "size": 3622
     },
     {
       "path": "contracts/upstream/kristal-state-v6.schema.json",
@@ -200,8 +205,8 @@
     },
     {
       "path": "docs/06-integrations.md",
-      "sha256": "4d9ab107d41eee543fd266a4ffc03affb4bc5db127406c4bf24244eb175b35dc",
-      "size": 2092
+      "sha256": "bce3fa26c9fffd09753b805624d3eb21c88b9c8c1b1739b6dc19d4e6018d6f81",
+      "size": 2570
     },
     {
       "path": "docs/07-delivery-plan.md",
@@ -395,8 +400,8 @@
     },
     {
       "path": "docs/IMPORT.md",
-      "sha256": "f775f169423f8a7528316e49343706376a62e344a180a2584cdcf02b69e48020",
-      "size": 1559
+      "sha256": "2c05a53944aa7bdfe15370caca43d30af68a52b2daf08a7d6d928356b3f80500",
+      "size": 2546
     },
     {
       "path": "docs/input-snapshots.json",
@@ -507,6 +512,11 @@
       "path": "examples/integrations/kristal-http.json",
       "sha256": "5372f77852906d50481d7ee23fac69a903c2d6388f866ff0c47e41353aed1b5b",
       "size": 1507
+    },
+    {
+      "path": "examples/integrations/kristal-kollection.json",
+      "sha256": "5cf2e6e00fa615e6976ae3bbcc1406b2e137dc9bc4ac96d3a157afbbf0fa313f",
+      "size": 134
     },
     {
       "path": "examples/integrations/kristal-v6-state.json",
@@ -835,13 +845,13 @@
     },
     {
       "path": "server/integrations/kristal-v6.mjs",
-      "sha256": "2c8803d6cdc110bd6cc85155c39ae4fef3f09a3447889238d21e26589888a56a",
-      "size": 16029
+      "sha256": "787f9c35fd472e6ff4438275b5b6df6c030f3f34b6c92ed49a7f90c840c4e686",
+      "size": 20454
     },
     {
       "path": "server/integrations/kristal.mjs",
-      "sha256": "9c4e1c6cd68f6574d6de23638164ba9a8499bca7524e57148fd240de67a4503c",
-      "size": 16780
+      "sha256": "affb5779541347fe24fc7a4dc8b0df38662184630a282e6f8566e4f40d03301c",
+      "size": 20601
     },
     {
       "path": "server/integrations/reader-policy.mjs",
@@ -910,8 +920,8 @@
     },
     {
       "path": "SNAPSHOT_INDEX.txt",
-      "sha256": "e7e10175b2ed8bafceb789fd072628a5033cf42b14483a1d3ee651ebc9bd6756",
-      "size": 4595
+      "sha256": "b99cbabbba3910c054cca1ff4cf665413706cdca95203f3d998517cf8b1b83af",
+      "size": 7196
     },
     {
       "path": "src/components/AdaptiveProjectionView.svelte",
@@ -1092,6 +1102,11 @@
       "path": "tests/integrations.test.mjs",
       "sha256": "90a07e2f7e39334b5dfafb54e6d23f4133ea14ece9e1b1c687a0379e6e3f7760",
       "size": 14497
+    },
+    {
+      "path": "tests/kristal-kollection.test.mjs",
+      "sha256": "ae92bad26e1072ea2e48ebf4eabc5e1ab2f0f05c16d252cd78b9fb82724b6aca",
+      "size": 3557
     },
     {
       "path": "tests/kristal-v6-navigation.test.mjs",

@@ -1,9 +1,11 @@
 @echo off
 setlocal EnableExtensions
-title Konstellation - Theophile + Graphe biblique
+title Konstellation - Explorateur de Kristals
 
 rem ============================================================
-rem Konstellation portable launcher - corpus enrichi obligatoire
+rem Konstellation portable launcher
+rem - Kristal collection mode when ..\kristals\domains exists
+rem - Legacy enriched local corpus otherwise
 rem Place this file in the repository root, beside package.json.
 rem ============================================================
 
@@ -12,28 +14,52 @@ if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
 set "PORT=4321"
 set "LOCAL_PACK=%ROOT%\data\theophile-biblical.enriched.pack.json"
 set "LOCAL_LENSES=%ROOT%\lenses-enriched"
+set "BACKEND_CONFIG=%ROOT%\examples\integrations\kristal-kollection.json"
+set "COLLECTION_DOMAINS=%ROOT%\..\kristals\domains"
+set "MODE=local"
+if exist "%COLLECTION_DOMAINS%" if exist "%BACKEND_CONFIG%" set "MODE=kristals"
 
- echo.
+echo.
 echo ============================================================
-echo   Konstellation - Theophile + Graphe biblique
+echo   Konstellation - Explorateur de connaissances
 echo ============================================================
 echo Repo : %ROOT%
+if /I "%MODE%"=="kristals" (
+    echo Mode : Kristal-Kollection ^(selection dans l'interface^)
+    echo Collection : %ROOT%\..\kristals
+) else (
+    echo Mode : corpus local enrichi
+)
 echo.
 
 if not exist "%ROOT%\package.json" (
     echo [ERROR] package.json not found.
     goto :fail
 )
-if not exist "%LOCAL_PACK%" (
-    echo [ERROR] Enriched local pack not found:
-    echo         %LOCAL_PACK%
-    echo This launcher never falls back to an older external corpus.
-    goto :fail
-)
-if not exist "%LOCAL_LENSES%" (
-    echo [ERROR] Enriched lenses not found:
-    echo         %LOCAL_LENSES%
-    goto :fail
+
+if /I "%MODE%"=="kristals" (
+    if not exist "%BACKEND_CONFIG%" (
+        echo [ERROR] Kristal collection backend config not found:
+        echo         %BACKEND_CONFIG%
+        goto :fail
+    )
+    if not exist "%COLLECTION_DOMAINS%" (
+        echo [ERROR] Kristal collection not found:
+        echo         %COLLECTION_DOMAINS%
+        goto :fail
+    )
+) else (
+    if not exist "%LOCAL_PACK%" (
+        echo [ERROR] Enriched local pack not found:
+        echo         %LOCAL_PACK%
+        echo Place the Kristal collection in ..\kristals to use collection mode.
+        goto :fail
+    )
+    if not exist "%LOCAL_LENSES%" (
+        echo [ERROR] Enriched lenses not found:
+        echo         %LOCAL_LENSES%
+        goto :fail
+    )
 )
 
 rem Prefer the official Node install, otherwise use PATH.
@@ -60,15 +86,26 @@ for /f "tokens=1 delims=." %%M in ("%NODE_VERSION_NUM%") do set "NODE_MAJOR=%%M"
 
 echo Node : %NODE_VERSION%
 echo npm  : %NPM_VERSION%
-echo Pack : %LOCAL_PACK%
-echo Lenses: %LOCAL_LENSES%
+if /I "%MODE%"=="kristals" (
+    echo Backend : %BACKEND_CONFIG%
+) else (
+    echo Pack : %LOCAL_PACK%
+    echo Lenses: %LOCAL_LENSES%
+)
 echo.
 
 if not defined NODE_MAJOR goto :badnode
 if %NODE_MAJOR% LSS 24 goto :badnode
 
-set "KONSTELLATION_PACK=%LOCAL_PACK%"
-set "KONSTELLATION_LENSES=%LOCAL_LENSES%"
+if /I "%MODE%"=="kristals" (
+    set "KONSTELLATION_BACKEND_CONFIG=%BACKEND_CONFIG%"
+    set "KONSTELLATION_PACK="
+    set "KONSTELLATION_LENSES="
+) else (
+    set "KONSTELLATION_BACKEND_CONFIG="
+    set "KONSTELLATION_PACK=%LOCAL_PACK%"
+    set "KONSTELLATION_LENSES=%LOCAL_LENSES%"
+)
 set "KONSTELLATION_SA_CONFIG="
 
 rem Stop an old Node instance on the Konstellation port only.
@@ -90,14 +127,18 @@ if not exist "node_modules" (
 )
 
 echo.
-echo Building Konstellation with the bundled enriched corpus...
+echo Building Konstellation...
 call npm run build
 if errorlevel 1 (popd & goto :fail)
 
 echo.
 echo Starting Konstellation...
 echo URL : http://127.0.0.1:%PORT%
-echo Expected corpus title: Theophile v0.2.1 + Graphe biblique enrichi
+if /I "%MODE%"=="kristals" (
+    echo Kristal selector: enabled
+) else (
+    echo Corpus: Theophile v0.2.1 + Graphe biblique enrichi
+)
 echo.
 
 start "" /B powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command ^

@@ -25,7 +25,30 @@ Le lecteur doit :
 - déclarer `importRecord.losses` ;
 - ne jamais remplacer l'identité canonique.
 
-## 3. Packs normalisés
+## 3. Kristal-Kollection
+
+Pour une collection contenant plusieurs dossiers `domains/Kristal-*`, utiliser l'adaptateur
+`kristal-kollection-v1`. Il découvre le `*.kristal-state.json` du domaine sélectionné et active
+un profil de compatibilité v6 **de lecture seulement** :
+
+```json
+{
+  "adapter": "kristal-kollection-v1",
+  "directory": "/chemin/vers/Kristal-Kollection",
+  "kristal": "Biology"
+}
+```
+
+Ce profil accepte les variantes observées dans la collection (par exemple
+`content_hash.algorithm`, provenance absente et rôles de records additionnels). Les divergences
+de schéma ou d'identité sont conservées dans `compatibilityWarnings`; elles ne deviennent jamais
+une validation canonique. Les `assertion_id` dupliqués reçoivent des identifiants locaux uniques
+et sont signalés dans `projectionWarnings`.
+
+Le lecteur reconnaît les deux dispositions rencontrées dans la collection :
+`knowledge-base/corpus/*.kristal-state.json` et `knowledge-base/*.kristal-state.json`.
+
+## 4. Packs normalisés
 
 Un pack normalisé reste utile comme cache/index local. Il doit porter suffisamment de contexte pour savoir :
 
@@ -34,11 +57,11 @@ Un pack normalisé reste utile comme cache/index local. Il doit porter suffisamm
 - quelle policy a été appliquée si pertinente ;
 - quelles pertes ont eu lieu.
 
-## 4. Import ancien SES
+## 5. Import ancien SES
 
 L'import des Structured Epistemic States historiques reste un chemin de compatibilité. Toute conversion vers le modèle local doit être stricte et déclarer les structures non représentées.
 
-## 5. Validation
+## 6. Validation
 
 Avant utilisation :
 
@@ -52,7 +75,7 @@ Pour les imports :
 npm run pack:import -- source.json mapping.json output.pack.json
 ```
 
-## 6. Navigation après import
+## 7. Navigation après import
 
 Une fois le pack chargé, le profiler analyse automatiquement sa structure. Aucune Lens spécifique n'est obligatoire pour obtenir la navigation générique.
 

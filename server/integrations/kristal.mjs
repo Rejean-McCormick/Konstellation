@@ -374,12 +374,10 @@ export async function loadKristalHttp(config, base, { fetchImpl = fetch } = {}) 
   });
 }
 
-export async function loadKristalV6File(config, base) {
-  const root = path.resolve(base, config.directory || '.');
-  if (typeof config.state !== 'string') fail('INVALID_CONFIG', 'Fichier kristal_state v6 requis.');
-  const filename = safeFile(root, config.state);
+function loadKristalV6Path(config, filename) {
   const stat = fs.statSync(filename);
   const maxBytes = config.maxBytes || 256 * 1024 * 1024;
+  if (!stat.isFile()) fail('INVALID_CONFIG', 'Le kristal_state v6 doit être un fichier.', 422);
   if (stat.size > maxBytes) fail('PACK_LIMIT', 'Kristal v6 dépasse la taille admise.', 422);
   const bytes = fs.readFileSync(filename);
   const digest = sha(bytes);
@@ -391,11 +389,160 @@ export async function loadKristalV6File(config, base) {
   return importKristalV6State(state, config, digest);
 }
 
+export async function loadKristalV6File(config, base) {
+  const root = path.resolve(base, config.directory || '.');
+  if (typeof config.state !== 'string') fail('INVALID_CONFIG', 'Fichier kristal_state v6 requis.');
+  return loadKristalV6Path(config, safeFile(root, config.state));
+}
+
+function collectionKey(value) {
+  return String(value || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/^kristal[-_ ]*/i, '')
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+function stateFilesInDomain(domain) {
+  const candidates = [];
+  const roots = [
+    path.join(domain, 'knowledge-base', 'corpus'),
+    path.join(domain, 'knowledge-base'),
+  ];
+  for (const root of roots) {
+    if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) continue;
+    for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith('.kristal-state.json')) continue;
+      const filename = fs.realpathSync(path.join(root, entry.name));
+      if (!filename.startsWith(domain + path.sep))
+        fail('PACK_PATH_INVALID', 'État Kristal hors du domaine.', 422);
+      candidates.push(filename);
+    }
+    if (candidates.length) break;
+  }
+  return [...new Set(candidates)].sort();
+}
+
+function resolveKristalCollectionEntry(config, base) {
+  const root = fs.realpathSync(path.resolve(base, config.directory || '.'));
+  if (typeof config.state === 'string') {
+    const filename = safeFile(root, config.state);
+    const rel = path.relative(root, filename).split(path.sep);
+    const domainDirectory = rel[0] === (config.domainsDirectory || 'domains') ? rel[1] : path.basename(path.dirname(filename));
+    return { filename, domainDirectory };
+  }
+  if (typeof config.kristal !== 'string' || !config.kristal.trim())
+    fail('INVALID_CONFIG', 'Nom de Kristal requis pour kristal-kollection-v1.', 422);
+  const domainsPath = path.join(root, config.domainsDirectory || 'domains');
+  if (!fs.existsSync(domainsPath) || !fs.statSync(domainsPath).isDirectory())
+    fail('KRISTAL_NOT_FOUND', 'Répertoire domains de la collection introuvable.', 422);
+  const domains = fs.realpathSync(domainsPath);
+  if (!domains.startsWith(root + path.sep))
+    fail('PACK_PATH_INVALID', 'Répertoire domains hors de la collection.', 422);
+  const wanted = collectionKey(config.kristal);
+  const matches = fs.readdirSync(domains, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && collectionKey(entry.name) === wanted)
+    .map((entry) => path.join(domains, entry.name));
+  if (matches.length !== 1)
+    fail(
+      'KRISTAL_NOT_FOUND',
+      matches.length ? `Kristal ambigu: ${config.kristal}` : `Kristal introuvable: ${config.kristal}`,
+      422,
+    );
+  const domain = fs.realpathSync(matches[0]);
+  const states = stateFilesInDomain(domain);
+  if (states.length !== 1)
+    fail('KRISTAL_NOT_FOUND', `Un unique kristal_state était attendu; trouvé: ${states.length}.`, 422);
+  return { filename: states[0], domainDirectory: path.basename(domain) };
+}
+
+export function resolveKristalCollectionState(config, base) {
+  return resolveKristalCollectionEntry(config, base).filename;
+}
+
+export async function loadKristalCollection(config, base) {
+  const { filename, domainDirectory } = resolveKristalCollectionEntry(config, base);
+  const inferredTitle = domainDirectory.replace(/^Kristal-/, '').replace(/[-_]+/g, ' ');
+  const pack = loadKristalV6Path(
+    {
+      ...config,
+      compatibilityMode: config.compatibilityMode || 'collection',
+      title: config.title || `Kristal · ${inferredTitle}`,
+    },
+    filename,
+  );
+  pack.integration = {
+    ...pack.integration,
+    adapter: 'kristal-kollection-v1',
+    collection: {
+      kristal: config.kristal || domainDirectory,
+      domainDirectory,
+      stateFile: path.basename(filename),
+    },
+  };
+  return pack;
+}
+
+export function listKristalCollection(config, base) {
+  const root = fs.realpathSync(path.resolve(base, config.directory || '.'));
+  const domainsPath = path.join(root, config.domainsDirectory || 'domains');
+  if (!fs.existsSync(domainsPath) || !fs.statSync(domainsPath).isDirectory())
+    fail('KRISTAL_NOT_FOUND', 'Répertoire domains de la collection introuvable.', 422);
+  const domains = fs.realpathSync(domainsPath);
+  if (!domains.startsWith(root + path.sep))
+    fail('PACK_PATH_INVALID', 'Répertoire domains hors de la collection.', 422);
+  return fs.readdirSync(domains, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => {
+      const domain = fs.realpathSync(path.join(domains, entry.name));
+      if (!domain.startsWith(domains + path.sep))
+        fail('PACK_PATH_INVALID', 'Domaine Kristal hors de la collection.', 422);
+      const states = stateFilesInDomain(domain);
+      const id = entry.name.replace(/^Kristal[-_ ]*/i, '') || entry.name;
+      const label = id.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+      const available = states.length === 1;
+      return {
+        id,
+        label,
+        domainDirectory: entry.name,
+        available,
+        ...(available ? { stateFile: path.basename(states[0]) } : {
+          reason: states.length ? `${states.length} états Kristal trouvés.` : 'Aucun état *.kristal-state.json lisible.',
+        }),
+      };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr'));
+}
+
+export function listIntegrationKristals(file) {
+  const config = readJson(file);
+  if (config.adapter !== 'kristal-kollection-v1')
+    return { selectable: false, defaultKristal: null, items: [] };
+  const base = path.dirname(path.resolve(file));
+  const items = listKristalCollection(config, base);
+  const available = items.filter((item) => item.available);
+  const configured = available.find((item) => collectionKey(item.id) === collectionKey(config.kristal));
+  return {
+    selectable: true,
+    defaultKristal: configured?.id || available[0]?.id || null,
+    items,
+  };
+}
+
+export async function loadIntegrationKristal(file, kristal, options) {
+  const config = readJson(file), base = path.dirname(path.resolve(file));
+  if (config.adapter !== 'kristal-kollection-v1')
+    fail('UNSUPPORTED_ADAPTER', 'Le backend configuré n’est pas une Kristal-Kollection.', 422);
+  return loadKristalCollection({ ...config, kristal, title: undefined }, base, options);
+}
+
 export async function loadIntegration(file, options) {
   const config = readJson(file),
     base = path.dirname(path.resolve(file));
   if (config.adapter === 'kristal-runtime-pack-v1') return loadKristalDirectory(config, base);
   if (config.adapter === 'kristal-http-query-v1') return loadKristalHttp(config, base, options);
   if (config.adapter === 'kristal-state-v6') return loadKristalV6File(config, base);
+  if (config.adapter === 'kristal-kollection-v1') return loadKristalCollection(config, base);
   fail('UNSUPPORTED_ADAPTER', 'Adaptateur Kristal inconnu.');
 }

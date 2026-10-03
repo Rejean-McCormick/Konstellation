@@ -18,6 +18,7 @@
   export let inspect = () => {};
   export let fallback = () => {};
   export let authToken = '';
+  export let kristal = '';
 
   let data = null, busy = false, error = '', controller, requestedKey = '', cursor = null;
   let nodeBudget = 280, edgeBudget = 420;
@@ -35,7 +36,7 @@
     spatial: SpatialView,
   };
 
-  $: requestBase = query && recipe ? { query, lensRef, recipeId: recipe.id, selectedEntityId } : null;
+  $: requestBase = query && recipe ? { query, lensRef, recipeId: recipe.id, selectedEntityId, kristal } : null;
   $: requestKey = requestBase ? JSON.stringify(requestBase) : '';
   $: if (requestKey && requestKey !== requestedKey) { cursor = null; nodeBudget = 280; edgeBudget = 420; load(requestKey, null); }
   $: Renderer = components[data?.rendererId] || components[recipe?.rendererId] || null;
@@ -44,8 +45,9 @@
   async function load(key, nextCursor) {
     controller?.abort(); controller = new AbortController(); requestedKey = key; busy = true; error = '';
     try {
-      const payload = { ...JSON.parse(key), ...(nextCursor ? { cursor: nextCursor } : {}), pageSize: 160, nodeBudget, edgeBudget };
-      const response = await fetch('/api/navigation/project', { method:'POST', headers:{'Content-Type':'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {})}, body:JSON.stringify(payload), signal:controller.signal });
+      const { kristal: _kristal, ...request } = JSON.parse(key);
+      const payload = { ...request, ...(nextCursor ? { cursor: nextCursor } : {}), pageSize: 160, nodeBudget, edgeBudget };
+      const response = await fetch('/api/navigation/project', { method:'POST', headers:{'Content-Type':'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}), ...(kristal ? { 'X-Konstellation-Kristal': kristal } : {})}, body:JSON.stringify(payload), signal:controller.signal });
       const value = await response.json();
       if (!response.ok) throw Error(value.error?.message || 'Projection adaptative indisponible.');
       if (requestedKey === key) { data = value; cursor = value.nextCursor || null; }

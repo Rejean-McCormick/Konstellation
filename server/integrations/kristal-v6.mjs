@@ -3,8 +3,10 @@ import path from 'node:path';
 import { ROOT, ajv, fail } from '../contracts.mjs';
 import { readJson, hash, validatePack } from '../pack.mjs';
 
-const schema = readJson(path.join(ROOT, 'contracts/upstream/kristal-state-v6.schema.json'));
-const validateState = ajv.compile(schema);
+const strictSchema = readJson(path.join(ROOT, 'contracts/upstream/kristal-state-v6.schema.json'));
+const compatibleSchema = readJson(path.join(ROOT, 'contracts/upstream/kristal-state-v6-compatible.schema.json'));
+const validateStrictState = ajv.compile(strictSchema);
+const validateCompatibleState = ajv.compile(compatibleSchema);
 
 const SUPPORTED_STATUS = new Set([
   'hypothesis', 'claimed', 'sourced', 'disputed', 'reviewed', 'validated',
@@ -41,17 +43,57 @@ export function kristalV6Identity(state) {
   };
 }
 
-export function verifyKristalV6State(state, { requireIdentity = false } = {}) {
-  if (!validateState(state))
-    fail('INVALID_KRISTAL_STATE', ajv.errorsText(validateState.errors));
+export function verifyKristalV6State(
+  state,
+  { requireIdentity = false, compatibilityMode = 'strict' } = {},
+) {
+  const strictValid = validateStrictState(state);
+  const validationWarnings = [];
+  if (!strictValid) {
+    if (compatibilityMode !== 'collection' || !validateCompatibleState(state)) {
+      const errors = compatibilityMode === 'collection' ? validateCompatibleState.errors : validateStrictState.errors;
+      fail('INVALID_KRISTAL_STATE', ajv.errorsText(errors));
+    }
+    validationWarnings.push({
+      code: 'KRISTAL_V6_COMPATIBILITY_PROFILE',
+      message: ajv.errorsText(validateStrictState.errors),
+    });
+  }
+
   const identity = kristalV6Identity(state);
+  const declaredAlgorithm = state.content_hash?.alg || state.content_hash?.algorithm || null;
+  const declaredHash = state.content_hash?.value || null;
+  const identityWarnings = [];
+  if (declaredAlgorithm && declaredAlgorithm !== 'sha256')
+    identityWarnings.push({ code: 'UNSUPPORTED_HASH_ALGORITHM', value: declaredAlgorithm });
   if (state.state_id && state.state_id !== identity.stateId)
-    fail('INTEGRITY_MISMATCH', 'Kristal v6 state_id ne correspond pas au contenu canonique.');
-  if (state.content_hash && (state.content_hash.alg !== 'sha256' || state.content_hash.value !== identity.sha256))
-    fail('INTEGRITY_MISMATCH', 'Kristal v6 content_hash ne correspond pas au contenu canonique.');
+    identityWarnings.push({ code: 'STATE_ID_MISMATCH', declared: state.state_id, computed: identity.stateId });
+  if (declaredHash && declaredHash !== identity.sha256)
+    identityWarnings.push({ code: 'CONTENT_HASH_MISMATCH', declared: declaredHash, computed: identity.sha256 });
   if (requireIdentity && (!state.state_id || !state.content_hash))
-    fail('INTEGRITY_MISMATCH', 'Identité canonique v6 requise mais absente.');
-  return identity;
+    identityWarnings.push({ code: 'IDENTITY_REQUIRED_BUT_MISSING' });
+
+  if (identityWarnings.length && compatibilityMode !== 'collection') {
+    const warning = identityWarnings[0];
+    if (warning.code === 'IDENTITY_REQUIRED_BUT_MISSING')
+      fail('INTEGRITY_MISMATCH', 'Identité canonique v6 requise mais absente.');
+    if (warning.code === 'UNSUPPORTED_HASH_ALGORITHM')
+      fail('INTEGRITY_MISMATCH', 'Algorithme content_hash Kristal v6 non pris en charge.');
+    fail('INTEGRITY_MISMATCH', 'Identité Kristal v6 déclarée ne correspond pas au contenu canonique.');
+  }
+
+  const declaredIdentity = Boolean(state.state_id || state.content_hash);
+  return {
+    ...identity,
+    validationProfile: strictValid ? 'strict-v6' : 'collection-compatible-v6',
+    validationWarnings,
+    identityWarnings,
+    identityVerified:
+      declaredIdentity &&
+      identityWarnings.length === 0 &&
+      (!state.state_id || state.state_id === identity.stateId) &&
+      (!declaredHash || declaredHash === identity.sha256),
+  };
 }
 
 function statementRef(value) {
@@ -81,12 +123,37 @@ function predicateLabel(predicate) {
 }
 
 function objectProjection(value) {
-  if (!value || typeof value !== 'object') return { supported: false, reason: 'statement object absent' };
-  if (typeof value.id === 'string') return { supported: true, kind: 'entity', value: entityId(value.id), sourceRef: value.id };
-  if (!('value' in value)) return { supported: false, reason: `value absent pour kind=${String(value.kind)}` };
-  if (typeof value.value === 'string') return { supported: true, kind: 'string', value: value.value };
-  if (Number.isSafeInteger(value.value)) return { supported: true, kind: 'integer', value: value.value };
-  return { supported: false, reason: `kind=${String(value.kind)} / valeur non projetable sans perte` };
+  if (!value || typeof value !== 'object')
+    return { supported: false, reason: 'statement object absent' };
+  if (typeof value.id === 'string')
+    return {
+      supported: true,
+      kind: 'entity',
+      value: entityId(value.id),
+      sourceRef: value.id,
+      sourceKind: value.kind || 'item',
+      encoding: 'entity-ref',
+    };
+  if (!('value' in value))
+    return { supported: false, reason: `value absent pour kind=${String(value.kind)}` };
+  if (typeof value.value === 'string')
+    return { supported: true, kind: 'string', value: value.value, sourceKind: value.kind || 'string', encoding: 'text' };
+  if (Number.isSafeInteger(value.value))
+    return { supported: true, kind: 'integer', value: value.value, sourceKind: value.kind || 'integer', encoding: 'integer' };
+  if (value.value === null || typeof value.value === 'boolean' || typeof value.value === 'number' || Array.isArray(value.value) || typeof value.value === 'object') {
+    try {
+      return {
+        supported: true,
+        kind: 'string',
+        value: canonicalizeV6(value.value),
+        sourceKind: value.kind || typeof value.value,
+        encoding: 'canonical-json',
+      };
+    } catch {
+      return { supported: false, reason: `kind=${String(value.kind)} / valeur JSON non projetable` };
+    }
+  }
+  return { supported: false, reason: `kind=${String(value.kind)} / valeur non projetable` };
 }
 
 function sourceEntry(ref) {
@@ -201,7 +268,10 @@ function navigationHintsFromState(state, config) {
 }
 
 export function importKristalV6State(state, config = {}, inputSha256 = 'not-provided') {
-  const identity = verifyKristalV6State(state, { requireIdentity: config.requireIdentity === true });
+  const identity = verifyKristalV6State(state, {
+    requireIdentity: config.requireIdentity === true,
+    compatibilityMode: config.compatibilityMode === 'collection' ? 'collection' : 'strict',
+  });
   const sourceMap = new Map();
   for (const ref of state.source_refs || []) {
     const item = sourceEntry(ref);
@@ -212,29 +282,65 @@ export function importKristalV6State(state, config = {}, inputSha256 = 'not-prov
     if (!item || !sourceMap.has(item.key)) return null;
     return sourceMap.get(item.key).id;
   };
+  const ensureSourceId = (ref) => {
+    const item = sourceEntry(ref);
+    if (!item) return null;
+    if (!sourceMap.has(item.key))
+      sourceMap.set(item.key, { ...item.entry, inferredFromAssertion: true });
+    return sourceMap.get(item.key).id;
+  };
 
-  const refs = new Set();
+  const refs = new Map();
   for (const assertion of state.assertions || []) {
     const subjectRef = statementRef(assertion.statement?.subject);
     const objectRef = statementRef(assertion.statement?.object);
-    if (subjectRef) refs.add(subjectRef);
-    if (objectRef) refs.add(objectRef);
+    const remember = (ref, node) => {
+      if (!ref) return;
+      const embedded = node?.value && typeof node.value === 'object' && typeof node.value.label === 'string'
+        ? node.value.label
+        : null;
+      if (!refs.has(ref) || embedded) refs.set(ref, embedded || refs.get(ref) || null);
+    };
+    remember(subjectRef, assertion.statement?.subject);
+    remember(objectRef, assertion.statement?.object);
   }
-  const entities = [...refs].sort().map((ref) => ({
+  const entities = [...refs.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([ref, embeddedLabel]) => ({
     id: entityId(ref),
     type: 'item',
-    label: config.entityLabels?.[ref] || displayLabel(ref),
+    label: String(config.entityLabels?.[ref] || embeddedLabel || displayLabel(ref)).slice(0, 300),
     upstreamRef: ref,
   }));
 
   const relationMap = new Map();
   const assertions = [];
   const losses = [];
-  const normalizedAssertionIds = new Map((state.assertions || []).map((upstream, index) => {
-    const raw = upstream.assertion_id || `${identity.stateId}:${index}`;
-    return [String(raw), safeId(upstream.assertion_id) ? upstream.assertion_id : `assertion:${sha(raw).slice(0, 24)}`];
-  }));
-  const mapAssertionRef = (ref) => normalizedAssertionIds.get(String(ref)) || null;
+  const projectionWarnings = [];
+  const assertionIdBuckets = new Map();
+  const assertionIdsByIndex = [];
+  for (const [index, upstream] of (state.assertions || []).entries()) {
+    const raw = String(upstream.assertion_id || `${identity.stateId}:${index}`);
+    const preferred = safeId(upstream.assertion_id)
+      ? upstream.assertion_id
+      : `assertion:${sha(raw).slice(0, 24)}`;
+    const bucket = assertionIdBuckets.get(raw) || [];
+    const normalized = bucket.length === 0
+      ? preferred
+      : `assertion:${sha(`${raw}:${hash(upstream)}:${bucket.length}`).slice(0, 24)}`;
+    bucket.push(normalized);
+    assertionIdBuckets.set(raw, bucket);
+    assertionIdsByIndex[index] = normalized;
+  }
+  for (const [upstreamId, ids] of assertionIdBuckets) {
+    if (ids.length > 1) {
+      projectionWarnings.push({
+        code: 'DUPLICATE_ASSERTION_ID',
+        upstreamId,
+        count: ids.length,
+        referenceResolution: 'first-occurrence',
+      });
+    }
+  }
+  const mapAssertionRef = (ref) => assertionIdBuckets.get(String(ref))?.[0] || null;
   let generatedAssertion = 0;
   for (const [index, upstream] of (state.assertions || []).entries()) {
     const subjectRef = statementRef(upstream.statement?.subject);
@@ -261,11 +367,11 @@ export function importKristalV6State(state, config = {}, inputSha256 = 'not-prov
           : ['exists', 'missing_in_view'],
       });
     }
-    const evidenceRefs = (upstream.evidence_refs || []).map(sourceIdFor).filter(Boolean);
+    const evidenceRefs = (upstream.evidence_refs || []).map(ensureSourceId).filter(Boolean);
     const status = SUPPORTED_STATUS.has(upstream.assertion_status) ? upstream.assertion_status : 'unspecified';
     const applicability = { ...(state.applicability || {}), ...(upstream.applicability || {}) };
     assertions.push({
-      id: normalizedAssertionIds.get(String(upstream.assertion_id || `${identity.stateId}:${index}`)),
+      id: assertionIdsByIndex[index],
       subject: entityId(subjectRef),
       relation: relationId,
       value: object.value,
@@ -288,8 +394,10 @@ export function importKristalV6State(state, config = {}, inputSha256 = 'not-prov
       applicability,
       evidenceRefs: uniqueRefs(upstream.evidence_refs || [], sourceIdFor, mapAssertionRef),
       provenanceRefs: uniqueRefs(upstream.provenance_refs || [], sourceIdFor, mapAssertionRef),
-      upstreamContractRef: schema.$id,
+      upstreamContractRef: strictSchema.$id,
       upstreamPayload: upstream,
+      sourceValueKind: object.sourceKind,
+      valueEncoding: object.encoding,
       projectionKind: 'kristal-v6-derived-query-record',
     });
     generatedAssertion += 1;
@@ -348,8 +456,11 @@ export function importKristalV6State(state, config = {}, inputSha256 = 'not-prov
         schemaVersion: state.schema_version,
         artifactStatus: state.artifact_status,
         stateId: state.state_id || identity.stateId,
-        identityVerified: Boolean(state.state_id || state.content_hash),
+        identityVerified: identity.identityVerified,
         derivedView: true,
+        validationProfile: identity.validationProfile,
+        compatibilityWarnings: [...identity.validationWarnings, ...identity.identityWarnings],
+        projectionWarnings,
         structuralSummary: summary,
         provenanceCount: Array.isArray(state.provenance) ? state.provenance.length : 0,
       },
@@ -358,9 +469,12 @@ export function importKristalV6State(state, config = {}, inputSha256 = 'not-prov
       inputSha256,
       stateId: state.state_id || identity.stateId,
       artifactStatus: state.artifact_status,
-      importer: 'konstellation-kristal-v6:1.0.0',
+      importer: 'konstellation-kristal-v6:1.1.0',
       canonicalizationProfile: identity.canonicalizationProfile,
-      identityVerified: Boolean(state.state_id || state.content_hash),
+      identityVerified: identity.identityVerified,
+      validationProfile: identity.validationProfile,
+      compatibilityWarnings: [...identity.validationWarnings, ...identity.identityWarnings],
+      projectionWarnings,
       projectedAssertions: generatedAssertion,
       unprojectedAssertions: losses.length,
       losses,

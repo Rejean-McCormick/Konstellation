@@ -4,6 +4,8 @@
   export let entityId = null;
   export let capabilities = {};
   export let disabled = false;
+  export let authToken = '';
+  export let kristal = '';
   let action = 'query',
     language = 'fr',
     locale = 'fr-CA',
@@ -14,7 +16,7 @@
     controller;
   const isOpaqueRef = (value) => /^sha256:[0-9a-f]{64}$/i.test(String(value || ''));
   $: visibleSourceRefs = (result?.source_refs || []).filter((ref) => !isOpaqueRef(ref));
-  $: identity = JSON.stringify({ query, cursor, entityId, action, language, locale });
+  $: identity = JSON.stringify({ query, cursor, entityId, action, language, locale, kristal });
   $: if (identity) {
     controller?.abort();
     busy = false;
@@ -31,7 +33,7 @@
     try {
       const response = await fetch(render ? '/api/sa' : '/api/sa/request', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}), ...(kristal ? { 'X-Konstellation-Kristal': kristal } : {}) },
         body: JSON.stringify({ query, cursor, entityId, action, language, locale }),
         signal: controller.signal,
       });

@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-10-03 — Sélecteur de Kristals
+
+- ajout du sélecteur `KRISTAL` dans l’interface pour les backends `kristal-kollection-v1` ;
+- découverte des domaines lisibles et affichage désactivé des domaines sans état exploitable ;
+- sélection isolée par requête via `X-Konstellation-Kristal`, avec cache de runtime par Kristal et rôles ;
+- conservation du Kristal dans le navigateur et dans `ExplorationState.kristalRef` ;
+- `Konstellation_Launcher.cmd` active automatiquement le mode collection quand `../kristals/domains` existe.
+
+## Kristal-Kollection compatibility — 2026-10-03
+
+- Ajout de `kristal-kollection-v1` pour sélectionner directement un domaine `Kristal-*` dans une collection.
+- Profil v6 de compatibilité en lecture pour les variantes de collection (`content_hash.algorithm`, provenance optionnelle, rôles additionnels), avec diagnostics explicites sans promotion en canon.
+- Projection des valeurs JSON/boolean/nombre non entier vers une représentation JSON canonique lorsque le registre local ne possède pas de type natif équivalent.
+- Gestion déterministe des `assertion_id` upstream dupliqués avec identifiants locaux uniques et `projectionWarnings`.
+- Découverte des états dans les dispositions `knowledge-base/corpus/` et `knowledge-base/`.
+
 ## 1.0.0-rc.2 — 2026-10-02
 
 - Durcissement final du contrat `navigation-projection` 1.0 : formes internes strictes par famille, liaison `projectionKind`/renderer/recipe, `nextCursor`/`totalCandidates` explicites et fixtures positives/négatives hors-ligne.

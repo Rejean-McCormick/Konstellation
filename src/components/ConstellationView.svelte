@@ -10,6 +10,7 @@
   export let limit = 8;
   export let inspect = () => {};
   export let authToken = '';
+  export let kristal = '';
 
   const VIEW_WIDTH = 1000;
   const VIEW_HEIGHT = 620;
@@ -29,7 +30,7 @@
 
   $: current = path.at(-1) || null;
   $: requestKey = current
-    ? JSON.stringify({ context, lensRef, focus: current.focus, groupId: current.groupId, limit })
+    ? JSON.stringify({ context, lensRef, focus: current.focus, groupId: current.groupId, limit, kristal })
     : '';
   $: if (requestKey && requestKey !== requestedKey) load(requestKey, path.length);
 
@@ -68,10 +69,10 @@
     busy = true;
     error = '';
     try {
-      const payload = JSON.parse(key);
+      const { kristal: _kristal, ...payload } = JSON.parse(key);
       const response = await fetch('/api/constellation', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}) },
+        headers: { 'Content-Type': 'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}), ...(kristal ? { 'X-Konstellation-Kristal': kristal } : {}) },
         body: JSON.stringify(payload),
         signal: controller.signal,
       });

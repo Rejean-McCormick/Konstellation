@@ -2,7 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadIntegration } from './integrations/kristal.mjs';
+import { loadIntegration, loadIntegrationKristal, listIntegrationKristals } from './integrations/kristal.mjs';
 import { SemantikAdapter } from './integrations/semantik.mjs';
 import { Engine } from './engine.mjs';
 import { loadPack, readJson } from './pack.mjs';
@@ -69,6 +69,7 @@ export function createServer({
   semantik = new SemantikAdapter(),
   dist = path.join(ROOT,'dist'),
   config = loadConfig(),
+  collection = null,
 } = {}) {
   lenses ||= loadLenses(engine);
   // Readiness means more than “the JSON parsed”: build the default policy scope
@@ -78,20 +79,51 @@ export function createServer({
   engine.scope(readinessContext);
   engine.visibleProfiler(readinessContext);
   const allowRate = rateLimiter(config.rateLimitPerMinute);
-  const engineByRoles = new Map([[engine.roles.join(','), engine]]);
-  const engineFor = (principal) => {
-    const roles = [...new Set(principal?.roles || ['public'])].sort();
-    const key = roles.join(',');
-    if (!engineByRoles.has(key)) {
-      engineByRoles.set(key, new Engine(engine.pack, {
-        roles,
-        secret: engine.secret,
-        maxOperations: engine.limits.maxOperations,
-        deadlineMs: engine.limits.deadlineMs,
-        cacheSize: engine.cacheSize,
-      }));
+  const runtimeCache = new Map();
+  const packCache = new Map(collection?.defaultKristal ? [[collection.defaultKristal, Promise.resolve(engine.pack)]] : []);
+  const collectionItems = new Map((collection?.items || []).map((item) => [item.id, item]));
+  const packFor = async (kristal) => {
+    if (!kristal) return engine.pack;
+    if (!packCache.has(kristal)) {
+      const promise = collection.loadPack(kristal);
+      packCache.set(kristal, promise);
+      promise.catch(() => packCache.delete(kristal));
     }
-    return engineByRoles.get(key);
+    return packCache.get(kristal);
+  };
+  const requestedKristal = (req) => {
+    if (!collection?.selectable) return null;
+    const raw = req.headers['x-konstellation-kristal'];
+    const value = Array.isArray(raw) ? raw[0] : raw;
+    const id = value ? String(value) : collection.defaultKristal;
+    if (!id || id.length > 200 || !collectionItems.get(id)?.available)
+      fail('KRISTAL_NOT_FOUND', 'Kristal sélectionné indisponible.', 422);
+    return id;
+  };
+  const runtimeFor = async (principal, kristal = null) => {
+    const roles = [...new Set(principal?.roles || ['public'])].sort();
+    const corpusKey = kristal || '__default__';
+    const key = `${corpusKey}|${roles.join(',')}`;
+    if (!runtimeCache.has(key)) {
+      const promise = (async () => {
+        const pack = await packFor(kristal);
+        const canReuseDefault = (!kristal || kristal === collection?.defaultKristal) && roles.join(',') === engine.roles.join(',');
+        const selectedEngine = canReuseDefault
+          ? engine
+          : new Engine(pack, {
+              roles,
+              secret: engine.secret,
+              maxOperations: engine.limits.maxOperations,
+              deadlineMs: engine.limits.deadlineMs,
+              cacheSize: engine.cacheSize,
+            });
+        const selectedLenses = selectedEngine === engine ? lenses : loadLenses(selectedEngine);
+        return { engine: selectedEngine, lenses: selectedLenses };
+      })();
+      runtimeCache.set(key, promise);
+      promise.catch(() => runtimeCache.delete(key));
+    }
+    return runtimeCache.get(key);
   };
   const server = http.createServer(async (req,res) => {
     const started=performance.now(); const rid=requestId(req.headers['x-request-id']);
@@ -116,16 +148,29 @@ export function createServer({
         if(!allowRate(`${remote}|preauth`)) fail('RATE_LIMITED','Trop de requêtes.',429);
         principal = authenticate(req, config);
         if(!allowRate(`${remote}|${principal.id}`)) fail('RATE_LIMITED','Trop de requêtes.',429);
-        const requestEngine = principal ? engineFor(principal) : engine;
         if(req.method==='GET' && url.pathname==='/api/metrics') { requireScope(principal,'metrics'); return send(metricsSnapshot()); }
+        if(req.method==='GET' && url.pathname==='/api/kristals') {
+          requireScope(principal,'read');
+          const current = requestedKristal(req);
+          return send({
+            selectable: Boolean(collection?.selectable),
+            current,
+            defaultKristal: collection?.defaultKristal || null,
+            items: collection?.items || [],
+          });
+        }
+        const selectedKristal = requestedKristal(req);
+        const runtime = await runtimeFor(principal, selectedKristal);
+        const requestEngine = runtime.engine;
+        const requestLenses = runtime.lenses;
         if(req.method==='GET' && ['/api/bootstrap','/api/capabilities'].includes(url.pathname)) {
           requireScope(principal,'read');
           const requestedPolicyRef=url.searchParams.get('readerPolicyRef');
           const bootContext=requestedPolicyRef ? requestEngine.context(requestedPolicyRef) : requestEngine.context();
           // scope() validates the requested policy before any registry/Lens metadata is exposed.
           requestEngine.scope(bootContext);
-          const communication=await semantik.capabilities(); const bootStart=performance.now(); const boot=requestEngine.bootstrap(lenses,bootContext); observe('bootstrap_duration_ms',performance.now()-bootStart); boot.capabilities.sa=communication.available;
-          return send(url.pathname==='/api/bootstrap'?{...boot,communication,principal:{id:principal.id,roles:principal.roles,scopes:principal.scopes}}:{...boot.capabilities,communication});
+          const communication=await semantik.capabilities(); const bootStart=performance.now(); const boot=requestEngine.bootstrap(requestLenses,bootContext); observe('bootstrap_duration_ms',performance.now()-bootStart); boot.capabilities.sa=communication.available;
+          return send(url.pathname==='/api/bootstrap'?{...boot,communication,kristal:selectedKristal,principal:{id:principal.id,roles:principal.roles,scopes:principal.scopes}}:{...boot.capabilities,communication});
         }
         if(req.method!=='POST') fail('NOT_FOUND','Endpoint introuvable.',404);
         if(url.pathname.startsWith('/api/sa')) requireScope(principal,'sa'); else requireScope(principal,'read');
@@ -137,16 +182,16 @@ export function createServer({
           }
           case '/api/facets': return send(requestEngine.facets(b.query,b.relations));
           case '/api/entity': return send(requestEngine.entity(b.id,b.context));
-          case '/api/constellation': return send(requestEngine.constellation(b,lenses));
+          case '/api/constellation': return send(requestEngine.constellation(b,requestLenses));
           case '/api/navigation/plan': {
-            const t=performance.now(); const value=requestEngine.navigationPlan(b,lenses); observe('navigation_planning_duration_ms',performance.now()-t); increment('navigation_recipe_selected_total',{recipe:value.primaryRecipeId}); return send(value);
+            const t=performance.now(); const value=requestEngine.navigationPlan(b,requestLenses); observe('navigation_planning_duration_ms',performance.now()-t); increment('navigation_recipe_selected_total',{recipe:value.primaryRecipeId}); return send(value);
           }
           case '/api/navigation/project': {
-            const t=performance.now(); const value=requestEngine.navigationProjection(b,lenses); observe('navigation_projection_duration_ms',performance.now()-t,{renderer:value.rendererId}); increment('navigation_projection_total',{recipe:value.recipeId,renderer:value.rendererId,truncated:Boolean(value.truncated)}); return send(value);
+            const t=performance.now(); const value=requestEngine.navigationProjection(b,requestLenses); observe('navigation_projection_duration_ms',performance.now()-t,{renderer:value.rendererId}); increment('navigation_projection_total',{recipe:value.recipeId,renderer:value.rendererId,truncated:Boolean(value.truncated)}); return send(value);
           }
           case '/api/evidence': return send(requestEngine.evidence(b.ids,b.context));
           case '/api/validate-state': {
-            const migrated=requestEngine.migrateExplorationState(b,lenses); requestEngine.check(migrated.state.query); requestEngine.scope(migrated.state.query.context);
+            const migrated=requestEngine.migrateExplorationState(b,requestLenses); requestEngine.check(migrated.state.query); requestEngine.scope(migrated.state.query.context);
             return send({valid:true,...migrated});
           }
           case '/api/sa/request': return send(semantik.request(requestEngine,b));
@@ -177,10 +222,16 @@ export function createServer({
 
 if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1])){
   const config=loadConfig();
-  const pack=process.env.KONSTELLATION_BACKEND_CONFIG?await loadIntegration(process.env.KONSTELLATION_BACKEND_CONFIG):loadPack();
+  const backendConfig=process.env.KONSTELLATION_BACKEND_CONFIG || null;
+  const pack=backendConfig?await loadIntegration(backendConfig):loadPack();
+  const selection=backendConfig?listIntegrationKristals(backendConfig):{selectable:false,defaultKristal:null,items:[]};
+  const collection=selection.selectable?{
+    ...selection,
+    loadPack:(kristal)=>loadIntegrationKristal(backendConfig,kristal),
+  }:null;
   const engine=new Engine(pack,{roles:(process.env.KONSTELLATION_ROLES||'public').split(','),...(process.env.KONSTELLATION_CURSOR_SECRET?{secret:process.env.KONSTELLATION_CURSOR_SECRET}:{})});
   const semantik=new SemantikAdapter(process.env.KONSTELLATION_SA_CONFIG?readJson(process.env.KONSTELLATION_SA_CONFIG):null);
-  const server=createServer({engine,semantik,config});
+  const server=createServer({engine,semantik,config,collection});
   const shutdown=(signal)=>{log('info','shutdown_requested',{signal}); server.close(()=>process.exit(0)); setTimeout(()=>process.exit(1),5000).unref();};
   process.on('SIGTERM',()=>shutdown('SIGTERM')); process.on('SIGINT',()=>shutdown('SIGINT'));
   server.listen(config.port,config.host,()=>log('info','server_started',{host:config.host,port:config.port,profile:config.deploymentProfile}));

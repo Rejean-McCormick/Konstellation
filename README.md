@@ -48,6 +48,12 @@ npm start
 
 Par défaut, le profil `local` écoute sur `127.0.0.1:4321`.
 
+### Sélection des Kristals
+
+Si une Kristal-Kollection est placée dans `../kristals` (à côté du dossier `Konstellation`), `Konstellation_Launcher.cmd` démarre automatiquement avec `examples/integrations/kristal-kollection.json`. L’interface affiche alors un sélecteur **KRISTAL** dans le bandeau de contexte. Le dernier Kristal choisi est conservé dans le navigateur et les explorations exportées/partagées mémorisent aussi leur `kristalRef`.
+
+Les domaines qui ne contiennent pas exactement un fichier `*.kristal-state.json` lisible restent visibles mais désactivés dans le sélecteur. Le choix est transmis par requête (`X-Konstellation-Kristal`) : il ne modifie pas globalement le corpus d’une instance partagée.
+
 ## Vérification
 
 ```bash
