@@ -47,6 +47,7 @@ test('hidden-only structural relations cannot leak through navigation affordance
 test('policy-scoped navigation suppresses presentation hints that could reveal hidden structure', () => {
   const pack = fixture();
   pack.navigationHints = {
+    schemaVersion: '1.0',
     preferredRecipes: ['timeline'],
     recipeLabels: { timeline: 'Chronologie du projet SECRET' },
     affordances: { temporal: { score: 1, reason: 'structure sensible' } },

@@ -279,11 +279,15 @@ test('Reader Policy cannot leak hidden-only entities through query, bootstrap or
   const research = [...engine.policies].find(([, policy]) => policy.id === 'demo:research')?.[0];
   const documentedContext = engine.context(documented);
   const researchContext = engine.context(research);
-  const documentedQuery = { ...base(engine), context: documentedContext, pageSize: 100 };
-  const researchQuery = { ...base(engine), context: researchContext, pageSize: 100 };
-  assert(!engine.query(documentedQuery).rows.some((row) => row.entityId === hiddenId));
+  const targeted = (context) => ({
+    ...base(engine, { entityType: 'human', ids: [hiddenId], filters: [], links: [] }, 1),
+    context,
+  });
+  // Hidden identifiers fail closed just like unavailable identities; the
+  // permissive research policy can resolve the same identity explicitly.
+  assert.throws(() => engine.query(targeted(documentedContext)), { code: 'TYPE_MISMATCH' });
   assert(!engine.bootstrap([], documentedContext).entities.some((entity) => entity.id === hiddenId));
   assert.throws(() => engine.entity(hiddenId, documentedContext), /Entité indisponible/);
-  assert(engine.query(researchQuery).rows.some((row) => row.entityId === hiddenId));
+  assert.equal(engine.query(targeted(researchContext)).rows[0]?.entityId, hiddenId);
   assert(engine.bootstrap([], researchContext).entities.some((entity) => entity.id === hiddenId));
 });

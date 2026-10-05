@@ -44,10 +44,12 @@ test('qualifier navigation makes a theme a center without inventing an assertion
     { focus: { kind: 'entity', id: 'demo:p000' }, context, lensRef: 'type:human', limit: 8 },
     [],
   );
-  const thought = person.satellites.find((x) => x.label === 'Pensée');
-  assert(thought);
+  // The generic type lens exposes qualifier groups by stable group id;
+  // presentation labels are intentionally free to evolve.
+  const themeGroup = person.satellites.find((x) => x.target.groupId === 'q:corpus:theme');
+  assert(themeGroup);
   const themes = engine.constellation(
-    { focus: thought.target.focus, groupId: thought.target.groupId, context, lensRef: 'type:human', limit: 8 },
+    { focus: themeGroup.target.focus, groupId: themeGroup.target.groupId, context, lensRef: 'type:human', limit: 8 },
     [],
   );
   const theme = themes.satellites.find((x) => x.label === 'Libre arbitre');
@@ -57,6 +59,12 @@ test('qualifier navigation makes a theme a center without inventing an assertion
     [],
   );
   assert.equal(centered.center.label, 'Libre arbitre');
-  assert(centered.satellites.some((x) => x.label === 'Personnes liées'));
+  const relatedPeople = centered.satellites.find((x) => x.target.groupId === 'participants:subjects');
+  assert(relatedPeople);
+  const people = engine.constellation(
+    { focus: theme.target.focus, groupId: relatedPeople.target.groupId, context, lensRef: 'type:human', limit: 8 },
+    [],
+  );
+  assert(people.satellites.some((x) => x.label === 'Augustin d’Hippone'));
   assert.equal(engine.pack.assertions.length, pack.assertions.length);
 });
