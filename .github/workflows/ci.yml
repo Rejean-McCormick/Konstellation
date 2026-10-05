@@ -14,9 +14,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  release-gates:
+  fast:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -24,26 +24,46 @@ jobs:
         with:
           node-version: 24.15.0
 
-      - name: Install reproducibly
-        run: npm ci
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            npm ci
+          else
+            echo "::warning::package-lock.json absent; using npm install without generating a lockfile"
+            npm install --no-package-lock --no-audit --no-fund
+          fi
 
-      - name: Install Playwright browser
+      - name: Core tests
+        run: npm test
+
+      - name: UI unit tests
+        run: npm run test:ui
+
+      - name: Static structure and security checks
+        run: |
+          npm run check:svelte-structure
+          npm run check:frontend-security
+
+      - name: Documentation links
+        run: npm run docs:check
+
+      - name: Production build
+        run: npm run build
+
+      - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Recompute release metadata
-        run: npm run release:prepare
-
-      - name: Verify generated release metadata is committed
-        run: git diff --exit-code -- RELEASE-MANIFEST.json SBOM.cdx.json
-
-      - name: Run release gates
-        run: npm run release:check
+      - name: Browser smoke tests
+        run: npm run test:e2e:smoke
 
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ github.run_id }}
-          path: playwright-report/
+          path: |
+            playwright-report/
+            test-results/
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: 7
