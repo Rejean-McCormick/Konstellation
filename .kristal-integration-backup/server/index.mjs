@@ -4,7 +4,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadIntegration, loadIntegrationKristal, listIntegrationKristals } from './integrations/kristal.mjs';
 import { SemantikAdapter } from './integrations/semantik.mjs';
-import { KompilerBridge } from './integrations/kompiler-bridge.mjs';
 import { Engine } from './engine.mjs';
 import { loadPack, readJson } from './pack.mjs';
 import { ROOT, AppError, fail, validate } from './contracts.mjs';
@@ -46,9 +45,9 @@ export function loadLenses(engine, dir) {
   return [...configured, ...generic];
 }
 
-async function body(req, maxBytes = 65536) {
+async function body(req) {
   let size = 0; const chunks = [];
-  for await (const chunk of req) { size += chunk.length; if (size > maxBytes) fail('PAYLOAD_TOO_LARGE', 'Requête limitée à 64 Kio.', 413); chunks.push(chunk); }
+  for await (const chunk of req) { size += chunk.length; if (size > 65536) fail('PAYLOAD_TOO_LARGE', 'Requête limitée à 64 Kio.', 413); chunks.push(chunk); }
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { fail('INVALID_QUERY', 'JSON invalide.'); }
 }
 
@@ -68,7 +67,6 @@ export function createServer({
   engine = new Engine(loadPack(), { roles:(process.env.KONSTELLATION_ROLES||'public').split(','), ...(process.env.KONSTELLATION_CURSOR_SECRET?{secret:process.env.KONSTELLATION_CURSOR_SECRET}:{}) }),
   lenses,
   semantik = new SemantikAdapter(),
-  kompiler = new KompilerBridge(),
   dist = path.join(ROOT,'dist'),
   config = loadConfig(),
   collection = null,
@@ -165,10 +163,6 @@ export function createServer({
         const runtime = await runtimeFor(principal, selectedKristal);
         const requestEngine = runtime.engine;
         const requestLenses = runtime.lenses;
-        if(req.method==='GET' && url.pathname==='/api/kompiler/capabilities') {
-          requireScope(principal,'read'); requireScope(principal,'kompiler');
-          return send(await kompiler.capabilities());
-        }
         if(req.method==='GET' && ['/api/bootstrap','/api/capabilities'].includes(url.pathname)) {
           requireScope(principal,'read');
           const requestedPolicyRef=url.searchParams.get('readerPolicyRef');
@@ -180,13 +174,9 @@ export function createServer({
         }
         if(req.method!=='POST') fail('NOT_FOUND','Endpoint introuvable.',404);
         if(url.pathname.startsWith('/api/sa')) requireScope(principal,'sa'); else requireScope(principal,'read');
-        if(url.pathname.startsWith('/api/kompiler/')) requireScope(principal,'kompiler');
         if(!req.headers['content-type']?.startsWith('application/json')) fail('INVALID_QUERY','Content-Type application/json requis.',415);
-        const b=await body(req, url.pathname==='/api/kompiler/projection'?1_500_000:65536); if(!b||typeof b!=='object'||Array.isArray(b)) fail('INVALID_QUERY','Objet JSON requis.');
+        const b=await body(req); if(!b||typeof b!=='object'||Array.isArray(b)) fail('INVALID_QUERY','Objet JSON requis.');
         switch(url.pathname){
-          case '/api/kompiler/validate': return send(await kompiler.validate(b));
-          case '/api/kompiler/run': return send(await kompiler.run(b));
-          case '/api/kompiler/projection': return send(await kompiler.projection(b.context_pack,b.surface_id));
           case '/api/query': {
             const t=performance.now(); const value=requestEngine.query(b.query,b.cursor); observe('query_evaluation_duration_ms',performance.now()-t); observe('result_set_size',value.total?.value||0); return send(value);
           }

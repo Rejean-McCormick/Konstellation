@@ -98,3 +98,16 @@ Les erreurs doivent être structurées et distinguer au minimum :
 - perte d'import ;
 - timeout ;
 - source inaccessible.
+
+## 8. Collections GitHub Kristal v10 draft.3 (opt-in)
+
+L’adaptateur `kristal-github-collection-v10` exploite `kristals/index.json`
+(`kristal.github-collection-index/1.0`) et `.kristal/sync-manifest.json`
+(`kristal.github-sync-manifest/1.0`) sans accès réseau et sans exécuter d’instructions IA.
+Son résultat normalisé est **uniquement une navigation d’hébergement dérivée** :
+`hosted_state`, `logical_artifact` (membre v9 déclaré) et `hosted_file`.
+
+Les empreintes et les liaisons entre manifests, AI index et State Snapshot sont
+vérifiées, pas les signatures, ni la fidélité sémantique de l’engagement logique.
+Les fichiers non déclarés ou les liens symboliques sont refusés. Aucune conversion
+v9→v6 automatique n’est autorisée. Voir [le guide v10](30-kristal-v10-github.md).

@@ -22,7 +22,7 @@ export function loadConfig(env = process.env) {
   const localPrincipal = Object.freeze({
     id: env.KONSTELLATION_LOCAL_PRINCIPAL || 'local-user',
     roles: [...new Set((env.KONSTELLATION_ROLES || 'public').split(',').map((x)=>x.trim()).filter(Boolean))].sort(),
-    scopes: ['read','metrics','sa','admin', ...(env.KONSTELLATION_ENABLE_KOMPILER_LOCAL === 'true' ? ['kompiler'] : [])],
+    scopes: ['read','metrics','sa','admin'],
   });
   return {
     deploymentProfile, host, port, anonymousReadonly, authPrincipals, localPrincipal,

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-08 — Patch d’intégration GitHub Kristal v10 sur 1.0 RC
+
+- Adaptateur opt-in `kristal-github-collection-v10` pour les collections synchronisées.
+- Vérification des index et manifestes de synchronisation, hashes SHA-256, budgets et arborescences exactes.
+- Navigation technique dérivée vers les membres v9 et fichiers hébergés ; aucune nouvelle autorité sémantique.
+- Conservation des adaptateurs v6, des Lens et des renderers existants.
+- Tests autonomes v10 et documentation d’intégration ; numéro RC inchangé tant que les gates complets ne sont pas qualifiés.
+
 ## 2026-10-03 — Sélecteur de Kristals
 
 - ajout du sélecteur `KRISTAL` dans l’interface pour les backends `kristal-kollection-v1` ;
@@ -123,6 +131,14 @@ Intégration SA alignée sur `konstellation-explorer-2`. Konstellation reste str
 Lecture Kristal Parquet/JSON et HTTP complète, contrôles d’intégrité/signatures, ReaderPolicy v5, capacités par relation, adaptateur SA avec couverture vérifiée, panneau de communication et exemple Parquet reproductible. 29 tests serveur et 6 tests DOM.
 
 # Changelog
+
+## 2026-10-08 — Patch d’intégration GitHub Kristal v10 sur 1.0 RC
+
+- Adaptateur opt-in `kristal-github-collection-v10` pour les collections synchronisées.
+- Vérification des index et manifestes de synchronisation, hashes SHA-256, budgets et arborescences exactes.
+- Navigation technique dérivée vers les membres v9 et fichiers hébergés ; aucune nouvelle autorité sémantique.
+- Conservation des adaptateurs v6, des Lens et des renderers existants.
+- Tests autonomes v10 et documentation d’intégration ; numéro RC inchangé tant que les gates complets ne sont pas qualifiés.
 
 ## 0.2.0 — 2026-09-26
 

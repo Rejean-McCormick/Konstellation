@@ -180,3 +180,17 @@ Dans l’environnement courant, le preflight échoue volontairement sur :
 3. SBOM marqué incomplet, conséquence directe de l’absence de lockfile.
 
 Aucun contournement artificiel n’est ajouté au repo. La promotion `1.0.0-rc.2 -> 1.0.0` doit avoir lieu seulement après exécution réussie de `npm ci`, tests Node, Vitest, build, Playwright et benchmark complet sous Node supporté.
+
+## Addendum du 2026-10-08 — lecteur opérationnel v10
+
+Le correctif v10 GitHub ajoute un adaptateur **facultatif** de navigation technique.
+Il conserve l’architecture 1.0 RC (`1.0.0-rc.2`) et ne requalifie pas sa release :
+aucun changement des contrats QuerySpec, Lens, NavigationPlan, UI ou Reader Policy.
+Vérification octet/SHA-256, index et sync manifest, cohérence des références AI
+et du Snapshot v9, refus des chemins dangereux et fichiers non gérés.
+La valeur `checks.semanticCommitmentVerified=false` est intentionnelle :
+ce contrôle n’est pas une preuve de la logique des membres du Snapshot.
+Les tests unitaires Node autonomes sont exécutables hors dépendances ; le
+build Astro, la suite complète Node 24/Vitest/Playwright restent à qualifier.
+
+Voir [30-kristal-v10-github.md](30-kristal-v10-github.md).

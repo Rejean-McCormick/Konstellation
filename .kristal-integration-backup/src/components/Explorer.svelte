@@ -1,7 +1,6 @@
 <script>
   import { onMount, tick } from 'svelte';
   import Communication from './Communication.svelte';
-  import KompilerPanel from './KompilerPanel.svelte';
   import Astrolabe from './Astrolabe.svelte';
   import QueryTree from './QueryTree.svelte';
   import ConstellationView from './ConstellationView.svelte';
@@ -938,7 +937,6 @@
         {authToken}
         {kristal}
       />
-      <KompilerPanel {authToken} />
       <div class="workspace">
         <aside class="filters-panel" aria-label="Filtres">
           <div class="panel-heading">

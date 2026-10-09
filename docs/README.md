@@ -51,6 +51,7 @@ La documentation 1.0 est normative. `IMPLEMENTATION.md` décrit l’état réel 
 - [Validation 1.0 RC](VALIDATION-v1.0-RC.md)
 - [Import Kristal](IMPORT.md)
 - [Intégrations](INTEGRATIONS.md)
+- [Collections GitHub Kristal v10](30-kristal-v10-github.md)
 - [Opérations](OPERATIONS.md)
 
 ### Exemples et historiques de domaine

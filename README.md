@@ -1,44 +1,32 @@
 # Konstellation
 
-**Moteur universel de navigation adaptative pour Kristals.**
+**Adaptive, domain-agnostic navigation engine for Kristal knowledge.**
 
-Cette branche contient l’implémentation **Konstellation 1.0 RC** (`1.0.0-rc.2`) alignée sur la spécification complète de [`docs/`](docs/README.md). Le suffixe RC signifie uniquement que les gates de release reproductible/build/E2E doivent encore être exécutés dans un environnement Node supporté ; l’architecture et le code cible 1.0 sont présents.
+**Release candidate:** `1.0.0-rc.2`. Architecture and target code exist, but a reproducible release build and full E2E gates remain prerequisites for final `1.0.0` qualification. See [implementation status](docs/IMPLEMENTATION.md) and [current validation evidence](docs/VALIDATION-v1.0-RC.md).
 
-## Principe
+## Core principle
 
-> Le Kristal définit ce qui est connaissable. La Lens définit l’angle. Konstellation dérive des affordances depuis la structure visible, construit un `NavigationPlan` explicable et choisit un renderer contrôlé. Une vue ne crée jamais de vérité.
-
-## Architecture 1.0
+> Kristal defines what is knowable. A Lens defines the viewing angle. Konstellation derives explainable navigation affordances from visible structure, creates a `NavigationPlan`, and selects a controlled renderer. A view never creates new semantic truth.
 
 ```text
-kristal_state v6 / normalized pack
-          ↓
-Reader Policy + rôles
-          ↓
-Structural Introspection
-          ↓
-Navigation Affordances
-          ↓
-Lens + ResultSet + Focus
-          ↓
-NavigationPlan 1.0
-          ↓
-Projection DTO 1.0
-          ↓
-Renderer Registry
-          ↓
-Konstellation Shell
+Kristal state v6 / normalized pack
+    → Reader Policy + roles
+    → Structural Introspection
+    → Navigation Affordances
+    → Lens + ResultSet + Focus
+    → NavigationPlan 1.0
+    → Projection DTO 1.0
+    → Renderer Registry
+    → Konstellation Shell
 ```
 
-## Renderers natifs
+## Renderers
 
-Konstellation 1.0 fournit : Liste, Tableau, Constellation, `timeline-lineage`, `tree`, `dag-proof`, `flow-path`, `causal-feedback`, `matrix-profile`, `state-flow`, `traceability`, `multiscale-layer` et `spatial`.
+Generic renderers include list, table, constellation, `timeline-lineage`, `tree`, `dag-proof`, `flow-path`, `causal-feedback`, `matrix-profile`, `state-flow`, `traceability`, `multiscale-layer` and `spatial`. They are not hard-coded to a domain such as mathematics, history or medicine.
 
-Ils sont génériques : aucun renderer n’est nommé d’après Math, HumanBody, HistoryTech, ScolQc, Catho ou un autre domaine.
+## Requirements and startup
 
-## Démarrer
-
-Prérequis de release : **Node.js >= 24.15.0** et un `package-lock.json` généré/commité dans l’environnement de release.
+A qualified release requires **Node.js >= 24.15.0** and a committed, reproducible `package-lock.json` generated under the supported release environment.
 
 ```bash
 npm ci
@@ -46,15 +34,15 @@ npm run build
 npm start
 ```
 
-Par défaut, le profil `local` écoute sur `127.0.0.1:4321`.
+The default `local` profile listens on `127.0.0.1:4321`.
 
-### Sélection des Kristals
+### Local Kristal selection
 
-Si une Kristal-Kollection est placée dans `../kristals` (à côté du dossier `Konstellation`), `Konstellation_Launcher.cmd` démarre automatiquement avec `examples/integrations/kristal-kollection.json`. L’interface affiche alors un sélecteur **KRISTAL** dans le bandeau de contexte. Le dernier Kristal choisi est conservé dans le navigateur et les explorations exportées/partagées mémorisent aussi leur `kristalRef`.
+When a compatible Kristal collection is placed in `../kristals` beside the Konstellation folder, `Konstellation_Launcher.cmd` can select `examples/integrations/kristal-kollection.json`. The context header offers a **KRISTAL** selector. The selected reference is retained locally and included in shared/exported navigation metadata. Domains without exactly one readable `*.kristal-state.json` remain visible but disabled. `X-Konstellation-Kristal` scopes a request without mutating the shared server corpus.
 
-Les domaines qui ne contiennent pas exactement un fichier `*.kristal-state.json` lisible restent visibles mais désactivés dans le sélecteur. Le choix est transmis par requête (`X-Konstellation-Kristal`) : il ne modifie pas globalement le corpus d’une instance partagée.
+The reference to a local **Kristal-Kollection directory/layout** does not rename the separate GitHub hosting repository `kristal-public`.
 
-## Vérification
+## Tests and release gates
 
 ```bash
 npm test
@@ -63,44 +51,33 @@ npm run build
 npm run test:e2e
 npm run benchmark -- --full
 npm run release:preflight
-```
-
-Le gate complet :
-
-```bash
 npm run release:check
 ```
 
-## Profils de déploiement
+**Do not tag final `1.0.0`** until `npm run release:check` succeeds in a supported environment with the committed lockfile.
 
-- `local` — single-user, principal local ;
-- `lan` — réseau de confiance avec auth recommandée/obligatoire par config ;
-- `shared` — authentification, rôles/scopes, audit et rate limiting ;
-- `public` — CSP stricte, gateway/TLS recommandés, auth sauf opt-in readonly public.
+## Deployment profiles
 
-Voir [`docs/22-deployment.md`](docs/22-deployment.md) et [`docs/19-security.md`](docs/19-security.md).
+| Profile | Boundary |
+| --- | --- |
+| `local` | Single local operator |
+| `lan` | Trusted-network deployment with configured authentication policy |
+| `shared` | Authentication, roles/scopes, audit and rate limiting |
+| `public` | Strict CSP, recommended TLS/gateway and authentication unless read-only public access is explicitly enabled |
 
-## Documentation
+Read [deployment](docs/22-deployment.md) and [security](docs/19-security.md) before exposing services.
 
-Point d’entrée : **[`docs/README.md`](docs/README.md)**.
+## Repository map
 
-Pour l’état exact du code : **[`docs/IMPLEMENTATION.md`](docs/IMPLEMENTATION.md)**.  
-Pour la qualification actuelle : **[`docs/VALIDATION-v1.0-RC.md`](docs/VALIDATION-v1.0-RC.md)**.  
-Pour la release finale : **[`docs/25-release-1.0.md`](docs/25-release-1.0.md)**.
+| Path | Contents |
+| --- | --- |
+| `src/` | Astro/Svelte shell and renderers |
+| `server/` | Engine, API, reader policy, profiler, planner and projections |
+| `contracts/` | Published and upstream JSON Schemas |
+| `tests/` | Policy, API, UI, contract and E2E tests |
+| `benchmarks/` | Regression measurements |
+| `scripts/` | Import and release tooling |
+| `docs/` | Specifications, guides, ADRs and runbooks |
+| `data/` | Demonstration corpus |
 
-## Structure
-
-| Chemin | Rôle |
-|---|---|
-| `src/` | shell Astro/Svelte et renderers |
-| `server/` | moteur, API, policy, profiler, planner, projections |
-| `contracts/` | JSON Schemas publics et upstream |
-| `tests/` | contrats, moteur, policy, navigation, UI, API, E2E |
-| `benchmarks/` | seuils de régression |
-| `scripts/` | import, benchmark, release gates |
-| `docs/` | spécification, guides, ADRs, runbooks et historique |
-| `data/` | corpus de démonstration |
-
-## Statut
-
-Ne pas publier le tag final `1.0.0` tant que `npm run release:check` n’est pas vert sous Node supporté avec lockfile commité. Voir [`docs/IMPLEMENTATION.md`](docs/IMPLEMENTATION.md).
+Start at [documentation index](docs/README.md); consult [release policy](docs/25-release-1.0.md) for qualification requirements.
