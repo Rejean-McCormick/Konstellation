@@ -1,3 +1,11 @@
+# Working tree — KNAV My Kristals preview (unreleased, 2026-10-12)
+
+- Opt-in local-only `GET /api/fleet` with per-principal ACL filtering and a bounded experimental Manager-preview JSON consumer (not an official Manager API).
+- Svelte My Kristals navigator and separate inventory/detail view with source/readiness/verification distinctions and return to existing Explorer.
+- Preserve the existing GitHub v10 checkout adapter, claims, and strict reader checks; no generic v9 concept decoding.
+- Legacy Kollection launch mode now requires explicit opt-in; portable Node 24 and an explicit v10 backend config are respected; existing listeners on the configured port are not killed.
+- Test coverage for permissions, unknown states, collisions, path safety, and deployment profiles. **Not a qualified release**; full UI build and E2E on Node >=24.15 remain required.
+
 # Changelog
 
 ## 2026-10-08 — Patch d’intégration GitHub Kristal v10 sur 1.0 RC

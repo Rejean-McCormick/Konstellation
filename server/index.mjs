@@ -12,6 +12,7 @@ import { loadConfig, cspFor } from './config.mjs';
 import { authenticate, requireScope } from './auth.mjs';
 import { requestId, increment, observe, gauge, metricsSnapshot, log } from './observability.mjs';
 import { versionInfo } from './version.mjs';
+import { fleetForPrincipal, readFleetExport } from './integrations/fleet.mjs';
 
 export function loadLenses(engine, dir) {
   const configured = [];
@@ -151,6 +152,13 @@ export function createServer({
         principal = authenticate(req, config);
         if(!allowRate(`${remote}|${principal.id}`)) fail('RATE_LIMITED','Trop de requêtes.',429);
         if(req.method==='GET' && url.pathname==='/api/metrics') { requireScope(principal,'metrics'); return send(metricsSnapshot()); }
+        if(req.method==='GET' && url.pathname==='/api/fleet') {
+          requireScope(principal,'read');
+          if(!config.fleetEnabled || config.deploymentProfile !== 'local' || principal.id === 'anonymous')
+            fail('NOT_FOUND','Fleet navigation is unavailable.',404);
+          // ACL filtering occurs on the server, before search, counts or client-side facets.
+          return send(fleetForPrincipal(principal, readFleetExport(config.fleetExportFile), collection));
+        }
         if(req.method==='GET' && url.pathname==='/api/kristals') {
           requireScope(principal,'read');
           const current = requestedKristal(req);
@@ -236,7 +244,7 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1
   const pack=backendConfig?await loadIntegration(backendConfig):loadPack();
   const selection=backendConfig?listIntegrationKristals(backendConfig):{selectable:false,defaultKristal:null,items:[]};
   const collection=selection.selectable?{
-    ...selection,
+    ...selection, source:readJson(backendConfig).adapter,
     loadPack:(kristal)=>loadIntegrationKristal(backendConfig,kristal),
   }:null;
   const engine=new Engine(pack,{roles:(process.env.KONSTELLATION_ROLES||'public').split(','),...(process.env.KONSTELLATION_CURSOR_SECRET?{secret:process.env.KONSTELLATION_CURSOR_SECRET}:{})});

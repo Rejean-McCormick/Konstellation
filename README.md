@@ -36,9 +36,13 @@ npm start
 
 The default `local` profile listens on `127.0.0.1:4321`.
 
-### Local Kristal selection
+### My Kristals (KNAV preview)
 
-When a compatible Kristal collection is placed in `../kristals` beside the Konstellation folder, `Konstellation_Launcher.cmd` can select `examples/integrations/kristal-kollection.json`. The context header offers a **KRISTAL** selector. The selected reference is retained locally and included in shared/exported navigation metadata. Domains without exactly one readable `*.kristal-state.json` remain visible but disabled. `X-Konstellation-Kristal` scopes a request without mutating the shared server corpus.
+Konstellation can show an optional **My Kristals** page before opening the existing conceptual Explorer. The preview is read-only and enabled only with `KONSTELLATION_ENABLE_MY_KRISTALS=true` in the `local` deployment profile. It can display an **explicit, separately authorized JSON inventory export** alongside the configured collection reader entries; it **does not** discover all local workspaces on its own. Inventory-only records cannot be opened without a reader. See [My Kristals setup, security, limits and tests](docs/31-my-kristals-manager-preview.md) and `Launch_My_Kristals.cmd`. This is a **working-tree preview**, not a qualified release or a ratified Manager integration.
+
+### Legacy local Kristal selection
+
+Only when `KONSTELLATION_USE_LEGACY_KOLLECTION=true` is explicitly set and a compatible legacy collection is placed in `../kristals`, `Konstellation_Launcher.cmd` can select `examples/integrations/kristal-kollection.json`. The context header offers a **KRISTAL** selector. The selected reference is retained locally and included in shared/exported navigation metadata. Domains without exactly one readable `*.kristal-state.json` remain visible but disabled. `X-Konstellation-Kristal` scopes a request without mutating the shared server corpus.
 
 The reference to a local **Kristal-Kollection directory/layout** does not rename the separate GitHub hosting repository `kristal-public`.
 

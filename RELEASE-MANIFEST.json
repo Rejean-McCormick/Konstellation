@@ -5,8 +5,8 @@
   "canonicalTruth": "upstream-kristal-state",
   "navigationPlanSchema": "1.0",
   "projectionSchema": "1.0",
-  "fileCount": 239,
-  "contentSha256": "d7b157fdbea580916a1c05e0736a52c65f3a4d122516520b99495b7fac5fc7d1",
+  "fileCount": 253,
+  "contentSha256": "a023a1dd42465eb12d5dc1547b795978242bcdea29aa29924310ad7d1876bfba",
   "files": [
     {
       "path": ".github/dependabot.yml",
@@ -27,6 +27,26 @@
       "path": ".gitignore",
       "sha256": "075474a237999f8f151efe3b4301fa37ac8df008e03ce1d60f47904b586235de",
       "size": 320
+    },
+    {
+      "path": ".kristal-integration-backup/patched.sha256.json",
+      "sha256": "e940331d3e68844243505e3063b04cfcabfb6b9787219e63f5ca25214996b330",
+      "size": 517
+    },
+    {
+      "path": ".kristal-integration-backup/server/config.mjs",
+      "sha256": "4b358a7b269739ed312b6e2524ee6c516901708952ad5bbb568f12505b02733d",
+      "size": 2656
+    },
+    {
+      "path": ".kristal-integration-backup/server/index.mjs",
+      "sha256": "79e30ccdda03b981bd94ea22c3ad74613c2975712e5a08d001f93f8ff76effcf",
+      "size": 16723
+    },
+    {
+      "path": ".kristal-integration-backup/src/components/Explorer.svelte",
+      "sha256": "2438982b28b73049e5f4a4deba19d32e913871528e99f6ce8e3c94a760516782",
+      "size": 59109
     },
     {
       "path": ".prettierrc.json",
@@ -55,8 +75,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "ab57c95427b8f1b912401b957512d7002cb01a8c616cc1af942d5ffa52faaefa",
-      "size": 13291
+      "sha256": "d2c6f5bfbcf02c77229459d29b8a44d75afc0f9ab1e461bd8827fefe740d699c",
+      "size": 14156
     },
     {
       "path": "contracts/constellation-response.schema.json",
@@ -334,6 +354,11 @@
       "size": 3732
     },
     {
+      "path": "docs/31-my-kristals-manager-preview.md",
+      "sha256": "bfa1017b408c301f90f7269ff156c1fd8de29b9b1bfc0c5e0c94aad8ac7a89e8",
+      "size": 7132
+    },
+    {
       "path": "docs/adr/ADR-0005-bounded-selection-tree.md",
       "sha256": "84a00331eb2a7964aeb75acc8126832bfa57f8fa86b1eea269ed7ff2485a2bd5",
       "size": 954
@@ -424,6 +449,11 @@
       "size": 1702
     },
     {
+      "path": "docs/KNAV_IMPLEMENTATION_REPORT_2026-10-12.md",
+      "sha256": "ba69bffad31d537c65ef0c1b0e54583789a6d4be9088f983d5c5711176aad45c",
+      "size": 5020
+    },
+    {
       "path": "docs/OPERATIONS.md",
       "sha256": "b8a551ea31944b6a80b57fd67a71fba901a5b20d1d0e9585c1ea0bfa4c690e95",
       "size": 1783
@@ -502,6 +532,11 @@
       "path": "examples/exploration.json",
       "sha256": "98a05c58b5b91fd84cc0e07c73c275ddd75a6198dd1d1c99cf5ed783cb1e4a83",
       "size": 1072
+    },
+    {
+      "path": "examples/fleet/manager-preview.example.json",
+      "sha256": "f38e3b139a1f4831aff4de47a6c91b9f3c882d609e8b2ed4cf17f8b2dae567ae",
+      "size": 782
     },
     {
       "path": "examples/import/mapping.json",
@@ -660,18 +695,23 @@
     },
     {
       "path": "GitSink.bat",
-      "sha256": "15b0af32d211ff210de0ed87eb4b374cf41f9302d92baf82a464a518ffe2c97e",
-      "size": 781
+      "sha256": "26c1bd8e8c7dc4d8adb1fe6da128b020ffbb7d90d54ad402ce3e64f2ce10b109",
+      "size": 1863
     },
     {
       "path": "Konstellation_Launcher.cmd",
-      "sha256": "4e5f29eb2ee568110c6da883f4dc3b0e964eb08e3e7e0297acd438f5d38205dd",
-      "size": 5096
+      "sha256": "f513097f9284986cf030a9462eefb8eabac5b578032985cd48a8d6b06afc9e0d",
+      "size": 5986
     },
     {
       "path": "Launch_MULTiSmartDump.lnk",
       "sha256": "597cb480ff60a1169b72f50df355256fefb23e5bcc03b382b1be07428b14821b",
       "size": 1359
+    },
+    {
+      "path": "Launch_My_Kristals.cmd",
+      "sha256": "6db5ea4405ffb9c876de2a926ad366008e01fa4ce0ad60e7531a2e8a99347967",
+      "size": 383
     },
     {
       "path": "lenses-enriched/biblical-people.json",
@@ -740,8 +780,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "95ea9dde5b1586f436ed37327f477d0dc292750870c48fb4d5c9ed4a018be8a2",
-      "size": 5071
+      "sha256": "80c4f6a9a304ff1b7a58d16889ef6a7f92b3b8084e7dd36300453391d28b405a",
+      "size": 4335
     },
     {
       "path": "requirements-dev.txt",
@@ -840,8 +880,8 @@
     },
     {
       "path": "server/config.mjs",
-      "sha256": "4b358a7b269739ed312b6e2524ee6c516901708952ad5bbb568f12505b02733d",
-      "size": 2656
+      "sha256": "7fc7df8082fbb61cd3253b1928012dabe754a4800df90ea59f0871025f9c2943",
+      "size": 2935
     },
     {
       "path": "server/contracts.mjs",
@@ -860,8 +900,18 @@
     },
     {
       "path": "server/index.mjs",
-      "sha256": "79e30ccdda03b981bd94ea22c3ad74613c2975712e5a08d001f93f8ff76effcf",
-      "size": 16723
+      "sha256": "0015c94515dd4c58fde47b27c9e7fc2b9173fb5ccf5247b8e58ab250f4e89955",
+      "size": 18097
+    },
+    {
+      "path": "server/integrations/fleet.mjs",
+      "sha256": "9a88df83b20308ef3b0d9d43d8c6b964c945193110d448c221e48abb906d3a81",
+      "size": 5412
+    },
+    {
+      "path": "server/integrations/kompiler-bridge.mjs",
+      "sha256": "99c2d56deee87f4b611a9b838fa7fe54acac750c4c696cfea23d2371de96602a",
+      "size": 3861
     },
     {
       "path": "server/integrations/kristal-v10.mjs",
@@ -944,9 +994,14 @@
       "size": 1279
     },
     {
+      "path": "SMARTDUMP_INDEX.txt",
+      "sha256": "5e7574206389a5f51c84641ecff1b9787dccb26c9ffe757c7362a37200ac18d8",
+      "size": 10590
+    },
+    {
       "path": "SNAPSHOT_INDEX.txt",
-      "sha256": "bed7d6847cca405539ddf126dd392eafdeab15582fbe09cf2363c453023f8ced",
-      "size": 7240
+      "sha256": "b99cbabbba3910c054cca1ff4cf665413706cdca95203f3d998517cf8b1b83af",
+      "size": 7196
     },
     {
       "path": "src/components/AdaptiveProjectionView.svelte",
@@ -980,13 +1035,18 @@
     },
     {
       "path": "src/components/Explorer.svelte",
-      "sha256": "2438982b28b73049e5f4a4deba19d32e913871528e99f6ce8e3c94a760516782",
-      "size": 59109
+      "sha256": "a911336314d489a6849acf9ec13a78dcf728575cea71bdcfa0a1936eaa52edf4",
+      "size": 60708
     },
     {
       "path": "src/components/FlowPathView.svelte",
       "sha256": "d0d3f4a754849d3604566234a5ce25a945eb5829ff3b95840ea4ae983c0e045d",
       "size": 4589
+    },
+    {
+      "path": "src/components/KompilerPanel.svelte",
+      "sha256": "ef0cba9760c635a6ac25c93c4f3504a5109d40b1e0885b5fd376a860ebaf2fa1",
+      "size": 4758
     },
     {
       "path": "src/components/MatrixProfileView.svelte",
@@ -997,6 +1057,11 @@
       "path": "src/components/MultiscaleLayerView.svelte",
       "sha256": "98f43c3697240c064a8ea7a5f6b201ebbb769b9a464f99fe61f986c8c9376f6b",
       "size": 1633
+    },
+    {
+      "path": "src/components/MyKristals.svelte",
+      "sha256": "c5588b60c39d1ae502ca8a42064202507c93b4f168f3d9ee26bb2054f73fd3f5",
+      "size": 5225
     },
     {
       "path": "src/components/QueryTree.svelte",
@@ -1045,8 +1110,8 @@
     },
     {
       "path": "src/styles/global.css",
-      "sha256": "98be0e2f82130ab13064a9c305977eb2b46453eb3733abcc51622ed911ecb903",
-      "size": 60133
+      "sha256": "3159492f8baeb7f904ab580eef66365020eb94163b8cffec35b2fdcaf808d573",
+      "size": 63217
     },
     {
       "path": "svelte.config.js",
@@ -1117,6 +1182,11 @@
       "path": "tests/engine.test.mjs",
       "sha256": "abcb3aee41605070c19f55c50d0d95b9c93f4d13c4dd956875d02d36b9a1fed8",
       "size": 11706
+    },
+    {
+      "path": "tests/fleet.test.mjs",
+      "sha256": "73434f2e4d85430c9f53417db8782a0c4ca6be064cc81066c413e1f02da5c111",
+      "size": 5193
     },
     {
       "path": "tests/import.test.mjs",

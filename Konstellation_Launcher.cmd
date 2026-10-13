@@ -4,7 +4,7 @@ title Konstellation - Explorateur de Kristals
 
 rem ============================================================
 rem Konstellation portable launcher
-rem - Kristal collection mode when ..\kristals\domains exists
+rem - Legacy Kristal-Kollection mode only when explicitly opted in
 rem - Legacy enriched local corpus otherwise
 rem Place this file in the repository root, beside package.json.
 rem ============================================================
@@ -17,7 +17,12 @@ set "LOCAL_LENSES=%ROOT%\lenses-enriched"
 set "BACKEND_CONFIG=%ROOT%\examples\integrations\kristal-kollection.json"
 set "COLLECTION_DOMAINS=%ROOT%\..\kristals\domains"
 set "MODE=local"
-if exist "%COLLECTION_DOMAINS%" if exist "%BACKEND_CONFIG%" set "MODE=kristals"
+rem Explicit backend override, e.g. a pinned v10 GitHub checkout configuration.
+if defined KONSTELLATION_BACKEND_CONFIG (
+    set "BACKEND_CONFIG=%KONSTELLATION_BACKEND_CONFIG%"
+    set "MODE=configured"
+)
+if /I "%MODE%"=="local" if /I "%KONSTELLATION_USE_LEGACY_KOLLECTION%"=="true" if exist "%COLLECTION_DOMAINS%" if exist "%BACKEND_CONFIG%" set "MODE=kristals"
 
 echo.
 echo ============================================================
@@ -27,6 +32,8 @@ echo Repo : %ROOT%
 if /I "%MODE%"=="kristals" (
     echo Mode : Kristal-Kollection ^(selection dans l'interface^)
     echo Collection : %ROOT%\..\kristals
+) else if /I "%MODE%"=="configured" (
+    echo Mode : explicit backend configuration
 ) else (
     echo Mode : corpus local enrichi
 )
@@ -48,11 +55,16 @@ if /I "%MODE%"=="kristals" (
         echo         %COLLECTION_DOMAINS%
         goto :fail
     )
+) else if /I "%MODE%"=="configured" (
+    if not exist "%BACKEND_CONFIG%" (
+        echo [ERROR] Explicit backend configuration not found: %BACKEND_CONFIG%
+        goto :fail
+    )
 ) else (
     if not exist "%LOCAL_PACK%" (
         echo [ERROR] Enriched local pack not found:
         echo         %LOCAL_PACK%
-        echo Place the Kristal collection in ..\kristals to use collection mode.
+        echo Legacy collection mode needs KONSTELLATION_USE_LEGACY_KOLLECTION=true.
         goto :fail
     )
     if not exist "%LOCAL_LENSES%" (
@@ -62,8 +74,10 @@ if /I "%MODE%"=="kristals" (
     )
 )
 
-rem Prefer the official Node install, otherwise use PATH.
-if exist "C:\Program Files\nodejs\node.exe" (
+rem Prefer the known portable Node 24 installation. Do not change the system PATH.
+if exist "C:\mycode\Tools\node24\node.exe" (
+    set "PATH=C:\mycode\Tools\node24;%PATH%"
+) else if exist "C:\Program Files\nodejs\node.exe" (
     set "PATH=C:\Program Files\nodejs;%PATH%"
 )
 
@@ -82,11 +96,13 @@ if errorlevel 1 (
 for /f "delims=" %%V in ('node --version') do set "NODE_VERSION=%%V"
 for /f "delims=" %%V in ('npm --version') do set "NPM_VERSION=%%V"
 set "NODE_VERSION_NUM=%NODE_VERSION:v=%"
-for /f "tokens=1 delims=." %%M in ("%NODE_VERSION_NUM%") do set "NODE_MAJOR=%%M"
+for /f "tokens=1,2 delims=." %%M in ("%NODE_VERSION_NUM%") do (set "NODE_MAJOR=%%M" & set "NODE_MINOR=%%N")
 
 echo Node : %NODE_VERSION%
 echo npm  : %NPM_VERSION%
 if /I "%MODE%"=="kristals" (
+    echo Backend : %BACKEND_CONFIG%
+) else if /I "%MODE%"=="configured" (
     echo Backend : %BACKEND_CONFIG%
 ) else (
     echo Pack : %LOCAL_PACK%
@@ -96,8 +112,13 @@ echo.
 
 if not defined NODE_MAJOR goto :badnode
 if %NODE_MAJOR% LSS 24 goto :badnode
+if %NODE_MAJOR% EQU 24 if %NODE_MINOR% LSS 15 goto :badnode
 
 if /I "%MODE%"=="kristals" (
+    set "KONSTELLATION_BACKEND_CONFIG=%BACKEND_CONFIG%"
+    set "KONSTELLATION_PACK="
+    set "KONSTELLATION_LENSES="
+) else if /I "%MODE%"=="configured" (
     set "KONSTELLATION_BACKEND_CONFIG=%BACKEND_CONFIG%"
     set "KONSTELLATION_PACK="
     set "KONSTELLATION_LENSES="
@@ -108,14 +129,10 @@ if /I "%MODE%"=="kristals" (
 )
 set "KONSTELLATION_SA_CONFIG="
 
-rem Stop an old Node instance on the Konstellation port only.
+rem Fail closed if the port is occupied. Never terminate an existing Node process.
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
   "$listeners=@(Get-NetTCPConnection -LocalPort %PORT% -State Listen -ErrorAction SilentlyContinue);" ^
-  "foreach($l in $listeners){" ^
-  "  $p=Get-Process -Id $l.OwningProcess -ErrorAction SilentlyContinue;" ^
-  "  if($p -and $p.ProcessName -eq 'node'){ Stop-Process -Id $p.Id -Force }" ^
-  "  elseif($p){ Write-Host ('Port %PORT% is used by ' + $p.ProcessName + ' (PID ' + $p.Id + ').'); exit 3 }" ^
-  "}"
+  "if($listeners.Count -gt 0){ Write-Host 'Port %PORT% is occupied; no process was stopped.'; exit 3 }"
 if errorlevel 1 goto :portbusy
 
 pushd "%ROOT%"
@@ -136,6 +153,8 @@ echo Starting Konstellation...
 echo URL : http://127.0.0.1:%PORT%
 if /I "%MODE%"=="kristals" (
     echo Kristal selector: enabled
+) else if /I "%MODE%"=="configured" (
+    echo Backend: %BACKEND_CONFIG%
 ) else (
     echo Corpus: Theophile v0.2.1 + Graphe biblique enrichi
 )

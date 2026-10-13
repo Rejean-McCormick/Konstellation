@@ -1,0 +1,85 @@
+<script>
+  // KNAV experimental fleet browser: all search/facets are client-side over
+  // the already authorized response from GET /api/fleet.
+  export let visible = false;
+  export let items = [];
+  export let opening = false;
+  export let onOpen = async () => {};
+  export let onExploreCurrent = () => {};
+  let search = '';
+  let source = 'all';
+  let availability = 'all';
+  let selected = null;
+  const lower = (text) => String(text || '').toLocaleLowerCase();
+  $: filtered = items.filter((item) => {
+    const q = lower(search.trim());
+    return (source === 'all' || item.source === source) &&
+      (availability === 'all' || item.availability === availability) &&
+      (!q || [item.title, item.stateRef, item.archetype, item.id].some((value) => lower(value).includes(q)));
+  });
+  $: if (selected && !filtered.some((item) => item.key === selected.key)) selected = null;
+</script>
+
+<section class="fleet" hidden={!visible} aria-label="My Kristals">
+  <header class="fleet-heading">
+    <div>
+      <span class="fleet-eyebrow">KRISTAL NETWORK · READ ONLY</span>
+      <h1>My Kristals<span class="fleet-accent">.</span></h1>
+      <p>Browse permitted local inventory entries and configured readers. An inventory record is not proof of a published or readable knowledge state.</p>
+    </div>
+    <button class="button" on:click={onExploreCurrent}>Explore current corpus →</button>
+  </header>
+  <div class="fleet-disclaimer" role="status">
+    Manager preview export is an experimental, local-only bridge. Hosted index metadata is not a publication receipt. Technical hosting diagrams are not semantic concept graphs.
+  </div>
+  <div class="fleet-filters">
+    <label>Search Kristals<input aria-label="Search Kristals" type="search" bind:value={search} placeholder="Name, state reference or declared archetype" /></label>
+    <label>Source<select aria-label="Kristal source" bind:value={source}>
+      <option value="all">All permitted sources</option>
+      <option value="local_manager_preview">Local inventory (preview)</option>
+      <option value="github_v10_checkout">GitHub v10 checkout</option>
+      <option value="legacy_reader">Legacy reader</option>
+    </select></label>
+    <label>Availability<select aria-label="Kristal availability" bind:value={availability}>
+      <option value="all">All states</option><option value="available">Available</option>
+      <option value="unavailable">Unavailable</option><option value="unknown">Unknown</option>
+    </select></label>
+  </div>
+  <p class="fleet-count">{filtered.length} visible {filtered.length === 1 ? 'entry' : 'entries'} · Counts reflect only permitted inventory</p>
+  <div class="fleet-layout">
+    <div class="fleet-grid" aria-label="Permitted Kristals">
+      {#each filtered as item (item.key)}
+        <button class="fleet-card" class:selected={selected?.key === item.key} on:click={() => (selected = item)} aria-label={'Inspect ' + item.title}>
+          <span class="fleet-card-top"><span class="fleet-type">{item.source === 'local_manager_preview' ? 'LOCAL INVENTORY' : item.source === 'github_v10_checkout' ? 'GITHUB V10' : 'LEGACY READER'}</span><span class="fleet-indicator">{item.availability}</span></span>
+          <strong>{item.title}</strong>
+          <span class="fleet-ref">{item.stateRef || 'State reference not supplied'}</span>
+          <span class="fleet-card-bottom">{item.openable ? 'Reader configured' : 'Inventory only'} · {item.readiness.replaceAll('_', ' ')}</span>
+        </button>
+      {:else}
+        <div class="fleet-empty">No permitted entries match these filters. Unknown or missing inventory is not evidence of absence.</div>
+      {/each}
+    </div>
+    <aside class="fleet-detail" aria-label="Kristal properties">
+      {#if selected}
+        <span class="fleet-eyebrow">ENTRY PROPERTIES</span>
+        <h2>{selected.title}</h2>
+        <dl>
+          <dt>Source</dt><dd>{selected.source.replaceAll('_', ' ')}</dd>
+          <dt>Reference</dt><dd>{selected.stateRef || 'Not supplied'}</dd>
+          <dt>State commitment</dt><dd>{selected.stateCommitment || 'Not supplied'}</dd>
+          <dt>Availability</dt><dd>{selected.availability}</dd>
+          <dt>Readiness (declared)</dt><dd>{selected.readiness.replaceAll('_', ' ')}</dd>
+          <dt>Verification</dt><dd>{selected.verification.replaceAll('_', ' ')}</dd>
+          <dt>View</dt><dd>{selected.viewKind.replaceAll('_', ' ')}</dd>
+          <dt>Archetype (declared)</dt><dd>{selected.archetype || 'Unknown'}</dd>
+        </dl>
+        {#if selected.openable}
+          <button class="button primary" disabled={opening} on:click={() => onOpen(selected.readerId)}>{opening ? 'Opening…' : 'Open in Explorer →'}</button>
+          <p class="fleet-detail-note">The reader validates its own payload when opened. The result may be a technical hosting view.</p>
+        {:else}<p class="fleet-detail-note">No authorized compatible reader is configured for this entry. Manager inventory access does not grant canonical content access.</p>{/if}
+      {:else}
+        <h2>Select a Kristal</h2><p>Choose an entry to inspect its available properties and see whether a compatible reader is configured.</p>
+      {/if}
+    </aside>
+  </div>
+</section>

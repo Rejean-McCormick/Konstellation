@@ -2,6 +2,7 @@
   import { onMount, tick } from 'svelte';
   import Communication from './Communication.svelte';
   import KompilerPanel from './KompilerPanel.svelte';
+  import MyKristals from './MyKristals.svelte';
   import Astrolabe from './Astrolabe.svelte';
   import QueryTree from './QueryTree.svelte';
   import ConstellationView from './ConstellationView.svelte';
@@ -26,7 +27,11 @@
     kristal = '',
     kristalSelectable = false,
     kristals = [],
-    switchingKristal = false;
+    switchingKristal = false,
+    fleetEnabled = false,
+    fleetView = false,
+    fleetItems = [],
+    fleetError = '';
   let search = '',
     history = [],
     future = [],
@@ -265,6 +270,11 @@
     } finally {
       switchingKristal = false;
     }
+  }
+  async function openFleetKristal(readerId) {
+    if (!kristalSelectable) return;
+    if (readerId !== kristal) await changeKristal(readerId);
+    if (kristal === readerId && !error) fleetView = false;
   }
   const FACET_BATCH_SIZE = 32;
   async function loadFacets(queryValue, relationIds, signal) {
@@ -723,6 +733,18 @@
         }
         boot = await api('bootstrap');
         if (!alive) return;
+        // Preview navigation is an optional authenticated, local-only surface.
+        // Missing/blocked sources do not prevent the existing Explorer from starting.
+        try {
+          const fleet = await api('fleet');
+          if (fleet?.format === 'konstellation.fleet-view/0.1' && Array.isArray(fleet.items)) {
+            fleetEnabled = true;
+            fleetItems = fleet.items;
+            fleetView = !location.hash.startsWith('#exploration=');
+          }
+        } catch (e) {
+          if (e.status !== 404) fleetError = 'My Kristals is unavailable: ' + e.message;
+        }
         initializeExploration(boot);
         try {
           const v = JSON.parse(localStorage.getItem('konstellation.saved.v1') || '[]');
@@ -769,7 +791,7 @@
       <span>Konstellation<small>DES ÉTOILES POUR S’ORIENTER</small></span>
     </a>
     <nav aria-label="Navigation principale">
-      <a class="active" href="/">Explorer</a><a href="#astrolabe">Astrolabe</a><button
+      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button><button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{:else}<a class="active" href="/">Explorer</a>{/if}<a href="#astrolabe" on:click={() => (fleetView = false)}>Astrolabe</a><button
         class:active={showSaved}
         on:click={() => (showSaved = !showSaved)}
         >Mes explorations <span class="nav-count">{saved.length}</span></button
@@ -793,6 +815,9 @@
     </main>
   {:else}
     <main>
+      {#if fleetError}<div role="status" class="alert notice">{fleetError}</div>{/if}
+      {#if fleetEnabled}<MyKristals visible={fleetView} items={fleetItems} opening={switchingKristal} onOpen={openFleetKristal} onExploreCurrent={() => (fleetView = false)} />{/if}
+      <div hidden={fleetEnabled && fleetView}>
       <section class="intro">
         <div>
           <div class="eyebrow">EXPLORATEUR DE CONNAISSANCES <span> / </span> {boot.title}</div>
@@ -1371,6 +1396,7 @@
       <footer class="page-footer">
         <span class="footer-brand"><img src="/brand-logo.svg" alt="" aria-hidden="true" />Relier. Comprendre. Explorer.</span><span>Requêtes explicites · Sources préservées · v0.5</span>
       </footer>
+      </div>
     </main>
   {/if}
 </div>

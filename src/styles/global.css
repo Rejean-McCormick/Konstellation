@@ -2950,3 +2950,36 @@ td {
 /* CSP-safe deterministic indentation: no inline style attributes. */
 .query-depth-0{margin-left:0}.query-depth-1{margin-left:.35rem}.query-depth-2{margin-left:.7rem}.query-depth-3{margin-left:1.05rem}
 .tree-depth-0{padding-left:0}.tree-depth-1{padding-left:1.1rem}.tree-depth-2{padding-left:2.2rem}.tree-depth-3{padding-left:3.3rem}.tree-depth-4{padding-left:4.4rem}.tree-depth-5{padding-left:5.5rem}.tree-depth-6{padding-left:6.6rem}.tree-depth-7{padding-left:7.7rem}.tree-depth-8{padding-left:8.8rem}.tree-depth-9{padding-left:9.9rem}.tree-depth-10{padding-left:11rem}.tree-depth-11{padding-left:12.1rem}.tree-depth-12{padding-left:13.2rem}
+
+/* KNAV: My Kristals — server-filtered, local-only inventory preview. */
+.fleet[hidden] { display:none !important; }
+.fleet { padding: 30px clamp(16px, 4vw, 62px) 60px; max-width: 1550px; margin:0 auto; color:var(--text, #193334); }
+.fleet-heading { display:flex; justify-content:space-between; gap:18px; align-items:center; }
+.fleet-heading h1 { font-size:clamp(2rem, 4vw, 3.2rem); margin:9px 0; line-height:1.2; }
+.fleet-heading p { max-width:760px; line-height:1.55; }
+.fleet-accent { color:#1e6864; }
+.fleet-eyebrow, .fleet-type { font-size:.73rem; letter-spacing:.09em; font-weight:750; color:#1e6864; }
+.fleet-disclaimer { border-left:4px solid #1e6864; background:#eef5f3; padding:12px 16px; margin:23px 0; font-size:.88rem; line-height:1.5; }
+.fleet-filters { display:flex; flex-wrap:wrap; gap:12px; margin:22px 0 12px; }
+.fleet-filters label { display:flex; flex-direction:column; gap:5px; font-size:.78rem; font-weight:700; flex:1 1 200px; }
+.fleet-filters label:first-child { flex:2 1 340px; }
+.fleet-filters input,.fleet-filters select { border:1px solid #b5cbc8; border-radius:8px; padding:11px 12px; background:#fff; color:#183d3a; font:inherit; width:100%; }
+.fleet-count { color:#657c79; font-size:.83rem; }
+.fleet-layout { display:grid; grid-template-columns:minmax(0, 1.9fr) minmax(270px, 1fr); gap:20px; align-items:start; }
+.fleet-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px, 1fr)); gap:12px; }
+.fleet-card { text-align:left; font:inherit; border:1px solid #d6e4e0; background:#fff; color:#223c3a; border-radius:13px; padding:20px; min-height:175px; display:flex; flex-direction:column; gap:13px; cursor:pointer; }
+.fleet-card:hover,.fleet-card.selected { border-color:#1e6864; box-shadow:0 3px 12px #1e686419; }
+.fleet-card:focus-visible { outline:3px solid #1e6864; outline-offset:2px; }
+.fleet-card strong { font-size:1.12rem; overflow-wrap:anywhere; }
+.fleet-card-top { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+.fleet-indicator { font-size:.75rem; text-transform:capitalize; color:#4f6664; }
+.fleet-ref { font-family:ui-monospace,monospace; font-size:.73rem; color:#667e7b; overflow-wrap:anywhere; }
+.fleet-card-bottom { font-size:.79rem; color:#52736e; margin-top:auto; }
+.fleet-detail { border:1px solid #d6e4e0; border-radius:13px; background:#f8fbfa; padding:24px; position:sticky; top:20px; }
+.fleet-detail h2 { font-size:1.45rem; margin:12px 0 18px; overflow-wrap:anywhere; }
+.fleet-detail dl { margin:0 0 25px; display:grid; grid-template-columns:minmax(110px, 0.8fr) minmax(0,1.2fr); gap:12px 8px; }
+.fleet-detail dt { color:#607975; font-size:.8rem; }
+.fleet-detail dd { margin:0; font-size:.84rem; font-family:ui-monospace,monospace; overflow-wrap:anywhere; }
+.fleet-detail-note { font-size:.84rem; line-height:1.5; color:#587470; margin-top:18px; }
+.fleet-empty { padding:30px; border:1px dashed #b4ccc6; border-radius:12px; }
+@media(max-width:850px){.fleet-layout{grid-template-columns:1fr}.fleet-detail{position:static}.fleet-heading{flex-direction:column;align-items:flex-start}}
