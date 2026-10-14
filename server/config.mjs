@@ -27,8 +27,10 @@ export function loadConfig(env = process.env) {
   return {
     deploymentProfile, host, port, anonymousReadonly, authPrincipals, localPrincipal,
     allowedHosts, rateLimitPerMinute, exposeCorpusIdentity, devOrigin: env.KONSTELLATION_DEV_ORIGIN || null,
-    fleetEnabled: deploymentProfile === 'local' && env.KONSTELLATION_ENABLE_MY_KRISTALS === 'true',
+    fleetEnabled: deploymentProfile === 'local' && ['127.0.0.1','::1','localhost'].includes(host) && env.KONSTELLATION_ENABLE_MY_KRISTALS === 'true',
     fleetExportFile: deploymentProfile === 'local' ? (env.KONSTELLATION_FLEET_EXPORT || null) : null,
+    fleetPolicyFile: deploymentProfile === 'local' ? (env.KONSTELLATION_FLEET_POLICY || null) : null,
+    fleetDiscoveryFile: deploymentProfile === 'local' ? (env.KONSTELLATION_DISCOVERY_CATALOG || null) : null,
   };
 }
 export function cspFor(config) {

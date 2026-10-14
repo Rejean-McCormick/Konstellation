@@ -12,7 +12,7 @@ import { loadConfig, cspFor } from './config.mjs';
 import { authenticate, requireScope } from './auth.mjs';
 import { requestId, increment, observe, gauge, metricsSnapshot, log } from './observability.mjs';
 import { versionInfo } from './version.mjs';
-import { fleetForPrincipal, readFleetExport } from './integrations/fleet.mjs';
+import { fleetForPrincipal, readFleetExport, readDiscoveryCatalog } from './integrations/fleet.mjs';
 
 export function loadLenses(engine, dir) {
   const configured = [];
@@ -157,7 +157,7 @@ export function createServer({
           if(!config.fleetEnabled || config.deploymentProfile !== 'local' || principal.id === 'anonymous')
             fail('NOT_FOUND','Fleet navigation is unavailable.',404);
           // ACL filtering occurs on the server, before search, counts or client-side facets.
-          return send(fleetForPrincipal(principal, readFleetExport(config.fleetExportFile), collection));
+          return send(fleetForPrincipal(principal, readFleetExport(config.fleetExportFile, config.fleetPolicyFile), collection, readDiscoveryCatalog(config.fleetDiscoveryFile)));
         }
         if(req.method==='GET' && url.pathname==='/api/kristals') {
           requireScope(principal,'read');

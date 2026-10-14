@@ -8,7 +8,7 @@
 - `server/config.mjs`: feature gated by `KONSTELLATION_ENABLE_MY_KRISTALS=true`, **local profile only**.
 - `server/index.mjs`: authenticated `GET /api/fleet`, read scope required, feature disabled responds 404; existing `/api/kristals` and all query/Reader Policy routes are unchanged.
 - `src/components/MyKristals.svelte`, `src/components/Explorer.svelte`, `src/styles/global.css`: fleet cards, filters, properties, read-only status, existing viewer link and return preserving selection/filters; entries without readers not openable.
-- `examples/fleet/manager-preview.example.json`: **synthetic fixture only**; does not represent the 126 real local instances.
+- `examples/fleet/legacy/manager-preview.example.json`: **synthetic fixture only**; does not represent the 126 real local instances.
 - `Launch_My_Kristals.cmd`: opt-in Windows entry point; historic Kollection auto-select disabled by default in `Konstellation_Launcher.cmd`, now requires `KONSTELLATION_USE_LEGACY_KOLLECTION=true`; occupied port is **not forcibly terminated**; an explicitly configured v10 backend is preserved by the Windows launcher, which prefers a known portable Node 24 and rejects versions below 24.15.
 - `docs/31-my-kristals-manager-preview.md`, `README.md`, `CHANGELOG.md`, `tests/fleet.test.mjs`: behavior, compatibility constraints, security and rollback.
 

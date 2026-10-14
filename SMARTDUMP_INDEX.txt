@@ -1,12 +1,12 @@
 SMART DUMPER INDEX
 ==================
-generated_at: 2026-10-12T16:00:01.351001
+generated_at: 2026-10-13T07:28:04.376275
 source_root: C:\mycode\Konstellation\Konstellation
 mode: snapshot
-zip_file: Code_snapshot_Konstellation.zip
+zip_file: Konstellation_Code_snapshot.zip
 embedded_index: SMARTDUMP_INDEX.txt
-file_count: 246
-total_bytes: 21869142
+file_count: 253
+total_bytes: 21906950
 compression: ZIP_DEFLATED level 1
 
 FILES
@@ -24,7 +24,7 @@ FILES
 astro.config.mjs	287 bytes
 benchmarks/navigation-baseline.json	848 bytes
 CHANGELOG-PLAYWRIGHT-FIX.md	337 bytes
-CHANGELOG.md	13291 bytes
+CHANGELOG.md	14156 bytes
 contracts/constellation-response.schema.json	5227 bytes
 contracts/exploration-state.schema.json	1619 bytes
 contracts/lens.schema.json	4747 bytes
@@ -80,6 +80,7 @@ docs/27-behavior-by-kristal.md	3027 bytes
 docs/28-anti-patterns.md	2546 bytes
 docs/29-reference-sequences.md	1943 bytes
 docs/30-kristal-v10-github.md	3732 bytes
+docs/31-my-kristals-manager-preview.md	7132 bytes
 docs/adr/ADR-0005-bounded-selection-tree.md	954 bytes
 docs/adr/ADR-0006-kristal-v6-authority.md	612 bytes
 docs/adr/ADR-0007-navigation-affordances.md	729 bytes
@@ -98,6 +99,7 @@ docs/IMPLEMENTATION.md	9175 bytes
 docs/IMPORT.md	2546 bytes
 docs/input-snapshots.json	1276 bytes
 docs/INTEGRATIONS.md	1702 bytes
+docs/KNAV_IMPLEMENTATION_REPORT_2026-10-12.md	5020 bytes
 docs/OPERATIONS.md	1783 bytes
 docs/README.md	4102 bytes
 docs/runbooks/BACKUP-RESTORE.md	4349 bytes
@@ -114,6 +116,7 @@ docs/VALIDATION-v0.6.md	1856 bytes
 docs/VALIDATION-v0.7.md	2454 bytes
 docs/VALIDATION-v1.0-RC.md	6385 bytes
 examples/exploration.json	1072 bytes
+examples/fleet/manager-preview.example.json	782 bytes
 examples/import/mapping.json	4290 bytes
 examples/import/state.json	927 bytes
 examples/integrations/kristal-directory.json	1286 bytes
@@ -146,8 +149,9 @@ examples/registry.json	2889 bytes
 examples/result.json	1756 bytes
 FIXES-20260930.md	963 bytes
 GitSink.bat	1863 bytes
-Konstellation_Launcher.cmd	5096 bytes
+Konstellation_Launcher.cmd	5986 bytes
 Launch_MULTiSmartDump.lnk	1359 bytes
+Launch_My_Kristals.cmd	383 bytes
 lenses-enriched/biblical-people.json	2959 bytes
 lenses-enriched/biblical-traditions.json	597 bytes
 lenses-enriched/biblical-works.json	1794 bytes
@@ -161,8 +165,8 @@ lenses-enriched/theophile-themes.json	266 bytes
 package.json	2327 bytes
 playwright.config.mjs	2476 bytes
 README-PLAYWRIGHT-FIX.md	633 bytes
-README.md	3570 bytes
-RELEASE-MANIFEST.json	39399 bytes
+README.md	4335 bytes
+RELEASE-MANIFEST.json	41792 bytes
 requirements-dev.txt	19 bytes
 SBOM.cdx.json	5190 bytes
 scripts/benchmark-navigation.mjs	6194 bytes
@@ -182,11 +186,12 @@ scripts/release-manifest.mjs	2512 bytes
 scripts/smoke-dev.mjs	1640 bytes
 scripts/update-biblical-corpus.mjs	16842 bytes
 server/auth.mjs	3341 bytes
-server/config.mjs	2768 bytes
+server/config.mjs	2935 bytes
 server/contracts.mjs	1997 bytes
 server/engine.mjs	29329 bytes
 server/errors.mjs	364 bytes
-server/index.mjs	17733 bytes
+server/index.mjs	18097 bytes
+server/integrations/fleet.mjs	5412 bytes
 server/integrations/kompiler-bridge.mjs	3861 bytes
 server/integrations/kristal-v10.mjs	16148 bytes
 server/integrations/kristal-v6.mjs	20454 bytes
@@ -211,11 +216,12 @@ src/components/CausalFeedbackView.svelte	3038 bytes
 src/components/Communication.svelte	5586 bytes
 src/components/ConstellationView.svelte	8748 bytes
 src/components/DagProofView.svelte	4984 bytes
-src/components/Explorer.svelte	60575 bytes
+src/components/Explorer.svelte	60708 bytes
 src/components/FlowPathView.svelte	4589 bytes
 src/components/KompilerPanel.svelte	4758 bytes
 src/components/MatrixProfileView.svelte	835 bytes
 src/components/MultiscaleLayerView.svelte	1633 bytes
+src/components/MyKristals.svelte	5225 bytes
 src/components/QueryTree.svelte	1464 bytes
 src/components/RelationGraph.svelte	2785 bytes
 src/components/SpatialView.svelte	3386 bytes
@@ -225,7 +231,7 @@ src/components/TraceabilityView.svelte	1025 bytes
 src/components/TreeView.svelte	2939 bytes
 src/lib/constellation/layout.js	1504 bytes
 src/pages/index.astro	666 bytes
-src/styles/global.css	60133 bytes
+src/styles/global.css	63217 bytes
 svelte.config.js	19 bytes
 Test_Konstellation.cmd	2987 bytes
 tests/api.test.mjs	3483 bytes
@@ -240,6 +246,7 @@ tests/browser/state.spec.mjs	1296 bytes
 tests/constellation.test.mjs	3079 bytes
 tests/contracts-1.0.test.mjs	6573 bytes
 tests/engine.test.mjs	11706 bytes
+tests/fleet.test.mjs	5193 bytes
 tests/import.test.mjs	2797 bytes
 tests/integrations.test.mjs	14497 bytes
 tests/kristal-kollection.test.mjs	4546 bytes

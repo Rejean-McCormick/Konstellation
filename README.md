@@ -38,7 +38,7 @@ The default `local` profile listens on `127.0.0.1:4321`.
 
 ### My Kristals (KNAV preview)
 
-Konstellation can show an optional **My Kristals** page before opening the existing conceptual Explorer. The preview is read-only and enabled only with `KONSTELLATION_ENABLE_MY_KRISTALS=true` in the `local` deployment profile. It can display an **explicit, separately authorized JSON inventory export** alongside the configured collection reader entries; it **does not** discover all local workspaces on its own. Inventory-only records cannot be opened without a reader. See [My Kristals setup, security, limits and tests](docs/31-my-kristals-manager-preview.md) and `Launch_My_Kristals.cmd`. This is a **working-tree preview**, not a qualified release or a ratified Manager integration.
+Konstellation can show an optional **My Kristals** page before opening the existing conceptual Explorer. The preview is read-only and enabled only with `KONSTELLATION_ENABLE_MY_KRISTALS=true` in the `local` deployment profile. It can display an **explicit, separately authorized JSON inventory export** alongside the configured collection reader entries; it **does not** discover all local workspaces on its own. Inventory-only records cannot be opened without a reader. See [My Kristals setup, security, limits and tests](docs/31-my-kristals-manager-preview.md) and `Launch_My_Kristals.cmd`. This is a **working-tree preview**, not a qualified release or a ratified Manager integration. This snapshot also accepts the Manager candidate local export through an explicit ACL file, and can display optional Authoring Kit 3.3 Discovery projections. See [Manager + Discovery guide](docs/32-manager-discovery-3.3.md).
 
 ### Legacy local Kristal selection
 

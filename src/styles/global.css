@@ -2983,3 +2983,30 @@ td {
 .fleet-detail-note { font-size:.84rem; line-height:1.5; color:#587470; margin-top:18px; }
 .fleet-empty { padding:30px; border:1px dashed #b4ccc6; border-radius:12px; }
 @media(max-width:850px){.fleet-layout{grid-template-columns:1fr}.fleet-detail{position:static}.fleet-heading{flex-direction:column;align-items:flex-start}}
+
+/* Satellite-of-satellite ephemeral preview; never changes selection. */
+.constellation-view { position: relative; }
+.constellation-preview-overlay { pointer-events: none; animation: constellation-preview-appear 160ms ease-out both; }
+.constellation-preview-overlay > line { stroke: #84a981; stroke-width: 1.4; stroke-dasharray: 5 4; opacity: .8; }
+.constellation-preview-overlay .constellation-preview-origin { fill: #e4f3d9; stroke: #749b62; stroke-width: 1.3; opacity: .56; }
+.constellation-preview-overlay g circle { fill: #f8fff2; stroke: #6f9968; stroke-width: 1.5; filter: drop-shadow(0 2px 3px #61845655); }
+.constellation-preview-overlay text { fill: #486248; font-size: 11px; }
+.constellation-preview-overlay .preview-symbol { font-size: 15px; }
+.constellation-preview-overlay .preview-label { font-size: 10px; font-weight: 600; paint-order: stroke; stroke: #fcfff8; stroke-width: 3px; stroke-linejoin: round; }
+.constellation-preview-overlay .preview-loading { font-size: 11px; }
+.constellation-portrait-indicator { cursor: pointer; outline: none; }
+.constellation-portrait-indicator circle { fill: #466e65; stroke: #fff; stroke-width: 1.6; filter: drop-shadow(0 2px 4px #263c3555); }
+.constellation-portrait-indicator text { fill: white; font-size: 13px; font-weight: 800; pointer-events: none; }
+.constellation-portrait-indicator:hover circle, .constellation-portrait-indicator:focus circle { fill: #244f57; stroke: #b2e9d3; stroke-width: 2.5; }
+.constellation-portrait-card { position: absolute; z-index: 4; right: 24px; top: 77px; width: min(305px, calc(100% - 48px)); max-height: min(570px, 75vh); overflow: auto; border: 1px solid #b1c6ac; border-radius: 13px; padding: 19px; background: #fffef8; box-shadow: 0 15px 45px #284a3544; color: #36503b; }
+.constellation-portrait-card .portrait-close { position: absolute; right: 12px; top: 8px; font-size: 23px; color: #587356; cursor: pointer; }
+.constellation-portrait-card .portrait-eyebrow { font-size: 11px; color: #768d6b; font-weight: 750; letter-spacing: .11em; }
+.constellation-portrait-card .portrait-visual { margin-top: 12px; display: grid; place-items: center; width: 100%; height: 138px; border-radius: 9px; background: linear-gradient(135deg,#d6e8d9,#edf3e2); color: #4a766b; font-size: 57px; overflow: hidden; }
+.constellation-portrait-card .portrait-visual img { width: 100%; height: 100%; object-fit: contain; }
+.constellation-portrait-card h3 { font-family: Georgia, serif; margin: 12px 0 7px; font-size: 19px; }
+.constellation-portrait-card p { margin: 6px 0 12px; line-height: 1.5; font-size: 13px; overflow-wrap: anywhere; }
+.constellation-portrait-card .portrait-field { border-top: 1px solid #e3ebde; padding: 8px 0; display: grid; gap: 3px; font-size: 12px; overflow-wrap: anywhere; }
+.constellation-portrait-card .portrait-field strong { font-size: 10px; text-transform: uppercase; color: #839277; letter-spacing: .06em; }
+.constellation-portrait-card .portrait-footnote { border-top: 1px solid #e3ebde; padding-top: 10px; font-size: 11px; color: #809276; }
+@keyframes constellation-preview-appear { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .constellation-preview-overlay { animation: none; } }

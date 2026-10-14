@@ -3,6 +3,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fail } from '../errors.mjs';
+import { MANAGER_LOCAL_FORMAT, validateManagerInventory, validateManagerAccessPolicy, projectManagerInventory } from './manager-adapter.mjs';
+import { validateDiscoveryCatalog, enrichAuthorizedFleet } from './discovery.mjs';
 
 export const FLEET_PREVIEW_FORMAT = 'konstellation.manager-inventory-preview/0.1';
 const ID = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$/;
@@ -38,25 +40,36 @@ export function validateFleetExport(doc) {
   });
 }
 
-export function readFleetExport(file) {
-  if (!file) return [];
-  // The administrator explicitly supplies this one local file. No recursive
-  // scanning, no symlinks, no workspaces and no inferred Manager API.
+export function readPrivateJsonFile(file, { maxBytes = 1024 * 1024 } = {}) {
   const absolute = path.resolve(file);
   let stat;
   try { stat = fs.lstatSync(absolute); }
-  catch { fail('FLEET_EXPORT_UNAVAILABLE', 'Configured inventory export is unavailable.', 503); }
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1024 * 1024)
-    fail('FLEET_EXPORT_INVALID', 'Inventory export must be a regular file below 1 MiB.', 422);
-  let doc;
-  try { doc = JSON.parse(fs.readFileSync(absolute, 'utf8')); }
-  catch { fail('FLEET_EXPORT_INVALID', 'Inventory export is not valid JSON.', 422); }
-  if (Object.keys(doc || {}).some((key) => !['format', 'entries'].includes(key)))
+  catch { fail('FLEET_EXPORT_UNAVAILABLE', 'Configured local metadata file is unavailable.', 503); }
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > maxBytes)
+    fail('FLEET_EXPORT_INVALID', 'Local metadata must be a regular bounded non-symlink file.', 422);
+  try { return JSON.parse(fs.readFileSync(absolute, 'utf8')); }
+  catch { fail('FLEET_EXPORT_INVALID', 'Local metadata is not valid JSON.', 422); }
+}
+
+export function readFleetExport(file, policyFile = null) {
+  if (!file) return [];
+  const doc = readPrivateJsonFile(file);
+  if (doc?.format === MANAGER_LOCAL_FORMAT) {
+    const records = validateManagerInventory(doc);
+    if (!policyFile) fail('FLEET_POLICY_REQUIRED', 'Explicit local Manager access policy required.', 403);
+    const policy = validateManagerAccessPolicy(readPrivateJsonFile(policyFile));
+    return validateFleetExport({format:FLEET_PREVIEW_FORMAT, entries:projectManagerInventory(records,policy)});
+  }
+  if (!isObject(doc) || Object.keys(doc).some((key) => !['format', 'entries'].includes(key)))
     fail('FLEET_EXPORT_INVALID', 'Unexpected inventory export field.', 422);
   return validateFleetExport(doc);
 }
 
-export function fleetForPrincipal(principal, entries, collection = null) {
+export function readDiscoveryCatalog(file) {
+  return file ? validateDiscoveryCatalog(readPrivateJsonFile(file, {maxBytes:256*1024})) : [];
+}
+
+export function fleetForPrincipal(principal, entries, collection = null, discoveryCatalog = []) {
   if (!principal?.scopes?.includes('read') && !principal?.scopes?.includes('admin'))
     fail('ACCESS_DENIED', 'Read scope required.', 403);
   const local = entries
@@ -84,5 +97,5 @@ export function fleetForPrincipal(principal, entries, collection = null) {
   }));
   // No joining on title, slug or state_ref: local and hosted observations remain separate.
   return { format: 'konstellation.fleet-view/0.1', experimental: true,
-    items: [...local, ...hosted].sort((a, b) => a.title.localeCompare(b.title, 'en') || a.key.localeCompare(b.key)) };
+    items: enrichAuthorizedFleet([...local, ...hosted], discoveryCatalog).sort((a, b) => a.title.localeCompare(b.title, 'en') || a.key.localeCompare(b.key)) };
 }

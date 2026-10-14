@@ -1,8 +1,10 @@
 <script>
-  import { onDestroy } from 'svelte';
+  import { onDestroy, tick } from 'svelte';
   import { layoutConstellation, splitLabel } from '../lib/constellation/layout.js';
+  import { portraitFor, orbitPreview } from '../lib/constellation/profile.mjs';
   export let rows = [];
   export let labels = {};
+  export let entities = {};
   export let rootLabel = 'Sélection';
   export let context;
   export let lensRef;
@@ -26,11 +28,29 @@
     requestedKey = '',
     resolvedKey = '',
     resolvedCenterKey = 'root',
-    resolvedPathDepth = 0;
+    resolvedPathDepth = 0,
+    hoveredKey = '',
+    hoveredNode = null,
+    preview = null,
+    previewBusy = false,
+    previewTimer,
+    previewController,
+    openPortrait = null,
+    portraitCloseButton,
+    portraitInvoker,
+    portraitImageFailed = false;
+  const previewCache = new Map();
 
   $: current = path.at(-1) || null;
+  $: accessKey = JSON.stringify({ context, lensRef, kristal, authToken });
+  let previousAccessKey = '';
+  $: if (accessKey !== previousAccessKey) {
+    previousAccessKey = accessKey;
+    previewCache.clear();
+    clearPreview();
+  }
   $: requestKey = current
-    ? JSON.stringify({ context, lensRef, focus: current.focus, groupId: current.groupId, limit, kristal })
+    ? JSON.stringify({ context, lensRef, focus: current.focus, groupId: current.groupId, limit, kristal, authToken })
     : '';
   $: if (requestKey && requestKey !== requestedKey) load(requestKey, path.length);
 
@@ -54,6 +74,8 @@
   $: model = data || rootModel;
   $: previousEntry = resolvedPathDepth > 1 ? path[resolvedPathDepth - 2] : null;
   $: centerX = previousEntry ? HISTORY_CENTER_X : BASE_CENTER_X;
+  $: centerPortrait = current?.focus?.kind === 'entity' && !current.groupId ? portraitFor(entities[current.focus.id], labels[current.focus.id]) : null;
+  $: previewPositioned = hoveredNode && preview ? orbitPreview(preview.satellites || [], hoveredNode, VIEW_WIDTH, VIEW_HEIGHT, 6, positioned.map((n) => ({ x:n.x, y:n.y, r:radius(n) }))) : [];
   $: positioned = layoutConstellation(
     model?.satellites || [],
     VIEW_WIDTH,
@@ -63,13 +85,15 @@
   );
 
   async function load(key, depth) {
+    clearPreview();
+    openPortrait = null;
     controller?.abort();
     requestedKey = key;
     controller = new AbortController();
     busy = true;
     error = '';
     try {
-      const { kristal: _kristal, ...payload } = JSON.parse(key);
+      const { kristal: _kristal, authToken: _authToken, ...payload } = JSON.parse(key);
       const response = await fetch('/api/constellation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}), ...(kristal ? { 'X-Konstellation-Kristal': kristal } : {}) },
@@ -91,13 +115,86 @@
     }
   }
 
+  function portrait(node) {
+    const focus = node?.target?.focus;
+    return focus?.kind === 'entity' && !node.target.groupId
+      ? portraitFor(entities[focus.id], labels[focus.id] || node.label)
+      : null;
+  }
+  function clearPreview() {
+    clearTimeout(previewTimer);
+    previewController?.abort();
+    previewController = null;
+    hoveredKey = '';
+    hoveredNode = null;
+    preview = null;
+    previewBusy = false;
+  }
+  function hidePreview(node) {
+    if (hoveredKey === nodeKey(node)) clearPreview();
+  }
+  function showPreview(node) {
+    if (!node?.target?.focus) return;
+    const key = nodeKey(node);
+    if (hoveredKey === key) return;
+    clearPreview();
+    hoveredKey = key;
+    hoveredNode = node;
+    const params = { context, lensRef, focus: node.target.focus, groupId: node.target.groupId, limit: 6, kristal };
+    const requestAuthToken = authToken;
+    const cacheKey = JSON.stringify({ params, accessKey });
+    if (previewCache.has(cacheKey)) {
+      preview = previewCache.get(cacheKey);
+      return;
+    }
+    previewBusy = true;
+    previewTimer = setTimeout(async () => {
+      previewController = new AbortController();
+      try {
+        const { kristal: _kristal, ...payload } = params;
+        const response = await fetch('/api/constellation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(requestAuthToken ? { Authorization: `Bearer ${requestAuthToken}` } : {}), ...(kristal ? { 'X-Konstellation-Kristal': kristal } : {}) },
+          body: JSON.stringify(payload),
+          signal: previewController.signal,
+        });
+        if (!response.ok) throw Error('Aperçu indisponible');
+        const value = await response.json();
+        if (hoveredKey !== key || requestAuthToken !== authToken) return;
+        if (previewCache.size >= 40) previewCache.delete(previewCache.keys().next().value);
+        previewCache.set(cacheKey, value);
+        preview = value;
+      } catch (e) {
+        if (e.name !== 'AbortError' && hoveredKey === key) preview = { satellites: [] };
+      } finally {
+        if (hoveredKey === key) previewBusy = false;
+      }
+    }, 140);
+  }
+  async function showPortrait(profile, event) {
+    clearPreview();
+    portraitInvoker = event?.currentTarget || null;
+    portraitImageFailed = false;
+    openPortrait = profile;
+    await tick();
+    portraitCloseButton?.focus();
+  }
+  function closePortrait() {
+    openPortrait = null;
+    if (portraitInvoker?.isConnected) portraitInvoker.focus();
+    portraitInvoker = null;
+  }
   function navigate(node) {
+    clearPreview();
+    openPortrait = null;
     const entry = { focus: node.target.focus, groupId: node.target.groupId, label: node.label };
     path = [...path, entry];
     if (entry.focus.kind === 'entity' && !entry.groupId) inspect(entry.focus.id);
   }
 
   function go(index) {
+    clearPreview();
+    openPortrait = null;
     const nextPath = index < 0 ? [] : path.slice(0, index + 1);
     const nextDepth = nextPath.length;
     path = nextPath;
@@ -130,13 +227,14 @@
     return JSON.stringify({ id: node.id, kind: node.kind, target: node.target });
   }
   function onLimit(event) {
+    clearPreview();
     limit = Number(event.currentTarget.value);
   }
 
-  onDestroy(() => controller?.abort());
+  onDestroy(() => { controller?.abort(); clearPreview(); });
 </script>
 
-<div class="constellation-view" aria-busy={busy}>
+<div class="constellation-view" aria-busy={busy} on:keydown={(e) => { if (e.key === 'Escape') { clearPreview(); if(openPortrait) { e.preventDefault(); closePortrait(); } } }}>
   <div class="constellation-toolbar">
     <nav class="constellation-breadcrumb" aria-label="Chemin de constellation">
       <button on:click={() => go(-1)}>Sélection</button>
@@ -150,7 +248,7 @@
 
   {#if error}<div class="constellation-message error">{error}</div>
   {:else if model}
-    <svg class:loading={busy} class="constellation-canvas" viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} role="img" aria-label={'Constellation autour de ' + model.center.label}>
+    <svg class:loading={busy} class="constellation-canvas" viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} role="group" aria-label={'Constellation autour de ' + model.center.label}>
       {#if previousEntry}
         <path
           class="constellation-history-edge"
@@ -210,6 +308,10 @@
           tabindex="0"
           transform={`translate(${node.x} ${node.y})`}
           aria-label={'Explorer ' + node.label}
+          on:mouseenter={() => showPreview(node)}
+          on:mouseleave={() => hidePreview(node)}
+          on:focus={() => showPreview(node)}
+          on:blur={() => hidePreview(node)}
           on:click={() => navigate(node)}
           on:keydown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -226,7 +328,55 @@
           </g>
         </g>
       {/each}
+      {#if centerPortrait}
+        <g class="constellation-portrait-indicator" role="button" tabindex="0"
+          aria-label={'Ouvrir la fiche de ' + centerPortrait.title}
+          transform={`translate(${centerX + 57} ${CENTER_Y - 55})`}
+          on:click={(e) => showPortrait(centerPortrait, e)}
+          on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPortrait(centerPortrait, e); } }}>
+          <circle r="13" /><text text-anchor="middle" y="4">i</text>
+        </g>
+      {/if}
+      {#each positioned as node (nodeKey(node))}
+        {#if portrait(node)}
+          <g class="constellation-portrait-indicator" role="button" tabindex="0"
+            aria-label={'Ouvrir la fiche de ' + node.label}
+            transform={`translate(${node.x + radius(node) * 0.8} ${node.y - radius(node) * 0.8})`}
+            on:click={(e) => showPortrait(portrait(node), e)}
+            on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPortrait(portrait(node), e); } }}>
+            <circle r="12" /><text text-anchor="middle" y="4">i</text>
+          </g>
+        {/if}
+      {/each}
+      {#if hoveredNode && (previewBusy || previewPositioned.length)}
+        <g class="constellation-preview-overlay" aria-hidden="true">
+          <circle class="constellation-preview-origin" cx={hoveredNode.x} cy={hoveredNode.y} r="47" />
+          {#each previewPositioned as child, i (i)}
+            <line x1={hoveredNode.x} y1={hoveredNode.y} x2={child.x} y2={child.y} />
+            <g transform={`translate(${child.x} ${child.y})`}>
+              <circle r="20" />
+              <text class="preview-symbol" text-anchor="middle" y="4">{child.kind === 'group' ? '✦' : '•'}</text>
+              {#each splitLabel(child.label, 13) as line, k}<text class="preview-label" text-anchor="middle" y={30 + k * 13}>{line}</text>{/each}
+            </g>
+          {/each}
+          {#if previewBusy}<text class="preview-loading" x={hoveredNode.x} y={hoveredNode.y + 54} text-anchor="middle">Aperçu…</text>{/if}
+        </g>
+      {/if}
     </svg>
+    {#if openPortrait}
+      <section class="constellation-portrait-card" role="dialog" aria-modal="false" aria-label={'Fiche de ' + openPortrait.title}>
+        <button class="portrait-close" bind:this={portraitCloseButton} aria-label="Fermer la fiche" on:click={closePortrait}>×</button>
+        <div class="portrait-eyebrow">FICHE · {openPortrait.typeLabel}</div>
+        <div class="portrait-visual">
+          {#if openPortrait.image && !portraitImageFailed}<img src={openPortrait.image} loading="lazy" decoding="async" alt={'Illustration de ' + openPortrait.title} on:error={() => (portraitImageFailed = true)} />
+          {:else}<span aria-hidden="true">{openPortrait.symbol}</span>{/if}
+        </div>
+        <h3>{openPortrait.title}</h3>
+        {#if openPortrait.description}<p>{openPortrait.description}</p>{/if}
+        {#each openPortrait.fields as field}<div class="portrait-field"><strong>{field.name}</strong><span>{field.value}</span></div>{/each}
+        <p class="portrait-footnote">Informations déclarées dans le jeu de données.</p>
+      </section>
+    {/if}
     <div class="constellation-footer">
       <span>{model.satellites.length} satellite{model.satellites.length > 1 ? 's' : ''}{model.truncated ? ` sur ${model.totalCandidates}` : ''}</span>
       <span>{busy ? 'Transition vers le nouveau centre…' : 'Classement déterministe · sources et politique de lecture préservées'}</span>

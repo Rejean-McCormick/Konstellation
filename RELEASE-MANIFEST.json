@@ -5,8 +5,8 @@
   "canonicalTruth": "upstream-kristal-state",
   "navigationPlanSchema": "1.0",
   "projectionSchema": "1.0",
-  "fileCount": 253,
-  "contentSha256": "a023a1dd42465eb12d5dc1547b795978242bcdea29aa29924310ad7d1876bfba",
+  "fileCount": 265,
+  "contentSha256": "64d92e93ddd7c46bee72039db797e0a5fbd82e71192b2c551263975594f35e2f",
   "files": [
     {
       "path": ".github/dependabot.yml",
@@ -75,8 +75,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "d2c6f5bfbcf02c77229459d29b8a44d75afc0f9ab1e461bd8827fefe740d699c",
-      "size": 14156
+      "sha256": "ad4f1410d135419a00c4d421781796d693993dd5d80064eefad60ff620679fcd",
+      "size": 15296
     },
     {
       "path": "contracts/constellation-response.schema.json",
@@ -355,8 +355,18 @@
     },
     {
       "path": "docs/31-my-kristals-manager-preview.md",
-      "sha256": "bfa1017b408c301f90f7269ff156c1fd8de29b9b1bfc0c5e0c94aad8ac7a89e8",
-      "size": 7132
+      "sha256": "f7e83a2220b451b941a80e24e24a9d5510a398ddc54a07c3cc107a59a3c84c98",
+      "size": 7579
+    },
+    {
+      "path": "docs/32-manager-discovery-3.3.md",
+      "sha256": "f1a951d2873f2ed342bb9a7d9ee933046d106ae5a80106fcb288c2a16411e45e",
+      "size": 6772
+    },
+    {
+      "path": "docs/32-satellite-overlay-portraits.md",
+      "sha256": "edfcd2c3f485a235e6e7565e5e413ab0202eb8707852f5bbe7e2accb090ac8b4",
+      "size": 2001
     },
     {
       "path": "docs/adr/ADR-0005-bounded-selection-tree.md",
@@ -450,8 +460,8 @@
     },
     {
       "path": "docs/KNAV_IMPLEMENTATION_REPORT_2026-10-12.md",
-      "sha256": "ba69bffad31d537c65ef0c1b0e54583789a6d4be9088f983d5c5711176aad45c",
-      "size": 5020
+      "sha256": "f4d4819ad37569f225772ae54937788ea063a8f1ed6b531c5aa7c6ed7b831693",
+      "size": 5027
     },
     {
       "path": "docs/OPERATIONS.md",
@@ -534,8 +544,18 @@
       "size": 1072
     },
     {
-      "path": "examples/fleet/manager-preview.example.json",
+      "path": "examples/fleet/legacy/manager-preview.example.json",
       "sha256": "f38e3b139a1f4831aff4de47a6c91b9f3c882d609e8b2ed4cf17f8b2dae567ae",
+      "size": 782
+    },
+    {
+      "path": "examples/fleet/manager-access-policy.example.json",
+      "sha256": "0b632565552df83acd12f80170a9a1a20d4eda252cf323224f92aca5df06e602",
+      "size": 328
+    },
+    {
+      "path": "examples/fleet/manager-local-inventory.synthetic.json",
+      "sha256": "1a81f347c71fa440bc89b50203b0e0d1d134c26e1b2ecfbfd5baa1acf250f3dc",
       "size": 782
     },
     {
@@ -764,6 +784,16 @@
       "size": 266
     },
     {
+      "path": "maintenance-cleanup.json",
+      "sha256": "df6bf8aeaaf48b9ddd212e1b580a36578b314d240bfcbcaff3f16291f0ceef15",
+      "size": 450
+    },
+    {
+      "path": "Nettoyage_Konstellation.pyw",
+      "sha256": "d0bbfa9b6f7165896e324eb226e00d0e6df8020c36eced9a3c4003a1d165b08f",
+      "size": 4285
+    },
+    {
       "path": "package.json",
       "sha256": "de3b61d05e5b074972dac159bb9d0de2538a5f4a70b0cccb608f73d5e9c1ec47",
       "size": 2327
@@ -780,8 +810,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "80c4f6a9a304ff1b7a58d16889ef6a7f92b3b8084e7dd36300453391d28b405a",
-      "size": 4335
+      "sha256": "eabb3143707c94423c31abb92b26bdfa011fc004a9e374adc5770c6390e91399",
+      "size": 4560
     },
     {
       "path": "requirements-dev.txt",
@@ -854,6 +884,11 @@
       "size": 3173
     },
     {
+      "path": "scripts/project-discovery.mjs",
+      "sha256": "d7db00921cad28601fffe0fd4777b2a8f53768eb5875fba462f7e797f9bd4d6b",
+      "size": 2438
+    },
+    {
       "path": "scripts/release-check.mjs",
       "sha256": "1f2fc9b490d1cb51b7de4608ae23f3f62a60d42fb59050cee78ada623cbeee88",
       "size": 2917
@@ -880,8 +915,8 @@
     },
     {
       "path": "server/config.mjs",
-      "sha256": "7fc7df8082fbb61cd3253b1928012dabe754a4800df90ea59f0871025f9c2943",
-      "size": 2935
+      "sha256": "446bf364379a7ecc71aae604075003181c968770a5c96f912410178c0d18f74f",
+      "size": 3197
     },
     {
       "path": "server/contracts.mjs",
@@ -900,13 +935,18 @@
     },
     {
       "path": "server/index.mjs",
-      "sha256": "0015c94515dd4c58fde47b27c9e7fc2b9173fb5ccf5247b8e58ab250f4e89955",
-      "size": 18097
+      "sha256": "88c7fbb4b852a6a0326f38ba83e72fe4243a61189a66da7830bc2ac3923e32db",
+      "size": 18192
+    },
+    {
+      "path": "server/integrations/discovery.mjs",
+      "sha256": "371b231237a12e7df357fbea9f717697d3745dab39d20b10005074be935a5a5f",
+      "size": 5047
     },
     {
       "path": "server/integrations/fleet.mjs",
-      "sha256": "9a88df83b20308ef3b0d9d43d8c6b964c945193110d448c221e48abb906d3a81",
-      "size": 5412
+      "sha256": "7900e3ae6df3129123f46d2d21edecca3552cef8f3bb1f403697d51503abfd7b",
+      "size": 6243
     },
     {
       "path": "server/integrations/kompiler-bridge.mjs",
@@ -927,6 +967,11 @@
       "path": "server/integrations/kristal.mjs",
       "sha256": "75e7835012d0a46076cf06227efa413b14d643e8da0adecba8d8383e710fe073",
       "size": 23520
+    },
+    {
+      "path": "server/integrations/manager-adapter.mjs",
+      "sha256": "44ea82528ee9d14679b7dbce95fbee0d740d50433f6149f06783812372e1d61a",
+      "size": 4890
     },
     {
       "path": "server/integrations/reader-policy.mjs",
@@ -994,14 +1039,9 @@
       "size": 1279
     },
     {
-      "path": "SMARTDUMP_INDEX.txt",
-      "sha256": "5e7574206389a5f51c84641ecff1b9787dccb26c9ffe757c7362a37200ac18d8",
-      "size": 10590
-    },
-    {
       "path": "SNAPSHOT_INDEX.txt",
-      "sha256": "b99cbabbba3910c054cca1ff4cf665413706cdca95203f3d998517cf8b1b83af",
-      "size": 7196
+      "sha256": "a85d6c42e7a814bcd21a1eeccd8ee3dedf16ab6faa28462d62c898f92a730202",
+      "size": 8331
     },
     {
       "path": "src/components/AdaptiveProjectionView.svelte",
@@ -1025,8 +1065,8 @@
     },
     {
       "path": "src/components/ConstellationView.svelte",
-      "sha256": "b186b4af75e41cfcd9fc587b34790458f884355f9478e69dffc7629d6efa0388",
-      "size": 8748
+      "sha256": "9e693393d01bff0a9f010a92a75208255ad3a9a141f1647612e24915a3327c4e",
+      "size": 15961
     },
     {
       "path": "src/components/DagProofView.svelte",
@@ -1035,8 +1075,8 @@
     },
     {
       "path": "src/components/Explorer.svelte",
-      "sha256": "a911336314d489a6849acf9ec13a78dcf728575cea71bdcfa0a1936eaa52edf4",
-      "size": 60708
+      "sha256": "e9b2f163438dabbef7aa2b3ccd464f2dc3fae042064968f44aa4660f484861bb",
+      "size": 60745
     },
     {
       "path": "src/components/FlowPathView.svelte",
@@ -1060,8 +1100,8 @@
     },
     {
       "path": "src/components/MyKristals.svelte",
-      "sha256": "c5588b60c39d1ae502ca8a42064202507c93b4f168f3d9ee26bb2054f73fd3f5",
-      "size": 5225
+      "sha256": "0f79355df78d84f2839bae8e7dedfe42950686214e5e976dc6fbbc43e5a8ea5d",
+      "size": 6193
     },
     {
       "path": "src/components/QueryTree.svelte",
@@ -1104,14 +1144,19 @@
       "size": 1504
     },
     {
+      "path": "src/lib/constellation/profile.mjs",
+      "sha256": "141cb3746a27be09fff71377d18b2e1a96c73f6afa3f127681fae30acdc3e2a5",
+      "size": 5381
+    },
+    {
       "path": "src/pages/index.astro",
       "sha256": "8c021068290775b90f077bd6da9be274de7e8419b75fd57dd7009206de60b535",
       "size": 666
     },
     {
       "path": "src/styles/global.css",
-      "sha256": "3159492f8baeb7f904ab580eef66365020eb94163b8cffec35b2fdcaf808d573",
-      "size": 63217
+      "sha256": "41a81f990baddd95f8b83483f896832f934d11bf65f5a9d762f663f0158af033",
+      "size": 66444
     },
     {
       "path": "svelte.config.js",
@@ -1169,6 +1214,11 @@
       "size": 1296
     },
     {
+      "path": "tests/constellation-portrait.test.mjs",
+      "sha256": "a11ce3d1a569e4176ef9d170a4224c4ed09c4da12c527db1029e2cc1a2e4ee9e",
+      "size": 3285
+    },
+    {
       "path": "tests/constellation.test.mjs",
       "sha256": "5600861718fadf64a7fd45137fdc0103074ed5af8070437539c69d02a3b8a9ad",
       "size": 3079
@@ -1219,6 +1269,11 @@
       "size": 1746
     },
     {
+      "path": "tests/manager-discovery.test.mjs",
+      "sha256": "3fc1b228932f3e203e8b504729b3662136be13a859b50bae0d929536e277b655",
+      "size": 7531
+    },
+    {
       "path": "tests/navigation-adaptive.test.mjs",
       "sha256": "d889cab6cfa60f5cbc98b2bacbc789b9b1648222aef0d96b9fee27fc499eec68",
       "size": 4359
@@ -1262,6 +1317,11 @@
       "path": "Update_Biblical_Corpus.cmd",
       "sha256": "0677f9f471b960f86e991c6f503c6239d1b6a18a5707c69715c8bbbfa353ac2b",
       "size": 2168
+    },
+    {
+      "path": "UPDATE_SUMMARY_2026-10-13.md",
+      "sha256": "2c8a8bc35fc926a674fe028e9fab376d7737888ad7a1868e2baca9bb6264ed79",
+      "size": 2243
     },
     {
       "path": "vitest.config.mjs",

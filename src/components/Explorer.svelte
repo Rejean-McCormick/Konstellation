@@ -1224,6 +1224,7 @@
             {:else if view === 'constellation' || view === 'graph'}<ConstellationView
                 {rows}
                 labels={labelMap}
+                entities={entityMap}
                 rootLabel={typeLabel(query.selection.entityType) || query.selection.entityType}
                 context={query.context}
                 lensRef={lensId}

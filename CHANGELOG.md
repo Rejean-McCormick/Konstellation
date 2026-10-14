@@ -1,3 +1,13 @@
+# Unreleased — Manager candidate + Discovery 3.3 consolidation (2026-10-13)
+
+- Local-only My Kristals now reads `kristal.manager-local-inventory/0.1-candidate` **with a separate explicit, default-deny operator access policy**; no implicit access from the Manager inventory itself.
+- Enforces state_ref and state commitment matching, rejects duplicate identities, local paths and sensitive data. Hosted and local observations stay separate.
+- Optional bounded local `konstellation.discovery-projections/0.1` catalog from Authoring Kit 3.3; classification, reader hints and measured bytes remain advisory, noncanonical and non-authorizing.
+- `scripts/project-discovery.mjs` projects explicitly selected Kit manifests without scanning or accessing any network.
+- My Kristals remains loopback-only. Legacy synthetic preview still supported but its fixture moved to `examples/fleet/legacy/`.
+- Added `Nettoyage_Konstellation.pyw` for manual deletion of the superseded local fixture only after SHA-256 verification and GUI confirmation.
+- Manager, Authoring Kit, canonical Kristals, remote services, and C2/C4 publication gates are unchanged.
+
 # Working tree — KNAV My Kristals preview (unreleased, 2026-10-12)
 
 - Opt-in local-only `GET /api/fleet` with per-principal ACL filtering and a bounded experimental Manager-preview JSON consumer (not an official Manager API).

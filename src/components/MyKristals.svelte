@@ -15,7 +15,7 @@
     const q = lower(search.trim());
     return (source === 'all' || item.source === source) &&
       (availability === 'all' || item.availability === availability) &&
-      (!q || [item.title, item.stateRef, item.archetype, item.id].some((value) => lower(value).includes(q)));
+      (!q || [item.title, item.stateRef, item.archetype, item.id, item.discovery?.classification?.primary_archetype, item.discovery?.classification?.primary_usage].some((value) => lower(value).includes(q)));
   });
   $: if (selected && !filtered.some((item) => item.key === selected.key)) selected = null;
 </script>
@@ -30,13 +30,13 @@
     <button class="button" on:click={onExploreCurrent}>Explore current corpus →</button>
   </header>
   <div class="fleet-disclaimer" role="status">
-    Manager preview export is an experimental, local-only bridge. Hosted index metadata is not a publication receipt. Technical hosting diagrams are not semantic concept graphs.
+    Local Manager inventory requires explicit authorization. Authoring Kit Discovery 3.3 is advisory metadata only; it does not prove qualification, publication or a usable reader. Hosted index metadata is not a publication receipt.
   </div>
   <div class="fleet-filters">
-    <label>Search Kristals<input aria-label="Search Kristals" type="search" bind:value={search} placeholder="Name, state reference or declared archetype" /></label>
+    <label>Search Kristals<input aria-label="Search Kristals" type="search" bind:value={search} placeholder="Name, state reference, archetype or usage" /></label>
     <label>Source<select aria-label="Kristal source" bind:value={source}>
       <option value="all">All permitted sources</option>
-      <option value="local_manager_preview">Local inventory (preview)</option>
+      <option value="local_manager_preview">Local Manager inventory</option>
       <option value="github_v10_checkout">GitHub v10 checkout</option>
       <option value="legacy_reader">Legacy reader</option>
     </select></label>
@@ -71,7 +71,15 @@
           <dt>Readiness (declared)</dt><dd>{selected.readiness.replaceAll('_', ' ')}</dd>
           <dt>Verification</dt><dd>{selected.verification.replaceAll('_', ' ')}</dd>
           <dt>View</dt><dd>{selected.viewKind.replaceAll('_', ' ')}</dd>
-          <dt>Archetype (declared)</dt><dd>{selected.archetype || 'Unknown'}</dd>
+          <dt>Archetype (declared)</dt><dd>{selected.discovery?.classification?.primary_archetype || selected.archetype || 'Unknown'}</dd>
+          {#if selected.discovery}
+            <dt>Usage Arketype (declared)</dt><dd>{selected.discovery.classification?.primary_usage || 'Not declared'}</dd>
+            <dt>Data organization</dt><dd>{selected.discovery.organization}</dd>
+            <dt>Reader recommendation</dt><dd>{selected.discovery.readerProfile}</dd>
+            {#if selected.discovery.accessPattern}<dt>Suggested access</dt><dd>{selected.discovery.accessPattern}</dd>{/if}
+            <dt>Measured registered bytes</dt><dd>{selected.discovery.trackedLocalBytes.toLocaleString()} ({selected.discovery.sizeClass}; {selected.discovery.completeness.replaceAll('_',' ')})</dd>
+            <dt>Discovery status</dt><dd>Declared, noncanonical, not independently verified</dd>
+          {/if}
         </dl>
         {#if selected.openable}
           <button class="button primary" disabled={opening} on:click={() => onOpen(selected.readerId)}>{opening ? 'Opening…' : 'Open in Explorer →'}</button>
