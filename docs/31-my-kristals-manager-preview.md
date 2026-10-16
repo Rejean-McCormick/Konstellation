@@ -34,7 +34,7 @@ The `Launch_My_Kristals.cmd` convenience wrapper enables the page using `Konstel
 
 ## Experimental, non-normative export
 
-`konstellation.manager-inventory-preview/0.1` remains a **legacy local synthetic fixture**, not an approved Manager format. The real Manager candidate `kristal.manager-local-inventory/0.1-candidate` is now supported through a separate authorization policy. Manager's producer contract remains to be negotiated between its owner, Konstellation and C0. Format example: [`../examples/fleet/legacy/manager-preview.example.json`](../examples/fleet/legacy/manager-preview.example.json).
+`konstellation.manager-inventory-preview/0.1` remains a **legacy local synthetic fixture**, not an approved Manager format. The real Manager candidate `kristal.manager-local-inventory/0.1-candidate` is now supported through a separate authorization policy. Manager's producer contract remains to be negotiated between its owner, Konstellation and C0. Format example: [`../examples/fleet/manager-preview.example.json`](../examples/fleet/manager-preview.example.json).
 
 Per record, required `id`, `title`, `visibility` (`public` or `private`), `readiness` (`unknown`, `not_checked`, `not_ready`, `ready`, `blocked`, `unavailable`), `availability` (`unknown`, `available`, `unavailable`), `allowed_principals` and `allowed_roles`. Optional `state_ref`, `state_commitment` (`sha256:<64 hexadecimal>`), and explicitly declared `archetype`. All other fields are rejected; **filesystem paths, private locators, tokens, trust receipts and canonical content are never exported**. `state_commitment` is display-only and **declared**, not independently recomputed.
 

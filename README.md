@@ -40,6 +40,36 @@ The default `local` profile listens on `127.0.0.1:4321`.
 
 Konstellation can show an optional **My Kristals** page before opening the existing conceptual Explorer. The preview is read-only and enabled only with `KONSTELLATION_ENABLE_MY_KRISTALS=true` in the `local` deployment profile. It can display an **explicit, separately authorized JSON inventory export** alongside the configured collection reader entries; it **does not** discover all local workspaces on its own. Inventory-only records cannot be opened without a reader. See [My Kristals setup, security, limits and tests](docs/31-my-kristals-manager-preview.md) and `Launch_My_Kristals.cmd`. This is a **working-tree preview**, not a qualified release or a ratified Manager integration. This snapshot also accepts the Manager candidate local export through an explicit ACL file, and can display optional Authoring Kit 3.3 Discovery projections. See [Manager + Discovery guide](docs/32-manager-discovery-3.3.md).
 
+### Lecteur local Kristal v10 (expérimental)
+
+Le lecteur explicite `kristal-local-v10` (voir `docs/33-kristal-v10-local-reader.md`)
+ouvre une vue dérivée d'un workspace local à état sémantique v9 (conservé
+par le Framework v10) sans modifier ni qualifier le canon. Les diagnostics
+Manager alpha.14 peuvent être affichés séparément dans My Kristals, toujours
+sous ACL explicite. Ils ne constituent ni permission de lecture ni autorité.
+Pour Catho, laissez le Kristal à son emplacement canonique local
+`C:\mycode\Kristal\locals\A-Kristal-Catho` et lancez
+`Ouvrir_Kristal_Catho_v10.cmd` (Node >=24.15 requis). Le lanceur principal
+utilise `config/active-reader.json` lorsqu'il existe, et ne choisit plus la
+démonstration Théophile implicitement. Pour rouvrir la démonstration,
+lancez `Ouvrir_Theophile_demo.cmd`. Aucun fichier de Catho n'est déplacé.
+
+### Parcours de lecture des Kristals locaux (correctif expérimental)
+
+Quand un graphe dérivé déclare des `kind`, Konstellation les expose comme
+**perspectives distinctes** plutôt que d'ouvrir par défaut `V9 state`.
+Dans `config/active-reader.json`, `readModel.presentation.preferredKind` et
+`featuredKinds` ne sont que des préférences d'interface locales, jamais des
+contrats canoniques. Les libellés de types et de relations sont facultatifs;
+ils ne confèrent aucune validation ni équivalence à leurs objets.
+
+Pour Catho, les parcours en accueil sont Personnes, Œuvres, Thèmes, Sources,
+Assertions historiques et Hypothèses ouvertes. Les états et artefacts v9
+restent accessibles dans la liste Perspective. L'avertissement est désormais
+« Lecture locale dérivée » et non « Corpus de démonstration ».
+Le dossier Catho reste `C:\mycode\Kristal\locals\A-Kristal-Catho`.
+Voir `docs/35-parcours-locaux-catho.md`.
+
 ### Legacy local Kristal selection
 
 Only when `KONSTELLATION_USE_LEGACY_KOLLECTION=true` is explicitly set and a compatible legacy collection is placed in `../kristals`, `Konstellation_Launcher.cmd` can select `examples/integrations/kristal-kollection.json`. The context header offers a **KRISTAL** selector. The selected reference is retained locally and included in shared/exported navigation metadata. Domains without exactly one readable `*.kristal-state.json` remain visible but disabled. `X-Konstellation-Kristal` scopes a request without mutating the shared server corpus.

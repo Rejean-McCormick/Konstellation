@@ -38,7 +38,7 @@ export function loadLenses(engine, dir) {
       widget: relation.valueKind === 'interval' ? 'year-range' : relation.valueKind === 'entity' ? 'entity-picker' : 'presence',
     }));
     const pivots = relations.filter((relation) => relation.valueKind === 'entity').slice(0, 16).map((relation) => relation.id);
-    const label = engine.profiler.entityTypeLabels[type] || type.replace(/[_:.-]+/g,' ').split(/\s+/).filter(Boolean).map((word)=>word.charAt(0).toLocaleUpperCase('fr')+word.slice(1)).join(' ');
+    const label = engine.pack.integration?.presentation?.typeLabels?.[type] || engine.profiler.entityTypeLabels[type] || type.replace(/[_:.-]+/g,' ').split(/\s+/).filter(Boolean).map((word)=>word.charAt(0).toLocaleUpperCase('fr')+word.slice(1)).join(' ');
     return validateLens({
       schemaVersion:'0.2', id:`type:${type}`, label:{fr:label,en:label}, rootType:type, facets, pivots,
       constellation:{defaultSatelliteCount:8,groups:[]},

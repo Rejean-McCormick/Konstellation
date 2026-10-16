@@ -34,7 +34,7 @@ test('Manager candidate inventory is supported only through exact operator ACL a
   const rows = validateManagerInventory(raw([record()]));
   const projected = projectManagerInventory(rows, validateManagerAccessPolicy(policy([grant()])));
   assert.equal(projected.length,1);
-  assert.equal(projected[0].readiness,'ready');
+  assert.equal(projected[0].readiness,'not_checked');
   assert.equal(projected[0].availability,'available');
   assert.equal(projected[0].archetype,undefined);
   assert.deepEqual(fleetForPrincipal(principal,projected).items[0].openable,false);
@@ -103,4 +103,35 @@ test('My Kristals refuses non-loopback serving and all nonlocal profiles',()=>{
   assert.equal(pub.fleetEnabled,false);
   assert.equal(pub.fleetPolicyFile,null);
   assert.equal(pub.fleetDiscoveryFile,null);
+});
+
+
+test('Manager alpha.14 operational report is sanitized, scoped and never elevates readiness',()=>{
+  const alpha14=record({
+    discovery:{status:'stale',issues:['size changed: /home/private/important.json'],classification:{primary_archetype:'ARK-08'}},
+    operational_result:'ATTENTION_REQUIRED',framework_state_verification:'VERIFIED',
+  });
+  const projected=projectManagerInventory(validateManagerInventory(raw([alpha14])),validateManagerAccessPolicy(policy([grant()])));
+  assert.equal(projected[0].readiness,'not_checked');
+  assert.deepEqual({o:projected[0].operational_result,d:projected[0].discovery_status,f:projected[0].framework_state_verification},
+    {o:'ATTENTION_REQUIRED',d:'stale',f:'VERIFIED'});
+  const entries=fleetForPrincipal(principal,projected).items;
+  assert.equal(entries[0].openable,false);
+  assert.equal(entries[0].managerAssessment.authority,'operational_observation_only');
+  assert.equal(JSON.stringify(entries).includes('/home/private'),false);
+  assert.equal(fleetForPrincipal({id:'bob',roles:[],scopes:['read']},projected).items.length,0);
+  assert.throws(()=>validateManagerInventory(raw([record({operational_result:'APPROVED'})])),{code:'FLEET_EXPORT_INVALID'});
+});
+
+
+test('Explicit local v10 reader is selectable but is not merged with Manager evidence',()=>{
+  const reader={source:'kristal-local-v10',items:[{id:'local-v10',label:'Fixture',stateRef:'urn:kristal:state:sample',available:true}]};
+  const local=projectManagerInventory(validateManagerInventory(raw([record({operational_result:'LOCAL_STRUCTURE_ONLY'})])),[grant()]);
+  const view=fleetForPrincipal(principal,local,reader).items;
+  assert.equal(view.length,2);
+  const configured=view.find(item=>item.source==='local_v10_reader');
+  assert.equal(configured.openable,true);
+  assert.equal(configured.verification,'checked_on_open');
+  assert.equal(configured.managerAssessment,undefined);
+  assert.equal(view.find(item=>item.source==='local_manager_preview').openable,false);
 });

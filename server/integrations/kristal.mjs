@@ -9,6 +9,7 @@ import { upstream, fetchJson, serviceUrl } from './upstream.mjs';
 import { normalizeKristalPolicy } from './reader-policy.mjs';
 import { importKristalV6State } from './kristal-v6.mjs';
 import { listGithubKristals, loadGithubKristal } from './kristal-v10.mjs';
+import { listLocalV10, loadLocalV10 } from './kristal-local-v10.mjs';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const hex = (x) => String(x || '').replace(/^sha256:/, '');
 function safeFile(root, name) {
@@ -518,11 +519,12 @@ export function listKristalCollection(config, base) {
 
 export function listIntegrationKristals(file) {
   const config = readJson(file);
-  if (!['kristal-kollection-v1', 'kristal-github-collection-v10'].includes(config.adapter))
+  if (!['kristal-kollection-v1', 'kristal-github-collection-v10', 'kristal-local-v10'].includes(config.adapter))
     return { selectable: false, defaultKristal: null, items: [] };
   const base = path.dirname(path.resolve(file));
   const items = config.adapter === 'kristal-github-collection-v10'
-    ? listGithubKristals(config, base) : listKristalCollection(config, base);
+    ? listGithubKristals(config, base) : config.adapter === 'kristal-local-v10'
+      ? listLocalV10(config, base) : listKristalCollection(config, base);
   const available = items.filter((item) => item.available);
   const configured = available.find((item) => collectionKey(item.id) === collectionKey(config.kristal));
   return {
@@ -536,6 +538,10 @@ export async function loadIntegrationKristal(file, kristal, options) {
   const config = readJson(file), base = path.dirname(path.resolve(file));
   if (config.adapter === 'kristal-github-collection-v10')
     return validatePack(loadGithubKristal({ ...config, kristal }, base));
+  if (config.adapter === 'kristal-local-v10') {
+    if (kristal !== 'local-v10') fail('KRISTAL_NOT_FOUND', 'Sélection locale inconnue.', 422);
+    return validatePack(loadLocalV10(config, base));
+  }
   if (config.adapter !== 'kristal-kollection-v1')
     fail('UNSUPPORTED_ADAPTER', 'Le backend configuré n’est pas une Kristal-Kollection.', 422);
   return loadKristalCollection({ ...config, kristal, title: undefined }, base, options);
@@ -545,6 +551,7 @@ export async function loadIntegration(file, options) {
   const config = readJson(file),
     base = path.dirname(path.resolve(file));
   if (config.adapter === 'kristal-github-collection-v10') return validatePack(loadGithubKristal(config, base));
+  if (config.adapter === 'kristal-local-v10') return validatePack(loadLocalV10(config, base));
   if (config.adapter === 'kristal-runtime-pack-v1') return loadKristalDirectory(config, base);
   if (config.adapter === 'kristal-http-query-v1') return loadKristalHttp(config, base, options);
   if (config.adapter === 'kristal-state-v6') return loadKristalV6File(config, base);

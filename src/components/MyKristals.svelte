@@ -38,6 +38,7 @@
       <option value="all">All permitted sources</option>
       <option value="local_manager_preview">Local Manager inventory</option>
       <option value="github_v10_checkout">GitHub v10 checkout</option>
+      <option value="local_v10_reader">Local Kristal v10 reader</option>
       <option value="legacy_reader">Legacy reader</option>
     </select></label>
     <label>Availability<select aria-label="Kristal availability" bind:value={availability}>
@@ -50,7 +51,7 @@
     <div class="fleet-grid" aria-label="Permitted Kristals">
       {#each filtered as item (item.key)}
         <button class="fleet-card" class:selected={selected?.key === item.key} on:click={() => (selected = item)} aria-label={'Inspect ' + item.title}>
-          <span class="fleet-card-top"><span class="fleet-type">{item.source === 'local_manager_preview' ? 'LOCAL INVENTORY' : item.source === 'github_v10_checkout' ? 'GITHUB V10' : 'LEGACY READER'}</span><span class="fleet-indicator">{item.availability}</span></span>
+          <span class="fleet-card-top"><span class="fleet-type">{item.source === 'local_manager_preview' ? 'LOCAL INVENTORY' : item.source === 'github_v10_checkout' ? 'GITHUB V10' : item.source === 'local_v10_reader' ? 'LOCAL V10 READER' : 'LEGACY READER'}</span><span class="fleet-indicator">{item.availability}</span></span>
           <strong>{item.title}</strong>
           <span class="fleet-ref">{item.stateRef || 'State reference not supplied'}</span>
           <span class="fleet-card-bottom">{item.openable ? 'Reader configured' : 'Inventory only'} · {item.readiness.replaceAll('_', ' ')}</span>
@@ -70,6 +71,11 @@
           <dt>Availability</dt><dd>{selected.availability}</dd>
           <dt>Readiness (declared)</dt><dd>{selected.readiness.replaceAll('_', ' ')}</dd>
           <dt>Verification</dt><dd>{selected.verification.replaceAll('_', ' ')}</dd>
+          {#if selected.managerAssessment}
+            <dt>Manager (local)</dt><dd>{selected.managerAssessment.result.replaceAll('_', ' ')}</dd>
+            <dt>Discovery (Manager)</dt><dd>{selected.managerAssessment.discovery.replaceAll('_', ' ')}</dd>
+            <dt>Framework state (Manager)</dt><dd>{selected.managerAssessment.frameworkState.replaceAll('_', ' ')}</dd>
+          {/if}
           <dt>View</dt><dd>{selected.viewKind.replaceAll('_', ' ')}</dd>
           <dt>Archetype (declared)</dt><dd>{selected.discovery?.classification?.primary_archetype || selected.archetype || 'Unknown'}</dd>
           {#if selected.discovery}

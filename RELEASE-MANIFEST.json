@@ -1,12 +1,12 @@
 {
   "schemaVersion": "1.0",
   "release": "1.0.0-rc.2",
-  "profile": "kristal-v6-adaptive-navigation",
+  "profile": "konstellation-multi-version-adaptive-navigation",
   "canonicalTruth": "upstream-kristal-state",
   "navigationPlanSchema": "1.0",
   "projectionSchema": "1.0",
-  "fileCount": 265,
-  "contentSha256": "64d92e93ddd7c46bee72039db797e0a5fbd82e71192b2c551263975594f35e2f",
+  "fileCount": 276,
+  "contentSha256": "3700eb629fa96db667da4507eeae51035e21c01c497cee586da59f18fcc30bac",
   "files": [
     {
       "path": ".github/dependabot.yml",
@@ -75,8 +75,13 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "ad4f1410d135419a00c4d421781796d693993dd5d80064eefad60ff620679fcd",
-      "size": 15296
+      "sha256": "40942acbcf14804a0c1b70aee8f787fb1dff13236671647874846ae5ef910dc7",
+      "size": 17656
+    },
+    {
+      "path": "config/active-reader.json",
+      "sha256": "b29445c670b6f94de8803c33e255e11ca2b64ef989cc38d4b07a42b75dbb9571",
+      "size": 1961
     },
     {
       "path": "contracts/constellation-response.schema.json",
@@ -355,8 +360,8 @@
     },
     {
       "path": "docs/31-my-kristals-manager-preview.md",
-      "sha256": "f7e83a2220b451b941a80e24e24a9d5510a398ddc54a07c3cc107a59a3c84c98",
-      "size": 7579
+      "sha256": "7af8a6db74ce7d5e2d47945b044d1546e49aaa04ef887daf5ac6ba88750415ca",
+      "size": 7565
     },
     {
       "path": "docs/32-manager-discovery-3.3.md",
@@ -367,6 +372,31 @@
       "path": "docs/32-satellite-overlay-portraits.md",
       "sha256": "edfcd2c3f485a235e6e7565e5e413ab0202eb8707852f5bbe7e2accb090ac8b4",
       "size": 2001
+    },
+    {
+      "path": "docs/33-kristal-v10-local-reader.md",
+      "sha256": "683e21ea4f5142922c734792304346396a0061cac7bd31e2f07e6cba88465219",
+      "size": 5600
+    },
+    {
+      "path": "docs/34-catho-existing-location.md",
+      "sha256": "c126a9837c4aa4540d9e0af5642be7bb0eb751569a5311f73252126e45f8c9e9",
+      "size": 2746
+    },
+    {
+      "path": "docs/34-mise-a-jour-2026-10-16.md",
+      "sha256": "115b3a6ac38a8dfd0f5366ffecd5c02b46d4bb04fb0d969503ed877aa5c9eb0d",
+      "size": 3637
+    },
+    {
+      "path": "docs/35-parcours-locaux-catho.md",
+      "sha256": "02dd0003b1e61042b83b0a530170b97416f051dd18df9c9aeb97e2d72f53407a",
+      "size": 2991
+    },
+    {
+      "path": "docs/36-correctif-registre-relations-catho.md",
+      "sha256": "b9f22f9cee0351e185e9626514a9fab6ea2d7f734e5deb4b49b7bbaafa1c8af4",
+      "size": 1534
     },
     {
       "path": "docs/adr/ADR-0005-bounded-selection-tree.md",
@@ -470,8 +500,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "27ee3f7d3fbc16a894450414f9b7e0557c62f253dab67948817476643bdfa0a4",
-      "size": 4102
+      "sha256": "e1435ffcd5384b99fec8c8cf30a7791da833ca36d2f4d94dc4e96bc96afe3485",
+      "size": 4176
     },
     {
       "path": "docs/runbooks/BACKUP-RESTORE.md",
@@ -544,11 +574,6 @@
       "size": 1072
     },
     {
-      "path": "examples/fleet/legacy/manager-preview.example.json",
-      "sha256": "f38e3b139a1f4831aff4de47a6c91b9f3c882d609e8b2ed4cf17f8b2dae567ae",
-      "size": 782
-    },
-    {
       "path": "examples/fleet/manager-access-policy.example.json",
       "sha256": "0b632565552df83acd12f80170a9a1a20d4eda252cf323224f92aca5df06e602",
       "size": 328
@@ -556,6 +581,11 @@
     {
       "path": "examples/fleet/manager-local-inventory.synthetic.json",
       "sha256": "1a81f347c71fa440bc89b50203b0e0d1d134c26e1b2ecfbfd5baa1acf250f3dc",
+      "size": 782
+    },
+    {
+      "path": "examples/fleet/manager-preview.example.json",
+      "sha256": "f38e3b139a1f4831aff4de47a6c91b9f3c882d609e8b2ed4cf17f8b2dae567ae",
       "size": 782
     },
     {
@@ -587,6 +617,11 @@
       "path": "examples/integrations/kristal-kollection.json",
       "sha256": "5cf2e6e00fa615e6976ae3bbcc1406b2e137dc9bc4ac96d3a157afbbf0fa313f",
       "size": 134
+    },
+    {
+      "path": "examples/integrations/kristal-local-v10-catho.json",
+      "sha256": "b29445c670b6f94de8803c33e255e11ca2b64ef989cc38d4b07a42b75dbb9571",
+      "size": 1961
     },
     {
       "path": "examples/integrations/kristal-v6-state.json",
@@ -720,8 +755,8 @@
     },
     {
       "path": "Konstellation_Launcher.cmd",
-      "sha256": "f513097f9284986cf030a9462eefb8eabac5b578032985cd48a8d6b06afc9e0d",
-      "size": 5986
+      "sha256": "8908d1e6e6f29c04c9fd8bc924c8ce5e21432602376cdec8dbee9f1fb1c671a8",
+      "size": 8596
     },
     {
       "path": "Launch_MULTiSmartDump.lnk",
@@ -730,8 +765,8 @@
     },
     {
       "path": "Launch_My_Kristals.cmd",
-      "sha256": "6db5ea4405ffb9c876de2a926ad366008e01fa4ce0ad60e7531a2e8a99347967",
-      "size": 383
+      "sha256": "ecd13c2090a6c47a7dc9290d1621753ef55d3a5813eae7ab2cf3240a08145543",
+      "size": 474
     },
     {
       "path": "lenses-enriched/biblical-people.json",
@@ -794,6 +829,16 @@
       "size": 4285
     },
     {
+      "path": "Ouvrir_Kristal_Catho_v10.cmd",
+      "sha256": "9ece46ed0b2d81d47d78e59bf6dfd13bc6ddab1aa4cca311d0efefc7a53a2496",
+      "size": 1026
+    },
+    {
+      "path": "Ouvrir_Theophile_demo.cmd",
+      "sha256": "c54296706c004b0a90e9c72022f5693430d1d2881f0fbab766e720d3ec92b4e6",
+      "size": 336
+    },
+    {
       "path": "package.json",
       "sha256": "de3b61d05e5b074972dac159bb9d0de2538a5f4a70b0cccb608f73d5e9c1ec47",
       "size": 2327
@@ -810,8 +855,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "eabb3143707c94423c31abb92b26bdfa011fc004a9e374adc5770c6390e91399",
-      "size": 4560
+      "sha256": "a30f705e034c3b69907565a150966653c39f851efe5573fa803a3cf1d350f591",
+      "size": 6361
     },
     {
       "path": "requirements-dev.txt",
@@ -895,8 +940,8 @@
     },
     {
       "path": "scripts/release-manifest.mjs",
-      "sha256": "f0a974e64321b329b4011a993f7adb2bdd7ec87df60a9a6cb8d3d0c163dff91d",
-      "size": 2512
+      "sha256": "e8186b3f804953324f9ba963aea3494e798282cb42b98acada4272659fc5e9d5",
+      "size": 2529
     },
     {
       "path": "scripts/smoke-dev.mjs",
@@ -925,8 +970,8 @@
     },
     {
       "path": "server/engine.mjs",
-      "sha256": "dbe42c3b213a649529d76404ecd24fb21c568c6e90270160532bc5e352fc1131",
-      "size": 29329
+      "sha256": "23522d667e168bc73185c25beb68bff0218e1b749fc2c52cf31782223ab5d689",
+      "size": 30020
     },
     {
       "path": "server/errors.mjs",
@@ -935,8 +980,8 @@
     },
     {
       "path": "server/index.mjs",
-      "sha256": "88c7fbb4b852a6a0326f38ba83e72fe4243a61189a66da7830bc2ac3923e32db",
-      "size": 18192
+      "sha256": "08c922620da211df060d111bbb8cea65443d06b8f6c027975464419dd2f00f03",
+      "size": 18253
     },
     {
       "path": "server/integrations/discovery.mjs",
@@ -945,13 +990,18 @@
     },
     {
       "path": "server/integrations/fleet.mjs",
-      "sha256": "7900e3ae6df3129123f46d2d21edecca3552cef8f3bb1f403697d51503abfd7b",
-      "size": 6243
+      "sha256": "35bad6066d0a6ae54e8f7fb89f1b24a05e90b7620241a42a3b99fd73d8d26eb4",
+      "size": 7449
     },
     {
       "path": "server/integrations/kompiler-bridge.mjs",
       "sha256": "99c2d56deee87f4b611a9b838fa7fe54acac750c4c696cfea23d2371de96602a",
       "size": 3861
+    },
+    {
+      "path": "server/integrations/kristal-local-v10.mjs",
+      "sha256": "5d7c389f22705b636a8e16673410896a82309438911e0762fcf16324e7317fb2",
+      "size": 19553
     },
     {
       "path": "server/integrations/kristal-v10.mjs",
@@ -965,13 +1015,13 @@
     },
     {
       "path": "server/integrations/kristal.mjs",
-      "sha256": "75e7835012d0a46076cf06227efa413b14d643e8da0adecba8d8383e710fe073",
-      "size": 23520
+      "sha256": "8addd1a58780753b89d5e64eb95e3d0f6a400e8451ccf44d1fa8083befe256bb",
+      "size": 23983
     },
     {
       "path": "server/integrations/manager-adapter.mjs",
-      "sha256": "44ea82528ee9d14679b7dbce95fbee0d740d50433f6149f06783812372e1d61a",
-      "size": 4890
+      "sha256": "dc40226ccd647767375681a5d9cd67e687f223f6e448b830fb24c656f50dc77c",
+      "size": 5838
     },
     {
       "path": "server/integrations/reader-policy.mjs",
@@ -1040,8 +1090,8 @@
     },
     {
       "path": "SNAPSHOT_INDEX.txt",
-      "sha256": "a85d6c42e7a814bcd21a1eeccd8ee3dedf16ab6faa28462d62c898f92a730202",
-      "size": 8331
+      "sha256": "a01305358e93b496c691e61644afae61f65930158521b6f973df03dd5df24e2e",
+      "size": 8356
     },
     {
       "path": "src/components/AdaptiveProjectionView.svelte",
@@ -1050,8 +1100,8 @@
     },
     {
       "path": "src/components/Astrolabe.svelte",
-      "sha256": "74cfc8172a0080836df846fb5d8b05b6cf2cadca2bb6df777a62ef688b321c4a",
-      "size": 4385
+      "sha256": "64342fd31fbee3fc3a49ca32fd50fa42457960d96804336cd42d5a649c40ea57",
+      "size": 4571
     },
     {
       "path": "src/components/CausalFeedbackView.svelte",
@@ -1075,8 +1125,8 @@
     },
     {
       "path": "src/components/Explorer.svelte",
-      "sha256": "e9b2f163438dabbef7aa2b3ccd464f2dc3fae042064968f44aa4660f484861bb",
-      "size": 60745
+      "sha256": "1d74b729427f68a5a44390d506bdc781286a2ac0d715e0289dc76766565a150e",
+      "size": 62377
     },
     {
       "path": "src/components/FlowPathView.svelte",
@@ -1100,8 +1150,8 @@
     },
     {
       "path": "src/components/MyKristals.svelte",
-      "sha256": "0f79355df78d84f2839bae8e7dedfe42950686214e5e976dc6fbbc43e5a8ea5d",
-      "size": 6193
+      "sha256": "4e9e11780caadc70f80b28471c394ec83cb42a101146940c1bc0640a36a0f9a2",
+      "size": 6714
     },
     {
       "path": "src/components/QueryTree.svelte",
@@ -1155,8 +1205,8 @@
     },
     {
       "path": "src/styles/global.css",
-      "sha256": "41a81f990baddd95f8b83483f896832f934d11bf65f5a9d762f663f0158af033",
-      "size": 66444
+      "sha256": "08334860930612775580fda921f3eb22bbd0cfe60c16314fc360aa3779118d93",
+      "size": 67972
     },
     {
       "path": "svelte.config.js",
@@ -1254,6 +1304,11 @@
       "size": 4546
     },
     {
+      "path": "tests/kristal-local-v10.test.mjs",
+      "sha256": "e6ae1f8cf3bca249e040b135d73c05f60520a7a3d15eb0252ee04e5b04b7703f",
+      "size": 10639
+    },
+    {
       "path": "tests/kristal-v10.test.mjs",
       "sha256": "91d2b4d4a2962438ed7daed970236f5a1a6fc4136c509da22f566dfce6b05c1c",
       "size": 6963
@@ -1270,8 +1325,8 @@
     },
     {
       "path": "tests/manager-discovery.test.mjs",
-      "sha256": "3fc1b228932f3e203e8b504729b3662136be13a859b50bae0d929536e277b655",
-      "size": 7531
+      "sha256": "a4da812e5082b5c51a4bd37105fb07d1e3a04a8ccfc53b03e921333bdd4bdcfb",
+      "size": 9525
     },
     {
       "path": "tests/navigation-adaptive.test.mjs",

@@ -11,6 +11,9 @@ const ID = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$/;
 const SHA = /^sha256:[0-9a-f]{64}$/;
 const READY = new Set(['unknown', 'not_checked', 'not_ready', 'ready', 'blocked', 'unavailable']);
 const AVAILABILITY = new Set(['unknown', 'available', 'unavailable']);
+const OPERATIONAL = new Set(['BLOCKED','ATTENTION_REQUIRED','LOCAL_CHECKS_PASSED','LOCAL_STRUCTURE_ONLY']);
+const DISCOVERY = new Set(['absent','incomplete','invalid','stale','consistent_unverified','verified_registered_sources']);
+const FRAMEWORK = new Set(['VERIFIED','FAILED','NOT_EVALUATED']);
 const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 const validText = (value, max = 200) => typeof value === 'string' && value.length > 0 && value.length <= max && !/[\x00-\x1f\x7f]/.test(value);
 const listOf = (value) => Array.isArray(value) && value.length <= 32 && value.every((item) => validText(item, 128));
@@ -28,11 +31,15 @@ export function validateFleetExport(doc) {
         (entry.state_ref !== undefined && !validText(entry.state_ref, 512)) ||
         (entry.state_commitment !== undefined && !SHA.test(entry.state_commitment)) ||
         (entry.archetype !== undefined && !validText(entry.archetype, 100)) ||
+        (entry.operational_result !== undefined && !OPERATIONAL.has(entry.operational_result)) ||
+        (entry.discovery_status !== undefined && !DISCOVERY.has(entry.discovery_status)) ||
+        (entry.framework_state_verification !== undefined && !FRAMEWORK.has(entry.framework_state_verification)) ||
         seen.has(entry.id)) fail('FLEET_EXPORT_INVALID', 'Invalid or duplicate Manager preview entry.', 422);
     // Reject fields that could contain filesystem paths, tokens, source payloads,
     // or implicitly claim verification, authority or publication.
     const fields = new Set(['id', 'title', 'visibility', 'readiness', 'availability',
-      'allowed_principals', 'allowed_roles', 'state_ref', 'state_commitment', 'archetype']);
+      'allowed_principals', 'allowed_roles', 'state_ref', 'state_commitment', 'archetype',
+      'operational_result','discovery_status','framework_state_verification']);
     if (Object.keys(entry).some((key) => !fields.has(key)))
       fail('FLEET_EXPORT_INVALID', 'Unexpected Manager preview entry field.', 422);
     seen.add(entry.id);
@@ -82,14 +89,23 @@ export function fleetForPrincipal(principal, entries, collection = null, discove
       ...(entry.state_ref ? { stateRef: entry.state_ref } : {}),
       ...(entry.state_commitment ? { stateCommitment: entry.state_commitment } : {}),
       ...(entry.archetype ? { archetype: entry.archetype } : {}),
+      ...(entry.operational_result ? { managerAssessment: {
+        result: entry.operational_result,
+        discovery: entry.discovery_status || 'not_checked',
+        frameworkState: entry.framework_state_verification || 'NOT_EVALUATED',
+        authority: 'operational_observation_only',
+      }} : {}),
     }));
   const hosted = (collection?.items || []).map((item) => ({
     key: `reader:${item.id}`, source: collection?.source === 'kristal-github-collection-v10'
-      ? 'github_v10_checkout' : 'legacy_reader',
+      ? 'github_v10_checkout' : collection?.source === 'kristal-local-v10'
+      ? 'local_v10_reader' : 'legacy_reader',
     id: item.id, title: item.label, availability: item.available ? 'available' : 'unavailable',
     readiness: 'unknown', verification: collection?.source === 'kristal-github-collection-v10'
-      ? 'index_only' : 'not_checked',
-    viewKind: collection?.source === 'kristal-github-collection-v10' ? 'technical_hosting' : 'legacy',
+      ? 'index_only' : collection?.source === 'kristal-local-v10'
+      ? 'checked_on_open' : 'not_checked',
+    viewKind: collection?.source === 'kristal-github-collection-v10' ? 'technical_hosting'
+      : collection?.source === 'kristal-local-v10' ? 'local_v10_derived' : 'legacy',
     openable: Boolean(item.available),
     ...(item.available ? { readerId: item.id } : {}),
     ...(item.stateRef ? { stateRef: item.stateRef } : {}),

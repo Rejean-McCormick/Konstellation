@@ -52,6 +52,7 @@ La documentation 1.0 est normative. `IMPLEMENTATION.md` décrit l’état réel 
 - [Import Kristal](IMPORT.md)
 - [Intégrations](INTEGRATIONS.md)
 - [Collections GitHub Kristal v10](30-kristal-v10-github.md)
+- [Lecteur local v10 et Manager alpha.14](33-kristal-v10-local-reader.md)
 - [Opérations](OPERATIONS.md)
 
 ### Exemples et historiques de domaine

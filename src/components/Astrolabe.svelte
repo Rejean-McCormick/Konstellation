@@ -1,6 +1,7 @@
 <script>
   export let entities = [];
   export let corpusTitle = '';
+  export let preferredType = '';
   export let onNavigate = () => {};
   let term = '';
 
@@ -9,7 +10,7 @@
   function distance(a,b){a=normalize(a);b=normalize(b);const row=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let prev=row[0];row[0]=i;for(let j=1;j<=b.length;j++){const old=row[j];row[j]=Math.min(row[j]+1,row[j-1]+1,prev+(a[i-1]===b[j-1]?0:1));prev=old;}}return row[b.length];}
   function score(entity, raw){const q=normalize(raw);if(!q)return 0;const label=normalize(entity.label),aliases=(entity.aliases||[]).map(normalize),description=normalize(entity.description),id=normalize(entity.id);if(label===q)return 150;if(aliases.includes(q))return 145;if(label.startsWith(q))return 120;if(label.includes(q))return 105;if(aliases.some(a=>a.includes(q)))return 95;if(description.includes(q))return 70;if(id.includes(q))return 55;let fuzzy=0;for(const qt of q.split(' ')){if(qt.length<4)continue;for(const lt of label.split(' ')){const d=distance(qt,lt);if(d<=(qt.length>=9?2:1))fuzzy=Math.max(fuzzy,58-d*10);}}return fuzzy;}
   function rank(raw){return entities.map(entity=>({entity,score:score(entity,raw)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.entity.label.localeCompare(b.entity.label,'fr')).slice(0,16);}
-  $: examples=[...new Map(entities.filter(e=>e?.label&&e.label.length>=3&&e.label.length<=42).map(e=>[e.type,e.label])).values()].slice(0,5);
+  $: examples=[...new Map([...entities].filter(e=>!(preferredType && ['v9_state','v9_artifact'].includes(e.type))).sort((a,b)=>(a.type===preferredType?-1:0)-(b.type===preferredType?-1:0)).filter(e=>e?.label&&e.label.length>=3&&e.label.length<=42).map(e=>[e.type,e.label])).values()].slice(0,5);
   $: results=rank(term);
   function surprise(){if(!entities.length)return;onNavigate(entities[Math.floor(Math.random()*entities.length)]);}
   function submit(){if(results[0])onNavigate(results[0].entity);}

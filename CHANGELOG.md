@@ -1,3 +1,37 @@
+## Correctif du 16 octobre 2026 — domaines de relations du lecteur Catho
+
+- Répare le plantage au démarrage `relation-registry: /relations/1/domain must NOT have more than 10 items`.
+- Partitionnement déterministe des relations dépassant dix types de domaine, sans affaiblir le schéma ni perdre d'assertions.
+- Test de non-régression pour plus de dix types de nœuds et pour les liens intertypes.
+- Voir `docs/36-correctif-registre-relations-catho.md`.
+
+## 2026-10-16 — Parcours de lecture des Kristals (correctif expérimental)
+
+- Types de nœuds dérivés convertis en perspectives de lecture séparées,
+  avec relations typées et conservation intégrale des métadonnées d'origine.
+- Entrée Personnes (Catho) plutôt que `V9 state`, avec six parcours rapides.
+- Libellés de présentation locaux facultatifs et limités aux types/prédicats
+  réellement présents dans le graphe; aucune promotion sémantique.
+- Suppression de la qualification erronée « Corpus de démonstration » pour
+  les vraies données locales; avertissement de projection non canonique.
+- Aucune mutation du Kristal, aucune modification Manager / Interaction Kernel / Daat.
+- 9 tests ciblés du lecteur réussis. Build Astro/Windows non qualifiés ici.
+
+
+## Correctif local Catho — 2026-10-16
+
+- Launchers: local Catho path preserved at `C:\mycode\Kristal\locals\A-Kristal-Catho`.
+- Main launcher honors optional `config/active-reader.json` ahead of the legacy Theophile pack.
+- Added explicit `Ouvrir_Theophile_demo.cmd` and path-specific instructions; no changes to Daat, Manager, Kernel or Catho canon.
+
+## Unreleased — Lecteur local Kristal v10 et Manager alpha.14 (2026-10-16)
+
+- Ajout expérimental de `kristal-local-v10` : état sémantique v9 sous Framework v10, vue locale structurelle et modèle dérivé optionnel, strictement en lecture seule.
+- Contrôle des ressources, états exporté/construit, empreintes canoniques des graphes et diagnostic Discovery périmé.
+- Consommation minimisée des résultats opérationnels de Manager alpha.14 avec politique d'accès distincte. `READY` reste `not_checked` du point de vue de la qualification.
+- Ajout d'un exemple Catho et lanceur local Windows; aucune modification de Manager, Framework, Interaction Kernel ou Daat.
+- Statut : expérimental; aucune validation de release finale n'est revendiquée.
+
 # Unreleased — Manager candidate + Discovery 3.3 consolidation (2026-10-13)
 
 - Local-only My Kristals now reads `kristal.manager-local-inventory/0.1-candidate` **with a separate explicit, default-deny operator access policy**; no implicit access from the Manager inventory itself.

@@ -38,7 +38,7 @@ const contentSha256 = sha256(Buffer.from(files.map((f) => `${f.sha256}  ${f.size
 const manifest = {
   schemaVersion: '1.0',
   release: pkg.version,
-  profile: 'kristal-v6-adaptive-navigation',
+  profile: 'konstellation-multi-version-adaptive-navigation',
   canonicalTruth: 'upstream-kristal-state',
   navigationPlanSchema: '1.0',
   projectionSchema: '1.0',

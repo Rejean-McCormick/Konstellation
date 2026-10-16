@@ -643,6 +643,16 @@ export class Engine {
       title: this.pack.title,
       description: this.pack.description,
       synthetic: this.pack.synthetic,
+      ...(this.pack.integration?.adapter === 'kristal-local-v10' ? {
+        readingNotice: {
+          heading: 'Lecture locale dérivée',
+          text: this.pack.integration.viewKind === 'derived-node-edge-graph'
+            ? 'Exploration d’un graphe dérivé non canonique. Les correspondances et assertions restent attribuées, non vérifiées comme vérités du domaine.'
+            : 'Exploration structurelle des états et artefacts déclarés, sans qualification de leur contenu.'
+        }
+      } : {}),
+      presentation: {typeLabels: this.pack.integration?.presentation?.typeLabels || {},
+        featuredTypes: this.pack.integration?.presentation?.featuredTypes || []},
       context,
       registry: schema.registry,
       lenses: visibleLenses,

@@ -63,7 +63,7 @@
     return text ? text.charAt(0).toUpperCase() + text.slice(1) : '';
   }
   function typeLabel(type) {
-    return typeLabels[type] || boot?.structuralProfile?.entityTypeLabels?.[type] || humanizeType(type);
+    return typeLabels[type] || boot?.presentation?.typeLabels?.[type] || boot?.structuralProfile?.entityTypeLabels?.[type] || humanizeType(type);
   }
   const capabilityLabels = {
     temporal: 'temporel', hierarchy: 'hiérarchique', dependency: 'dépendances', sequence: 'séquentiel',
@@ -88,6 +88,12 @@
   };
   $: relations = boot?.registry.relations || [];
   $: lens = boot?.lenses.find((l) => l.id === lensId);
+  $: featuredEntries = (boot?.presentation?.featuredTypes || []).map((type) => {
+    const entryLens = boot?.lenses?.find((item) => item.rootType === type);
+    if (!entryLens) return null;
+    return { type, id: entryLens.id, title: entryLens.label.fr,
+      count: (boot?.entities || []).filter((entity) => entity.type === type).length };
+  }).filter(Boolean);
   $: currentFacets =
     lens && query && lens.rootType === query.selection.entityType
       ? lens.facets
@@ -831,7 +837,27 @@
           >
         </div>
       </section>
-      <Astrolabe entities={boot.entities} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />
+      {#if featuredEntries.length}<section class="reader-guide" aria-label="Parcours du Kristal">
+        <div class="reader-guide-heading"><div><span class="eyebrow">EXPLORER LE KRISTAL</span>
+          <h2>Par où commencer ?</h2></div>
+          <p>Choisissez une famille d’éléments du graphe, puis suivez ses relations documentées.</p>
+        </div>
+        <div class="reader-guide-grid">
+          {#each featuredEntries as entry}
+            <button class:active={query.selection.entityType === entry.type} class="reader-guide-card"
+              aria-pressed={query.selection.entityType === entry.type}
+              on:click={errorGuard(() => changeLens(entry.id))}>
+              <span class="reader-guide-count">{entry.count.toLocaleString('fr-CA')}</span>
+              <strong>{entry.title}</strong>
+              <span class="reader-guide-action">Explorer →</span>
+            </button>
+          {/each}
+        </div>
+      </section>{/if}
+      <Astrolabe entities={boot.entities} preferredType={boot.lenses[0]?.rootType || ''} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />
+      {#if boot.readingNotice}<div class="demo-banner" role="note">
+          <span class="tiny-star">✦</span><strong>{boot.readingNotice.heading}</strong><span>{boot.readingNotice.text}</span>
+        </div>{/if}
       {#if boot.synthetic}<div class="demo-banner">
           <span class="tiny-star">✦</span><strong>Corpus de démonstration</strong><span
             >Notices illustratives et relations synthétiques. Aucune validation historique
