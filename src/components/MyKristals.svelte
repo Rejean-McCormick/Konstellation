@@ -4,6 +4,7 @@
   export let visible = false;
   export let items = [];
   export let opening = false;
+  export let hasCurrent = false;
   export let onOpen = async () => {};
   export let onExploreCurrent = () => {};
   let search = '';
@@ -24,10 +25,10 @@
   <header class="fleet-heading">
     <div>
       <span class="fleet-eyebrow">KRISTAL NETWORK · READ ONLY</span>
-      <h1>My Kristals<span class="fleet-accent">.</span></h1>
-      <p>Browse permitted local inventory entries and configured readers. An inventory record is not proof of a published or readable knowledge state.</p>
+      <h1>Mes Kristals<span class="fleet-accent">.</span></h1>
+      <p>Choisissez un Kristal local pour l’ouvrir dans Konstellation. Un inventaire ne prouve pas sa publication ni sa qualification.</p>
     </div>
-    <button class="button" on:click={onExploreCurrent}>Explore current corpus →</button>
+    {#if hasCurrent}<button class="button" on:click={onExploreCurrent}>Explorer le Kristal ouvert →</button>{/if}
   </header>
   <div class="fleet-disclaimer" role="status">
     Local Manager inventory requires explicit authorization. Authoring Kit Discovery 3.3 is advisory metadata only; it does not prove qualification, publication or a usable reader. Hosted index metadata is not a publication receipt.
@@ -88,11 +89,11 @@
           {/if}
         </dl>
         {#if selected.openable}
-          <button class="button primary" disabled={opening} on:click={() => onOpen(selected.readerId)}>{opening ? 'Opening…' : 'Open in Explorer →'}</button>
+          <button class="button primary" disabled={opening} on:click={() => onOpen(selected.readerId)}>{opening ? 'Ouverture…' : 'Ouvrir dans l’explorateur →'}</button>
           <p class="fleet-detail-note">The reader validates its own payload when opened. The result may be a technical hosting view.</p>
         {:else}<p class="fleet-detail-note">No authorized compatible reader is configured for this entry. Manager inventory access does not grant canonical content access.</p>{/if}
       {:else}
-        <h2>Select a Kristal</h2><p>Choose an entry to inspect its available properties and see whether a compatible reader is configured.</p>
+        <h2>Choisir un Kristal</h2><p>Sélectionnez une entrée pour connaître ses propriétés et l’ouvrir avec un lecteur compatible.</p>
       {/if}
     </aside>
   </div>

@@ -1,3 +1,9 @@
+## 2026-10-16 — Sélecteur local neutre expérimental
+- Un lanceur principal `Konstellation.cmd`, choix du Kristal dans l'interface.
+- Catalogue local privé au format interne `kristal-local-catalog-v10` (répertoire explicitement configuré).
+- Démarrage sans corpus présélectionné, démonstration Théophile non chargée par défaut.
+- Les anciens scripts sont rangés sous `tools/legacy-root`; migration contrôlée et réversible.
+
 ## Correctif du 16 octobre 2026 — domaines de relations du lecteur Catho
 
 - Répare le plantage au démarrage `relation-registry: /relations/1/domain must NOT have more than 10 items`.

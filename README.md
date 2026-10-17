@@ -115,3 +115,10 @@ Read [deployment](docs/22-deployment.md) and [security](docs/19-security.md) bef
 | `data/` | Demonstration corpus |
 
 Start at [documentation index](docs/README.md); consult [release policy](docs/25-release-1.0.md) for qualification requirements.
+
+## Choisir son Kristal local (mode neutre)
+
+Lancer `Konstellation.cmd`, puis sélectionner un Kristal dans **Mes Kristals**.
+Le dossier `C:/mycode/Kristal/locals` reste à son emplacement d'origine.
+Pour changer ce dossier, éditer `config/local-catalog.json`. Aucune modification canonique n'est effectuée.
+Voir `docs/LOCAL_SELECTOR_2026-10-16.md` pour les limites et les outils de migration.

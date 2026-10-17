@@ -99,6 +99,7 @@ export function createServer({
     const raw = req.headers['x-konstellation-kristal'];
     const value = Array.isArray(raw) ? raw[0] : raw;
     const id = value ? String(value) : collection.defaultKristal;
+    if (!id && collection.requiresSelection) return null;
     if (!id || id.length > 200 || !collectionItems.get(id)?.available)
       fail('KRISTAL_NOT_FOUND', 'Kristal sélectionné indisponible.', 422);
     return id;
@@ -164,6 +165,7 @@ export function createServer({
           const current = requestedKristal(req);
           return send({
             selectable: Boolean(collection?.selectable),
+            requiresSelection: Boolean(collection?.requiresSelection),
             current,
             defaultKristal: collection?.defaultKristal || null,
             items: collection?.items || [],

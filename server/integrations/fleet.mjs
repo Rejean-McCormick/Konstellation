@@ -98,14 +98,14 @@ export function fleetForPrincipal(principal, entries, collection = null, discove
     }));
   const hosted = (collection?.items || []).map((item) => ({
     key: `reader:${item.id}`, source: collection?.source === 'kristal-github-collection-v10'
-      ? 'github_v10_checkout' : collection?.source === 'kristal-local-v10'
+      ? 'github_v10_checkout' : ['kristal-local-v10','kristal-local-catalog-v10'].includes(collection?.source)
       ? 'local_v10_reader' : 'legacy_reader',
     id: item.id, title: item.label, availability: item.available ? 'available' : 'unavailable',
     readiness: 'unknown', verification: collection?.source === 'kristal-github-collection-v10'
-      ? 'index_only' : collection?.source === 'kristal-local-v10'
+      ? 'index_only' : ['kristal-local-v10','kristal-local-catalog-v10'].includes(collection?.source)
       ? 'checked_on_open' : 'not_checked',
     viewKind: collection?.source === 'kristal-github-collection-v10' ? 'technical_hosting'
-      : collection?.source === 'kristal-local-v10' ? 'local_v10_derived' : 'legacy',
+      : ['kristal-local-v10','kristal-local-catalog-v10'].includes(collection?.source) ? 'local_v10_derived' : 'legacy',
     openable: Boolean(item.available),
     ...(item.available ? { readerId: item.id } : {}),
     ...(item.stateRef ? { stateRef: item.stateRef } : {}),

@@ -15,22 +15,17 @@ set "PORT=4321"
 set "LOCAL_PACK=%ROOT%\data\theophile-biblical.enriched.pack.json"
 set "LOCAL_LENSES=%ROOT%\lenses-enriched"
 set "BACKEND_CONFIG=%ROOT%\examples\integrations\kristal-kollection.json"
-set "ACTIVE_READER_CONFIG=%ROOT%\config\active-reader.json"
+set "ACTIVE_READER_CONFIG=%ROOT%\config\local-catalog.json"
 set "COLLECTION_DOMAINS=%ROOT%\..\kristals\domains"
 set "MODE=local"
-rem Priority: explicit operator config > explicit legacy collection > explicit demo > local reader.
+rem Démarrage neutre : catalogue local. Pas de lecture automatique de Catho/Théophile.
 rem A local reader is an operator-supplied JSON config, not an automatic filesystem scan.
-if defined KONSTELLATION_BACKEND_CONFIG (
-    set "BACKEND_CONFIG=%KONSTELLATION_BACKEND_CONFIG%"
-    set "MODE=configured"
-) else if /I "%KONSTELLATION_USE_LEGACY_KOLLECTION%"=="true" (
-    if exist "%COLLECTION_DOMAINS%" if exist "%BACKEND_CONFIG%" set "MODE=kristals"
-) else if /I "%KONSTELLATION_USE_THEOPHILE%"=="true" (
-    set "MODE=local"
-) else if exist "%ACTIVE_READER_CONFIG%" (
-    set "BACKEND_CONFIG=%ACTIVE_READER_CONFIG%"
-    set "MODE=configured"
+if not exist "%ACTIVE_READER_CONFIG%" (
+    echo [ERROR] Catalogue local introuvable: %ACTIVE_READER_CONFIG%
+    goto :fail
 )
+set "BACKEND_CONFIG=%ACTIVE_READER_CONFIG%"
+set "MODE=configured"
 
 echo.
 echo ============================================================
@@ -41,7 +36,7 @@ if /I "%MODE%"=="kristals" (
     echo Mode : Kristal-Kollection ^(selection dans l'interface^)
     echo Collection : %ROOT%\..\kristals
 ) else if /I "%MODE%"=="configured" (
-    echo Mode : lecteur Kristal explicitement configure
+    echo Mode : selection neutre dans Mes Kristals
 ) else (
     echo Mode : corpus local enrichi
 )
@@ -174,7 +169,7 @@ call npm run build
 if errorlevel 1 (popd & goto :fail)
 
 echo.
-echo Starting Konstellation...
+echo Starting Konstellation - choisissez un Kristal dans l interface...
 echo URL : http://127.0.0.1:%PORT%
 if /I "%MODE%"=="kristals" (
     echo Kristal selector: enabled

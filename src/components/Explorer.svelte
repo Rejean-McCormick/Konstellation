@@ -26,6 +26,7 @@
     authRequired = false,
     kristal = '',
     kristalSelectable = false,
+    selectionRequired = false,
     kristals = [],
     switchingKristal = false,
     fleetEnabled = false,
@@ -729,13 +730,27 @@
         authToken = sessionStorage.getItem('konstellation.auth.token') || '';
         const collection = await api('kristals');
         kristalSelectable = Boolean(collection.selectable);
+        selectionRequired = Boolean(collection.requiresSelection);
         kristals = Array.isArray(collection.items) ? collection.items : [];
         if (kristalSelectable) {
           let remembered = '';
           try { remembered = localStorage.getItem('konstellation.kristal.v1') || ''; } catch {}
-          kristal = kristals.some((item) => item.id === remembered && item.available)
+          kristal = selectionRequired ? '' : kristals.some((item) => item.id === remembered && item.available)
             ? remembered
             : collection.current || collection.defaultKristal || kristals.find((item) => item.available)?.id || '';
+        }
+        // Neutral local selection works even when an optional Manager fleet export is missing.
+        // Only explicitly configured, readable entries from /api/kristals are shown.
+        if (selectionRequired) {
+          fleetEnabled = true;
+          fleetView = true;
+          fleetItems = kristals.map((item) => ({
+            key: `reader:${item.id}`, id: item.id, title: item.label,
+            source: 'local_v10_reader', availability: item.available ? 'available' : 'unavailable',
+            readiness: 'unknown', verification: 'checked_on_open', viewKind: 'local_v10_derived',
+            openable: Boolean(item.available), ...(item.available ? { readerId: item.id } : {}),
+            ...(item.stateRef ? { stateRef: item.stateRef } : {}),
+          }));
         }
         boot = await api('bootstrap');
         if (!alive) return;
@@ -746,12 +761,12 @@
           if (fleet?.format === 'konstellation.fleet-view/0.1' && Array.isArray(fleet.items)) {
             fleetEnabled = true;
             fleetItems = fleet.items;
-            fleetView = !location.hash.startsWith('#exploration=');
+            fleetView = selectionRequired || !location.hash.startsWith('#exploration=');
           }
         } catch (e) {
           if (e.status !== 404) fleetError = 'My Kristals is unavailable: ' + e.message;
         }
-        initializeExploration(boot);
+        if (!selectionRequired) initializeExploration(boot);
         try {
           const v = JSON.parse(localStorage.getItem('konstellation.saved.v1') || '[]');
           saved = Array.isArray(v)
@@ -760,7 +775,7 @@
         } catch {
           saved = [];
         }
-        if (location.hash.startsWith('#exploration=')) {
+        if (!selectionRequired && location.hash.startsWith('#exploration=')) {
           try {
             const encoded = decodeURIComponent(location.hash.slice(13));
             if (encoded.length > 16000) throw Error('Lien trop long.');
@@ -773,7 +788,8 @@
             await run();
             error = message;
           }
-        } else await run();
+        } else if (!selectionRequired) await run();
+        else busy = false;
       } catch (e) {
         authRequired = e.status === 401;
         error = authRequired ? '' : e.message;
@@ -797,7 +813,7 @@
       <span>Konstellation<small>DES ÉTOILES POUR S’ORIENTER</small></span>
     </a>
     <nav aria-label="Navigation principale">
-      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button><button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{:else}<a class="active" href="/">Explorer</a>{/if}<a href="#astrolabe" on:click={() => (fleetView = false)}>Astrolabe</a><button
+      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}{#if !selectionRequired || kristal}<a href="#astrolabe" on:click={() => (fleetView = false)}>Astrolabe</a>{/if}<button
         class:active={showSaved}
         on:click={() => (showSaved = !showSaved)}
         >Mes explorations <span class="nav-count">{saved.length}</span></button
@@ -805,7 +821,7 @@
     </nav>
     <span class="local-indicator"><i></i> {boot?.principal?.id || 'Espace local'}</span>
   </header>
-  {#if !boot || !query}<main class="loading-screen">
+  {#if (!boot || !query) && !(fleetEnabled && fleetView)}<main class="loading-screen">
       <div class="brand-mark"><img src="/brand-logo.svg" alt="Konstellation" class="loading-logo" /></div>
       <h1>Ouvrir de nouvelles perspectives.</h1>
       {#if authRequired}
@@ -822,8 +838,9 @@
   {:else}
     <main>
       {#if fleetError}<div role="status" class="alert notice">{fleetError}</div>{/if}
-      {#if fleetEnabled}<MyKristals visible={fleetView} items={fleetItems} opening={switchingKristal} onOpen={openFleetKristal} onExploreCurrent={() => (fleetView = false)} />{/if}
-      <div hidden={fleetEnabled && fleetView}>
+      {#if fleetView && error}<div role="alert" class="alert error">{error}</div>{/if}
+      {#if fleetEnabled}<MyKristals visible={fleetView} items={fleetItems} opening={switchingKristal} hasCurrent={Boolean(kristal)} onOpen={openFleetKristal} onExploreCurrent={() => (fleetView = false)} />{/if}
+      {#if boot && query}<div hidden={fleetEnabled && fleetView}>
       <section class="intro">
         <div>
           <div class="eyebrow">EXPLORATEUR DE CONNAISSANCES <span> / </span> {boot.title}</div>
@@ -1423,7 +1440,7 @@
       <footer class="page-footer">
         <span class="footer-brand"><img src="/brand-logo.svg" alt="" aria-hidden="true" />Relier. Comprendre. Explorer.</span><span>Requêtes explicites · Sources préservées · v0.5</span>
       </footer>
-      </div>
+      </div>{/if}
     </main>
   {/if}
 </div>
