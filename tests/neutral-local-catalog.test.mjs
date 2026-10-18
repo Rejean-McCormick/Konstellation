@@ -51,3 +51,22 @@ test('neutral pack has no canonical statements or preselected Kristal',()=>{
   assert.equal(pack.assertions.length,0);
   assert(!JSON.stringify(pack).includes('Catho'));
 });
+
+test('catalogue accepts the default private local session when profile env is absent',t=>{
+  const {locals,create}=fixture(t);create('A-Kristal-Catho','Kristal-Catho');
+  delete process.env.KONSTELLATION_DEPLOYMENT_PROFILE;
+  delete process.env.HOST;
+  assert.deepEqual(listLocalCatalog({directory:locals},'.').filter(x=>x.available).map(x=>x.id),['A-Kristal-Catho']);
+  assert.equal(loadLocalCatalog({directory:locals},'.','A-Kristal-Catho').integration.adapter,'kristal-local-v10');
+});
+test('catalogue refuses public-readonly mode and non-loopback local listener',t=>{
+  const {locals,create}=fixture(t);create('A-Kristal-Catho','Kristal-Catho');
+  process.env.KONSTELLATION_ANONYMOUS_READONLY='true';
+  assert.throws(()=>listLocalCatalog({directory:locals},'.'),{code:'INVALID_CONFIG'});
+  delete process.env.KONSTELLATION_ANONYMOUS_READONLY;
+  process.env.HOST='0.0.0.0';
+  assert.throws(()=>listLocalCatalog({directory:locals},'.'),{code:'INVALID_CONFIG'});
+  process.env.HOST='127.0.0.1';
+  process.env.KONSTELLATION_PUBLIC_READONLY='true';
+  assert.throws(()=>listLocalCatalog({directory:locals},'.'),{code:'INVALID_CONFIG'});
+});

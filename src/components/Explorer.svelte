@@ -5,6 +5,7 @@
   import MyKristals from './MyKristals.svelte';
   import Astrolabe from './Astrolabe.svelte';
   import QueryTree from './QueryTree.svelte';
+  import { readableCode, readableStatus } from '../lib/semantic-display.mjs';
   import ConstellationView from './ConstellationView.svelte';
   import AdaptiveProjectionView from './AdaptiveProjectionView.svelte';
   let boot = null,
@@ -86,6 +87,7 @@
     rejected: 'Rejetée',
     retracted: 'Rétractée',
     superseded: 'Remplacée',
+    unspecified: 'Non précisé',
   };
   $: relations = boot?.registry.relations || [];
   $: lens = boot?.lenses.find((l) => l.id === lensId);
@@ -104,6 +106,16 @@
             relation: r.id,
             widget: r.valueKind === 'interval' ? 'year-range' : 'entity-picker',
           }));
+  // Hide uninformative empty facets, but preserve active filters and any facets
+  // for which counters have not yet loaded or are unavailable.
+  $: visibleFacets = currentFacets.filter(facet => {
+    if (facet.relation.startsWith('v9:node_kind') &&
+        !query?.selection?.filters?.some(f => f.relation === facet.relation)) return false;
+    const data = facets[facet.relation];
+    return !data || !data.available || data.present > 0 ||
+      Boolean(query?.selection?.filters?.some(f => f.relation === facet.relation));
+  });
+  $: hiddenEmptyFacets = currentFacets.length - visibleFacets.length;
   function normalizeSearch(value) {
     return String(value || '')
       .normalize('NFD')
@@ -702,12 +714,12 @@
   }
   const scopeLabels = { domain: 'Domaine', subdomain: 'Sous-domaine', language: 'Langue', time_window: 'Période documentaire' };
   function qualifierLabel(q) {
-    return q?.predicate?.label || q?.predicate?.external_id || 'Qualificatif';
+    return q?.predicate?.label || readableCode(q?.predicate?.external_id || 'Qualificatif');
   }
   function qualifierValue(q) {
     const value = q?.object?.value;
-    if (value && typeof value === 'object') return value.label || value.external_id || value.id || JSON.stringify(value);
-    return String(value ?? '—').replaceAll('_', ' ');
+    if (value && typeof value === 'object') return value.label || readableCode(value.external_id || value.id || JSON.stringify(value));
+    return readableStatus(value ?? '—');
   }
   function pick(id) {
     selectedIds = selectedIds.includes(id)
@@ -871,7 +883,7 @@
           {/each}
         </div>
       </section>{/if}
-      <Astrolabe entities={boot.entities} preferredType={boot.lenses[0]?.rootType || ''} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />
+      <Astrolabe entities={boot.entities} typeLabels={boot?.presentation?.typeLabels || {}} preferredType={boot.lenses[0]?.rootType || ''} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />
       {#if boot.readingNotice}<div class="demo-banner" role="note">
           <span class="tiny-star">✦</span><strong>{boot.readingNotice.heading}</strong><span>{boot.readingNotice.text}</span>
         </div>{/if}
@@ -1020,8 +1032,8 @@
               }}>Réinitialiser</button
             >
           </div>
-          <p class="panel-caption">Les facettes viennent de votre perspective.</p>
-          {#each currentFacets as facet}
+          <p class="panel-caption">Les filtres disponibles dépendent de la perspective.</p>{#if hiddenEmptyFacets > 0}<p class="hint">{hiddenEmptyFacets} filtre{hiddenEmptyFacets > 1 ? 's' : ''} non pertinent{hiddenEmptyFacets > 1 ? 's' : ''} masqué{hiddenEmptyFacets > 1 ? 's' : ''}.</p>{/if}
+          {#each visibleFacets as facet}
             {@const r = relation(facet.relation)}{@const f = filterFor(
               facet.relation,
             )}{@const data = facets[facet.relation]}
@@ -1397,7 +1409,7 @@
                   <div class="assertion-heading">
                     <span>{relation(a.payload.relation)?.label.fr}</span><span
                       class:disputed={a.payload.status === 'disputed'}
-                      class="status-pill">{statusLabels[a.payload.status] || a.payload.status}</span
+                      class="status-pill">{statusLabels[a.payload.status] || readableStatus(a.payload.status)}</span
                     >
                   </div>
                   <strong
@@ -1405,29 +1417,30 @@
                       ? humanValue(a.payload)
                       : labelMap[a.payload.subject]}</strong
                   ><small
-                    >Certitude : {a.payload.certainty} · Validation : {a.payload
-                      .validationStatus}</small
+                    >Certitude : {readableStatus(a.payload.certainty)} · Validation : {readableStatus(a.payload.validationStatus)}</small
                   >{#if a.payload.conflictsWith?.length}<p class="conflict-note">
                       Une divergence est présente dans cette vue.
                     </p>{/if}
                   <details>
-                    <summary>Provenance et détails</summary>
-                    <p>Autorité : {a.payload.authority}</p>
+                    <summary>Provenance et détails techniques</summary>
+                    {#if a.payload.originalPredicate}<p>Propriété source : <code>{a.payload.originalPredicate}</code></p>{/if}
+                    {#if a.payload.sourceEdgeId}<p>Relation source : <code>{a.payload.sourceEdgeId}</code></p>{/if}
+                    <p>Autorité : {readableStatus(a.payload.authority)}</p>
                     {#if a.payload.scope}<dl class="detail-list scope-list">
-                        {#each Object.entries(a.payload.scope) as [key, value]}<div><dt>{scopeLabels[key] || key.replaceAll('_', ' ')}</dt><dd>{value}</dd></div>{/each}
+                        {#each Object.entries(a.payload.scope) as [key, value]}<div><dt>{scopeLabels[key] || key.replaceAll('_', ' ')}</dt><dd>{readableStatus(value)}</dd></div>{/each}
                       </dl>{/if}
-                    <p>Validée comme : {a.payload.validatedAs}</p>
+                    <p>Validée comme : {readableStatus(a.payload.validatedAs)}</p>
                     {#if a.payload.recognitionStatus}<p>
-                        Reconnaissance : {a.payload.recognitionStatus}
+                        Reconnaissance : {readableStatus(a.payload.recognitionStatus)}
                       </p>{/if}
                     {#if a.payload.artifactStatus}<p>
-                        Statut du corpus : {a.payload.artifactStatus}
+                        Statut du corpus : {readableStatus(a.payload.artifactStatus)}
                       </p>{/if}
                     {#each a.payload.readerLabels || [] as label}<p>{label}</p>{/each}
                     {#if a.payload.qualifiers?.length}<dl class="detail-list qualifier-list">
                         {#each a.payload.qualifiers as qualifier}<div><dt>{qualifierLabel(qualifier)}</dt><dd>{qualifierValue(qualifier)}</dd></div>{/each}
                       </dl>{/if}
-                    {#if a.payload.lineage}<p>Lineage : {JSON.stringify(a.payload.lineage)}</p>{/if}
+                    {#if a.payload.lineage}<p>Lignée technique : {JSON.stringify(a.payload.lineage)}</p>{/if}
                     {#each a.payload.sourceRefs as sid}<p class="source-ref">
                         ↗ {sourceTitle(sid)}
                       </p>{/each}{#if a.payload.ruleRef && !isOpaqueRef(a.payload.ruleRef)}<p>

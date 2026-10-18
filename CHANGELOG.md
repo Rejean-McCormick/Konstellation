@@ -1,3 +1,11 @@
+## 2026-10-17 — Accessible French semantic presentation (experimental)
+
+- Kristal v10 local reader: derived graph relation labels resolve grounded French names for known Wikidata properties (including P138) and a bounded set of explicitly interpreted Catho predicates; unknown P IDs remain explicit, never guessed.
+- Astrolabe: word-aware search instead of arbitrary substring matches, improved result diversity without merging identities, and correct entity-type labels.
+- Exploration: empty/technical facets hidden unless actively filtered, epistemic state labels rendered in French, and advanced inspector retains original identifiers and provenance.
+- Constellation: derived node-kind metadata excluded from leading relationship groups, still visible in inspector.
+- No canonical Kristal mutation, no new permissions, no changes to configured local Kristal directories or stored reader policies. Full Windows/browser regression is pending.
+
 ## 2026-10-16 — Sélecteur local neutre expérimental
 - Un lanceur principal `Konstellation.cmd`, choix du Kristal dans l'interface.
 - Catalogue local privé au format interne `kristal-local-catalog-v10` (répertoire explicitement configuré).

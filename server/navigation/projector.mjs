@@ -223,7 +223,9 @@ function automaticGroupDefinitions(engine, index, focus, lens) {
     const relationIds = unique(directEntityEdges.map((edge) => edge.relationId)).filter((id) => !claimedRelations.has(id));
     for (const id of relationIds) {
       const r = engine.relations.get(id);
-      if (!r) continue;
+      // Node type is presentation metadata, not a meaningful graph connection.
+      // It remains available in the inspector and faceted query surface.
+      if (!r || id.startsWith('v9:node_kind')) continue;
       groups.push({
         id: `r:${id}`,
         label: { fr: relationLabel(r), en: r.label?.en || relationLabel(r) },

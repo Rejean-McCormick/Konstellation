@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fail } from '../errors.mjs';
+import { semanticLabel, readableNodeLabel } from '../../src/lib/semantic-display.mjs';
 
 const SHA = /^sha256:[a-f0-9]{64}$/;
 const FORMAT = 'kristal.discovery/1.0';
@@ -284,17 +285,23 @@ export function loadLocalV10(config,base) {
       }
       return lookup;
     };
-    const kindRelationIds=addDomainBoundedRelations('v9:node_kind','Type du nœud dérivé',orderedGraphTypes);
+    const kindRelationIds=addDomainBoundedRelations('v9:node_kind','Type d’élément',orderedGraphTypes);
     const edgeRelationIds=new Map();
     for(const [key,def] of [...edgeTypes].sort(([a],[b])=>a.localeCompare(b))){
       const baseId=id('v9rel',key);
-      const label=graph.presentation.predicateLabels?.[def.predicate] || def.predicate;
+      const label=semanticLabel(def.predicate, {
+        // Explicit viewer dictionary corrects legacy raw-code labels; the original
+        // predicate remains in each assertion for inspection and provenance.
+        configured: graph.presentation.predicateLabels?.[def.predicate],
+        rangeKind: [...kindToType].find(([,v])=>v===def.range)?.[0] || '',
+      });
       edgeRelationIds.set(key,addDomainBoundedRelations(baseId,label,def.domains,def.range,'entity'));
     }
     for(const n of graph.nodes){
       const eid=id('v9node',n.id);
-      entities.push({id:eid,type:typeForKind(n.kind),label:n.label,
-        description:`Élément de graphe dérivé (${graphTypeLabels[typeForKind(n.kind)]}); identifiant source ${n.id}`,
+      entities.push({id:eid,type:typeForKind(n.kind),label:readableNodeLabel(n.label,n.kind),
+        description:typeof n.description === 'string' && n.description.length <= 500 ? n.description :
+          `Élément de la projection locale · ${graphTypeLabels[typeForKind(n.kind)]}.`,
         upstreamRef:n.id,originalKind:n.kind});
       emit(id('v9kind',n.id),eid,kindRelationIds.get(typeForKind(n.kind)),n.kind);
     }

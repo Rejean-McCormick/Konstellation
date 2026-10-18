@@ -131,6 +131,13 @@ if /I "%MODE%"=="kristals" (
     set "KONSTELLATION_PACK=%LOCAL_PACK%"
     set "KONSTELLATION_LENSES=%LOCAL_LENSES%"
 )
+rem Le catalogue local n'est accessible que depuis un serveur prive sur loopback.
+rem Fixer explicitement le meme profil que server/config.mjs pour eviter un
+rem environnement herite (HOST/public) ou ambigu.
+set "KONSTELLATION_DEPLOYMENT_PROFILE=local"
+set "HOST=127.0.0.1"
+set "KONSTELLATION_ANONYMOUS_READONLY=false"
+set "KONSTELLATION_PUBLIC_READONLY=false"
 set "KONSTELLATION_SA_CONFIG="
 
 rem Stop previous Konstellation instances on this port, but never unrelated apps.

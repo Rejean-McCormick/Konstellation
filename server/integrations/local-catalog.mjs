@@ -3,15 +3,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fail } from '../errors.mjs';
+import { loadConfig } from '../config.mjs';
 import { inspectLocalV10, loadLocalV10 } from './kristal-local-v10.mjs';
 
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,119}$/;
 function rootAndEntries(config, base) {
-  if (process.env.KONSTELLATION_DEPLOYMENT_PROFILE !== 'local' ||
-      !['127.0.0.1','localhost','::1'].includes(process.env.HOST || '127.0.0.1') ||
-      process.env.KONSTELLATION_ANONYMOUS_READONLY === 'true' ||
-      process.env.KONSTELLATION_PUBLIC_READONLY === 'true')
+  // The server defaults to deploymentProfile='local' when unset (loadConfig).
+  // Apply the SAME normalized configuration here, rather than requiring a
+  // raw environment variable that the neutral launcher never needed to set.
+  const runtime = loadConfig();
+  if (runtime.deploymentProfile !== 'local' ||
+      !['127.0.0.1','localhost','::1'].includes(runtime.host) ||
+      runtime.anonymousReadonly)
     fail('INVALID_CONFIG','Le catalogue local nécessite une session locale privée.',422);
   if (typeof config.directory !== 'string' || !config.directory || config.directory.length > 4096)
     fail('INVALID_CONFIG','Le dossier racine des Kristals est requis.',422);
