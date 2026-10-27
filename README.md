@@ -1,5 +1,7 @@
 # Konstellation
 
+> **Nouveau (preview local v11)** : lecteur séparé `/v11`, utilisant le Framework `11.0.0-draft.4` et l’Integration Pack `0.3.0-alpha.1`, avec accès explicite local seulement et sans conversion v6/v10. Voir [guide v11](docs/34-v11-local-reader.md). Cette fonctionnalité n’est pas une autorisation de publication.
+
 **Adaptive, domain-agnostic navigation engine for Kristal knowledge.**
 
 **Release candidate:** `1.0.0-rc.2`. Architecture and target code exist, but a reproducible release build and full E2E gates remain prerequisites for final `1.0.0` qualification. See [implementation status](docs/IMPLEMENTATION.md) and [current validation evidence](docs/VALIDATION-v1.0-RC.md).

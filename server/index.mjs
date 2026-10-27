@@ -13,6 +13,7 @@ import { authenticate, requireScope } from './auth.mjs';
 import { requestId, increment, observe, gauge, metricsSnapshot, log } from './observability.mjs';
 import { versionInfo } from './version.mjs';
 import { fleetForPrincipal, readFleetExport, readDiscoveryCatalog } from './integrations/fleet.mjs';
+import { loadV11Config, v11Catalog, v11View, v11Neighborhood } from './integrations/kristal-v11.mjs';
 
 export function loadLenses(engine, dir) {
   const configured = [];
@@ -73,6 +74,7 @@ export function createServer({
   dist = path.join(ROOT,'dist'),
   config = loadConfig(),
   collection = null,
+  v11Reader = null,
 } = {}) {
   lenses ||= loadLenses(engine);
   // Readiness means more than “the JSON parsed”: build the default policy scope
@@ -159,6 +161,21 @@ export function createServer({
             fail('NOT_FOUND','Fleet navigation is unavailable.',404);
           // ACL filtering occurs on the server, before search, counts or client-side facets.
           return send(fleetForPrincipal(principal, readFleetExport(config.fleetExportFile, config.fleetPolicyFile), collection, readDiscoveryCatalog(config.fleetDiscoveryFile)));
+        }
+        // Isolated Framework v11 read surface: never routed through v6/v10 Engine.
+        // The Pack validates the exact Framework pins on every requested view.
+        if(req.method==='GET' && url.pathname==='/api/v11/catalog') {
+          requireScope(principal,'read');
+          return send(v11Catalog(v11Reader,principal,config.deploymentProfile));
+        }
+        if(req.method==='GET' && url.pathname==='/api/v11/view') {
+          requireScope(principal,'read');
+          return send(v11View(v11Reader,principal,config.deploymentProfile,url.searchParams.get('dataset'),url.searchParams.get('locale')));
+        }
+        if(req.method==='GET' && url.pathname==='/api/v11/neighborhood') {
+          requireScope(principal,'read');
+          const view=v11View(v11Reader,principal,config.deploymentProfile,url.searchParams.get('dataset'),url.searchParams.get('locale'));
+          return send(v11Neighborhood(view,url.searchParams.get('id')));
         }
         if(req.method==='GET' && url.pathname==='/api/kristals') {
           requireScope(principal,'read');
@@ -251,7 +268,8 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1
   }:null;
   const engine=new Engine(pack,{roles:(process.env.KONSTELLATION_ROLES||'public').split(','),...(process.env.KONSTELLATION_CURSOR_SECRET?{secret:process.env.KONSTELLATION_CURSOR_SECRET}:{})});
   const semantik=new SemantikAdapter(process.env.KONSTELLATION_SA_CONFIG?readJson(process.env.KONSTELLATION_SA_CONFIG):null);
-  const server=createServer({engine,semantik,config,collection});
+  const v11Reader=loadV11Config(process.env.KONSTELLATION_V11_CONFIG||null,config.deploymentProfile);
+  const server=createServer({engine,semantik,config,collection,v11Reader});
   const shutdown=(signal)=>{log('info','shutdown_requested',{signal}); server.close(()=>process.exit(0)); setTimeout(()=>process.exit(1),5000).unref();};
   process.on('SIGTERM',()=>shutdown('SIGTERM')); process.on('SIGINT',()=>shutdown('SIGINT'));
   server.listen(config.port,config.host,()=>log('info','server_started',{host:config.host,port:config.port,profile:config.deploymentProfile}));

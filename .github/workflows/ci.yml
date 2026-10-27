@@ -24,15 +24,8 @@ jobs:
         with:
           node-version: 24.15.0
 
-      - name: Install dependencies
-        shell: bash
-        run: |
-          if [[ -f package-lock.json ]]; then
-            npm ci
-          else
-            echo "::warning::package-lock.json absent; using npm install without generating a lockfile"
-            npm install --no-package-lock --no-audit --no-fund
-          fi
+      - name: Install pinned dependencies (fail closed)
+        run: npm ci
 
       - name: Core tests
         run: npm test

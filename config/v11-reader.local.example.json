@@ -1,0 +1,19 @@
+{
+  "profile": "konstellation.v11-local-reader/0.1",
+  "mode": "local-only",
+  "python": "python",
+  "framework_root": "C:\\mycode\\Kristal\\Kristal-Framework",
+  "integration_pack_root": "C:\\mycode\\Kristal-Integration-Pack",
+  "principals": ["local-user"],
+  "datasets": [
+    {
+      "id": "framework-demo",
+      "title": "Démonstration vérifiée Framework v11",
+      "locales": ["fr-CA", "fr", "en"],
+      "registry": "C:\\mycode\\Kristal\\Kristal-Framework\\examples\\v11\\identity-registry.example.json",
+      "graph": "C:\\mycode\\Kristal\\Kristal-Framework\\examples\\v11\\semantic-graph.example.json",
+      "crosswalk": "C:\\mycode\\Kristal\\Kristal-Framework\\examples\\v11\\external-crosswalk.example.json",
+      "catalog": "C:\\mycode\\Kristal\\Kristal-Framework\\examples\\v11\\dictionaries\\catalog.json"
+    }
+  ]
+}

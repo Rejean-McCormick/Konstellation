@@ -1,3 +1,10 @@
+## 2026-10-27 — v11 local reader opt-in preview (post RC2)
+
+- Lecteur Framework v11 isolé, validateur officiel épinglé, UI `/v11` et API local-only; KQ/KP/KA/KS et couverture lexicale préservées.
+- Aucun chemin canonique modifié; aucune autorisation publique inférée; profils public/lan/shared refusés.
+- Tests adversariaux et test réel Framework+Integration Pack ajoutés.
+- Version RC2 conservée : release complète Node 24.15+/Playwright et package-lock exact à qualifier.
+
 ## 2026-10-17 — Accessible French semantic presentation (experimental)
 
 - Kristal v10 local reader: derived graph relation labels resolve grounded French names for known Wikidata properties (including P138) and a bounded set of explicitly interpreted Catho predicates; unknown P IDs remain explicit, never guessed.
