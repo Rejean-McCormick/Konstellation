@@ -146,3 +146,15 @@ QuerySpec, Lens et relation registry restent actuellement en 0.2 : ils ne sont p
 ## 8. Idempotence
 
 Les endpoints de lecture sont déterministes pour un même corpus, Reader Policy, roles, Lens, QuerySpec et version de service. Une projection est toujours une opération dérivée de lecture.
+
+## 6. Optional isolated Framework v11 local endpoints (October 27 preview)
+
+The following endpoints exist in `server/index.mjs` but are **not** part of the traditional v6/v10 QuerySpec/Reader Policy/NavigationPlan pipeline. They are opt-in, read-only, require `read` scope, the `local` deployment profile and a matching principal in the private `KONSTELLATION_V11_CONFIG` allowlist.
+
+| Method | Endpoint | Meaning |
+| --- | --- | --- |
+| GET | `/api/v11/catalog` | Allowed dataset IDs, titles and locales without exposing configured local paths |
+| GET | `/api/v11/view?dataset=framework-demo&locale=fr-CA` | Validated, derived exact-pinned Framework v11 read view |
+| GET | `/api/v11/neighborhood?dataset=framework-demo&locale=fr-CA&id=KQ1001` | Entity neighborhood with KQ/KP/KA/KS source and assertion references |
+
+`framework-demo` is **only an example dataset ID**; its presence depends on the private operator configuration. Unconfigured or unavailable datasets/locales/entities return 404; disallowed principals return 403. The underlying v11 view has no independently verified per-assertion access labels, so **authorization is for the entire configured dataset**. See [the v11 reader guide](34-v11-local-reader.md).

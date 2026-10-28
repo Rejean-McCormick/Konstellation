@@ -1,87 +1,62 @@
-# Documentation Konstellation
+# Konstellation documentation
 
-Cette arborescence est la **référence documentaire du repo**. Voir aussi le [Manifeste documentaire](DOCS-MANIFEST.md) pour le statut normatif de chaque fichier. Elle décrit deux choses distinctes :
+This directory is the **repository documentation index**. Read the [documentation manifest](DOCS-MANIFEST.md) for normative versus explanatory or historical status.
 
-- **implémentation courante : **Konstellation 1.0 RC (`1.0.0-rc.2`)**, alignée sur les contrats 1.0 ;
-- **qualification finale : Konstellation 1.0.0**, obtenue seulement lorsque tous les gates de release sont verts.
+**Current code:** Konstellation `1.0.0-rc.2`. **Qualification:** final `1.0.0` remains pending reproducible dependency installation, the supported Node toolchain, browser E2E, benchmarks, and release checks. The supplied source snapshot does not include `package-lock.json`. [Implementation status](IMPLEMENTATION.md) and [RC validation](VALIDATION-v1.0-RC.md) distinguish implementation from qualification.
 
-La documentation 1.0 est normative. `IMPLEMENTATION.md` décrit l’état réel du code et `VALIDATION-v1.0-RC.md` distingue ce qui a été exécuté dans ce snapshot de ce qui reste à qualifier dans l’environnement de release.
+**Current optional integration:** [isolated Framework v11 local reader](34-v11-local-reader.md), using a pinned Framework `11.0.0-draft.4` and Integration Pack `0.3.0-alpha.1`, *not* the traditional v6/v10 navigation engine. Review the [October 27 validation record](VALIDATION_V11_LOCAL_PREVIEW_2026-10-27.md). The v11 preview is local-only, opt-in, dataset-level authorized, and not publication-ready.
 
-## Principe directeur
+## Guiding principle
 
-> Le Kristal définit ce qui est connaissable. La Lens définit l'angle. Konstellation reconnaît la structure visible, construit un plan de navigation explicable et la représente avec des renderers contrôlés. Une vue n'ajoute jamais de vérité au Kristal.
+> The Kristal defines what is knowable. A Lens defines the reading angle. Konstellation derives explainable navigation from **visible, authorized** structure; a view never creates canonical truth.
 
-## Parcours de lecture
+## Architecture and semantics
 
-### Architecture et sémantique
+1. [Decisions and invariants](00-decisions.md)
+2. [System architecture](01-architecture.md)
+3. [QuerySpec, Lens, reader policy and state](02-query-model.md)
+4. [Adaptive navigation](03-navigation.md)
+5. [Authority, semantics and projections](04-knowledge-semantics.md)
+6. [Execution and Renderer Registry](05-execution.md)
+7. [Integrations and external contracts](06-integrations.md)
+8. [Adaptive navigation detail](15-adaptive-navigation.md)
+9. [Kristal v6 alignment](16-kristal-v6-alignment.md)
 
-1. [Décisions et invariants](00-decisions.md)
-2. [Architecture système](01-architecture.md)
-3. [QuerySpec, Lens, Reader Policy et état](02-query-model.md)
-4. [Navigation adaptative](03-navigation.md)
-5. [Autorité, sémantique et projections](04-knowledge-semantics.md)
-6. [Exécution et Renderer Registry](05-execution.md)
-7. [Intégrations et contrats externes](06-integrations.md)
+## Implementation and operations
 
-### Production
+- [Current implementation status](IMPLEMENTATION.md)
+- [1.0 RC validation](VALIDATION-v1.0-RC.md)
+- [Import](IMPORT.md) and [integrations](INTEGRATIONS.md)
+- [Operations](OPERATIONS.md), [deployment](22-deployment.md), [security](19-security.md)
+- [Public API and contracts](24-api-contracts.md)
+- [1.0 release qualification](25-release-1.0.md)
+- [Local v10 reader and Manager alpha.14](33-kristal-v10-local-reader.md)
+- [Neutral local catalog](LOCAL_SELECTOR_2026-10-16.md)
+- [Optional local v11 reader: configuration, boundaries, API](34-v11-local-reader.md)
+- [v11 local-preview validation evidence](VALIDATION_V11_LOCAL_PREVIEW_2026-10-27.md)
+- [Performance](18-performance-scalability.md), [observability](20-observability.md), [tests and golden corpus](21-testing-golden-corpus.md)
+- [Renderer registry](17-renderer-registry.md), [extension guide](23-extension-guide.md)
+- [Migration](08-migration.md), [source audit](09-source-audit.md), [validation strategy](10-validation-report.md)
+- [1.0 delivery plan](07-delivery-plan.md), [glossary](26-glossary.md)
+- [Expected Kristal-family behavior](27-behavior-by-kristal.md), [anti-patterns](28-anti-patterns.md), [reference sequences](29-reference-sequences.md)
 
-8. [Plan de livraison 1.0](07-delivery-plan.md)
-9. [Migration v0.7 -> 1.0](08-migration.md)
-10. [Audit des sources et références](09-source-audit.md)
-11. [Stratégie de validation](10-validation-report.md)
-12. [Renderer Registry](17-renderer-registry.md)
-13. [Performance et scalabilité](18-performance-scalability.md)
-14. [Sécurité](19-security.md)
-15. [Observabilité et fiabilité](20-observability.md)
-16. [Tests et golden corpus](21-testing-golden-corpus.md)
-17. [Déploiement](22-deployment.md)
-18. [Extension à de nouveaux Kristals](23-extension-guide.md)
-19. [API et contrats publics](24-api-contracts.md)
-20. [Critères de release 1.0](25-release-1.0.md)
-21. [Glossaire](26-glossary.md)
-22. [Comportement attendu par famille de Kristal](27-behavior-by-kristal.md)
-23. [Anti-patterns interdits](28-anti-patterns.md)
-24. [Séquences de référence](29-reference-sequences.md)
+## Specialized and historical reference material
 
-### Alignement Kristal et navigation
+- [GitHub-hosted Framework v10 collection model](30-kristal-v10-github.md)
+- [My Kristals Manager preview](31-my-kristals-manager-preview.md)
+- [Manager + Discovery 3.3](32-manager-discovery-3.3.md)
+- [Catho reading paths](35-parcours-locaux-catho.md) and [relation registry correction](36-correctif-registre-relations-catho.md)
+- [October 17 French semantic-display patch](37-semantic-display-fr-2026-10-17.md)
+- [Astrolabe](11-astrolabe.md), [biblical graph](12-biblical-graph.md), [Playwright](13-playwright.md), [Théophile enrichment](14-theophile-enrichment.md)
 
-- [Navigation adaptative — spécification détaillée](15-adaptive-navigation.md)
-- [Alignement Kristal v6](16-kristal-v6-alignment.md)
-- [État d'implémentation](IMPLEMENTATION.md)
-- [Validation 1.0 RC](VALIDATION-v1.0-RC.md)
-- [Import Kristal](IMPORT.md)
-- [Intégrations](INTEGRATIONS.md)
-- [Collections GitHub Kristal v10](30-kristal-v10-github.md)
-- [Lecteur local v10 et Manager alpha.14](33-kristal-v10-local-reader.md)
-- [Opérations](OPERATIONS.md)
+Historical reports are retained for traceability. They do **not** override the current code, contracts or validation gates.
 
-### Exemples et historiques de domaine
+## Architectural decisions and role guides
 
-- [Astrolabe](11-astrolabe.md)
-- [Biblical Graph](12-biblical-graph.md)
-- [Playwright](13-playwright.md)
-- [Théophile enrichment](14-theophile-enrichment.md)
+- [ADRs](adr/README.md): ADR-0005 to ADR-0010
+- [User guide](guides/USER.md), [integrator guide](guides/INTEGRATOR.md), [developer guide](guides/DEVELOPER.md), [operator guide](guides/OPERATOR.md)
+- [Runbooks](runbooks/README.md): startup, rollback, backup, incident, upgrade and threat model
 
-Ces documents illustrent l'architecture mais **ne définissent pas le modèle universel**.
+## Documentation maintenance
 
-## ADRs
-
-Les décisions structurantes sont figées dans `docs/adr/` :
-
-- [ADR-0005 — Bounded selection tree](adr/ADR-0005-bounded-selection-tree.md)
-- [ADR-0006 — Kristal v6 reste l'autorité canonique](adr/ADR-0006-kristal-v6-authority.md)
-- [ADR-0007 — Affordances de navigation dérivées](adr/ADR-0007-navigation-affordances.md)
-- [ADR-0008 — Séparation planner / projection / renderer](adr/ADR-0008-planner-renderer-separation.md)
-- [ADR-0009 — Actionability n'est pas une autorité d'exécution](adr/ADR-0009-actionability-not-authority.md)
-- [ADR-0010 — Registry fermé de renderers](adr/ADR-0010-controlled-renderer-registry.md)
-
-## Guides par rôle
-
-- [Guide utilisateur](guides/USER.md)
-- [Guide intégrateur Kristal](guides/INTEGRATOR.md)
-- [Guide développeur](guides/DEVELOPER.md)
-- [Guide opérateur](guides/OPERATOR.md)
-
-## Statut des versions
-
-`VALIDATION-v1.0-RC.md` est le rapport courant. Les fichiers `VALIDATION-v0.x.md` sont historiques et ne remplacent ni les critères de release 1.0 ni l’état d’implémentation courant.
+Update contracts, the implementation-status document, relevant guides, tests and change records when behavior actually changes. Keep qualified release claims separate from experimental local previews. Wiki pages are introductions; repository schemas, tests and the implementation remain the detailed references.

@@ -2,6 +2,12 @@
 
 Ce document est la source de vérité sur l’état **réel du code**. La spécification 1.0 est implémentée dans cette branche sous le numéro `1.0.0-rc.2`. Le suffixe RC est conservé tant que tous les gates opérationnels de [25-release-1.0.md](25-release-1.0.md) ne sont pas exécutés avec succès dans l’environnement de release supporté.
 
+## October 27, 2026 addendum — optional isolated Framework v11 reader
+
+The inspected `1.0.0-rc.2` source also implements `server/integrations/kristal-v11.mjs`, `server/integrations/kristal-v11-envelope.mjs`, `/api/v11/{catalog,view,neighborhood}`, and the separate Astro/Svelte `/v11` route. This is an **opt-in, local-only, whole-dataset-allowlisted** read preview against exact-pinned Framework `11.0.0-draft.4` via Integration Pack `0.3.0-alpha.1`. It does **not** use the traditional v6/v10 engine, convert older states, implement per-assertion Reader Policy, or grant publication rights.
+
+The original source ZIP includes neither the external Framework/Pack checkouts nor `package-lock.json`. See [the v11 operational guide](34-v11-local-reader.md) and [the dated local validation record](VALIDATION_V11_LOCAL_PREVIEW_2026-10-27.md). The release qualification gaps described below still apply.
+
 ## Résumé
 
 Implémenté :

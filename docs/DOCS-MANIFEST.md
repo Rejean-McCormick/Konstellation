@@ -40,6 +40,13 @@ Ce manifeste classe les documents du repo selon leur rôle.
 
 En cas de divergence entre la cible 1.0 et le code actuel, `IMPLEMENTATION.md` doit la signaler.
 
+## Current optional integration (experimental, not normative Framework authority)
+
+- `34-v11-local-reader.md` — **current English operational guide** for the separate Framework v11 local-only preview (`/v11`); no per-assertion ACL or publication qualification.
+- `VALIDATION_V11_LOCAL_PREVIEW_2026-10-27.md` — **dated historical validation evidence** for targeted v11 checks with external repos; not evidence that the release gates passed.
+
+The main documentation index `README.md` is in English and links to these pages. The v11 preview does **not** supersede the Framework v10/v9 state contracts for the traditional reader.
+
 ## Guides opérationnels
 
 - `IMPORT.md`

@@ -87,3 +87,7 @@ Sauvegarder séparément le Kristal canonique, configuration, policies, Lens/hin
 ## 8. CI de référence
 
 Les workflows GitHub Actions de référence utilisent Node 24.15.0, `npm ci`, installent Chromium Playwright, régénèrent SBOM/manifest et exigent `npm run release:check`. Le workflow de tag produit un bundle qualifié accompagné de son SHA-256.
+
+## 9. Optional Framework v11 preview: local-only deployment
+
+Konstellation `1.0.0-rc.2` includes an **isolated, experimental** `/v11` route enabled only by an explicit private `KONSTELLATION_V11_CONFIG`. The config names exact-pinned Framework `11.0.0-draft.4`, Integration Pack `0.3.0-alpha.1`, datasets, locales and principal allowlist. `lan`, `shared` and `public` profiles are rejected. The v11 preview grants **whole-dataset read access** to a local allowlisted principal; it provides neither per-assertion Reader Policy nor C1/C2/publication authority. The source snapshot does not contain `package-lock.json`, so `npm ci` remains conditional on retrieving the matching committed lockfile. See [v11 guide](34-v11-local-reader.md) and [dated v11 validation record](VALIDATION_V11_LOCAL_PREVIEW_2026-10-27.md).
