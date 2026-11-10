@@ -106,3 +106,5 @@ Read [security](docs/19-security.md) and [deployment](docs/22-deployment.md) bef
 | `data/` | Demonstration datasets, not a universal Kristal model |
 
 Start with the [documentation index](docs/README.md). The English wiki is distributed separately as the local `Konstellation.wiki` checkout; no remote wiki publication is implied by this source snapshot.
+
+> **Final-system Branch 03 alignment (2026-11-09):** See [the release/distribution/exploration integration note](docs/FINAL_SYSTEM_BRANCH03.md). The seven-owner pipeline is a target with independently gated qualification, permission, packaging and readers. This source snapshot does not authorize public publication or deployment.

@@ -1,20 +1,20 @@
 SMART DUMPER INDEX
 ==================
-generated_at: 2026-10-13T07:28:04.376275
+generated_at: 2026-11-09T16:31:47.554171
 source_root: C:\mycode\Konstellation\Konstellation
 mode: snapshot
 zip_file: Konstellation_Code_snapshot.zip
 embedded_index: SMARTDUMP_INDEX.txt
-file_count: 253
-total_bytes: 21906950
+file_count: 292
+total_bytes: 22087532
 compression: ZIP_DEFLATED level 1
 
 FILES
 -----
 .github/dependabot.yml	366 bytes
-.github/workflows/ci.yml	1610 bytes
+.github/workflows/ci.yml	1356 bytes
 .github/workflows/release.yml	2424 bytes
-.gitignore	320 bytes
+.gitignore	346 bytes
 .kristal-integration-backup/patched.sha256.json	517 bytes
 .kristal-integration-backup/server/config.mjs	2656 bytes
 .kristal-integration-backup/server/index.mjs	16723 bytes
@@ -24,7 +24,10 @@ FILES
 astro.config.mjs	287 bytes
 benchmarks/navigation-baseline.json	848 bytes
 CHANGELOG-PLAYWRIGHT-FIX.md	337 bytes
-CHANGELOG.md	14156 bytes
+CHANGELOG.md	19536 bytes
+config/active-reader.json	1961 bytes
+config/local-catalog.json	2071 bytes
+config/v11-reader.local.example.json	840 bytes
 contracts/constellation-response.schema.json	5227 bytes
 contracts/exploration-state.schema.json	1619 bytes
 contracts/lens.schema.json	4747 bytes
@@ -47,6 +50,7 @@ CONTRIBUTING.md	1136 bytes
 data/biblical-seed.json	25403 bytes
 data/biblical.pack.local.json	6470206 bytes
 data/demo.pack.json	345754 bytes
+data/neutral.pack.json	1604 bytes
 data/theophile-biblical.enriched.pack.json	8938264 bytes
 data/theophile.semantic.enriched.json	4802793 bytes
 docs/00-decisions.md	3356 bytes
@@ -71,16 +75,25 @@ docs/18-performance-scalability.md	2406 bytes
 docs/19-security.md	4662 bytes
 docs/20-observability.md	1840 bytes
 docs/21-testing-golden-corpus.md	2123 bytes
-docs/22-deployment.md	3579 bytes
+docs/22-deployment.md	4395 bytes
 docs/23-extension-guide.md	2215 bytes
-docs/24-api-contracts.md	5506 bytes
+docs/24-api-contracts.md	6732 bytes
 docs/25-release-1.0.md	2793 bytes
 docs/26-glossary.md	1754 bytes
 docs/27-behavior-by-kristal.md	3027 bytes
 docs/28-anti-patterns.md	2546 bytes
 docs/29-reference-sequences.md	1943 bytes
 docs/30-kristal-v10-github.md	3732 bytes
-docs/31-my-kristals-manager-preview.md	7132 bytes
+docs/31-my-kristals-manager-preview.md	7565 bytes
+docs/32-manager-discovery-3.3.md	6772 bytes
+docs/32-satellite-overlay-portraits.md	2001 bytes
+docs/33-kristal-v10-local-reader.md	5600 bytes
+docs/34-catho-existing-location.md	2746 bytes
+docs/34-mise-a-jour-2026-10-16.md	3637 bytes
+docs/34-v11-local-reader.md	5709 bytes
+docs/35-parcours-locaux-catho.md	2991 bytes
+docs/36-correctif-registre-relations-catho.md	1534 bytes
+docs/37-semantic-display-fr-2026-10-17.md	3310 bytes
 docs/adr/ADR-0005-bounded-selection-tree.md	954 bytes
 docs/adr/ADR-0006-kristal-v6-authority.md	612 bytes
 docs/adr/ADR-0007-navigation-affordances.md	729 bytes
@@ -88,20 +101,23 @@ docs/adr/ADR-0008-planner-renderer-separation.md	525 bytes
 docs/adr/ADR-0009-actionability-not-authority.md	401 bytes
 docs/adr/ADR-0010-controlled-renderer-registry.md	469 bytes
 docs/adr/README.md	590 bytes
+docs/ALIGNEMENT_LOT1_CI.md	578 bytes
 docs/DESIGN-v0.2-README.md	584 bytes
-docs/DOCS-MANIFEST.md	2315 bytes
+docs/DOCS-MANIFEST.md	2946 bytes
 docs/guides/DEVELOPER.md	1996 bytes
 docs/guides/INTEGRATOR.md	710 bytes
 docs/guides/OPERATOR.md	991 bytes
 docs/guides/README.md	258 bytes
 docs/guides/USER.md	1243 bytes
-docs/IMPLEMENTATION.md	9175 bytes
+docs/IMPLEMENTATION.md	10077 bytes
 docs/IMPORT.md	2546 bytes
 docs/input-snapshots.json	1276 bytes
 docs/INTEGRATIONS.md	1702 bytes
-docs/KNAV_IMPLEMENTATION_REPORT_2026-10-12.md	5020 bytes
+docs/KNAV_IMPLEMENTATION_REPORT_2026-10-12.md	5027 bytes
+docs/LOCAL_SELECTOR_2026-10-16.md	1705 bytes
 docs/OPERATIONS.md	1783 bytes
-docs/README.md	4102 bytes
+docs/patches/2026-10-17-session-locale-privee.md	1865 bytes
+docs/README.md	4434 bytes
 docs/runbooks/BACKUP-RESTORE.md	4349 bytes
 docs/runbooks/INCIDENT.md	894 bytes
 docs/runbooks/README.md	556 bytes
@@ -115,7 +131,10 @@ docs/VALIDATION-v0.5.md	1953 bytes
 docs/VALIDATION-v0.6.md	1856 bytes
 docs/VALIDATION-v0.7.md	2454 bytes
 docs/VALIDATION-v1.0-RC.md	6385 bytes
+docs/VALIDATION_V11_LOCAL_PREVIEW_2026-10-27.md	2502 bytes
 examples/exploration.json	1072 bytes
+examples/fleet/manager-access-policy.example.json	328 bytes
+examples/fleet/manager-local-inventory.synthetic.json	782 bytes
 examples/fleet/manager-preview.example.json	782 bytes
 examples/import/mapping.json	4290 bytes
 examples/import/state.json	927 bytes
@@ -123,6 +142,7 @@ examples/integrations/kristal-directory.json	1286 bytes
 examples/integrations/kristal-github-v10.json	193 bytes
 examples/integrations/kristal-http.json	1507 bytes
 examples/integrations/kristal-kollection.json	134 bytes
+examples/integrations/kristal-local-v10-catho.json	1961 bytes
 examples/integrations/kristal-v6-state.json	2234 bytes
 examples/integrations/kristal-v6.json	552 bytes
 examples/integrations/runtime-pack/assertions.parquet	25976 bytes
@@ -148,10 +168,7 @@ examples/queries/works.json	1085 bytes
 examples/registry.json	2889 bytes
 examples/result.json	1756 bytes
 FIXES-20260930.md	963 bytes
-GitSink.bat	1863 bytes
-Konstellation_Launcher.cmd	5986 bytes
-Launch_MULTiSmartDump.lnk	1359 bytes
-Launch_My_Kristals.cmd	383 bytes
+Konstellation.cmd	8710 bytes
 lenses-enriched/biblical-people.json	2959 bytes
 lenses-enriched/biblical-traditions.json	597 bytes
 lenses-enriched/biblical-works.json	1794 bytes
@@ -162,11 +179,15 @@ lenses-enriched/theophile-authors.json	1326 bytes
 lenses-enriched/theophile-positions.json	1825 bytes
 lenses-enriched/theophile-questions.json	1822 bytes
 lenses-enriched/theophile-themes.json	266 bytes
+LOCAL_V10_CHANGESET.json	2717 bytes
+maintenance-cleanup.json	450 bytes
 package.json	2327 bytes
 playwright.config.mjs	2476 bytes
+RAPPORT_Konstellation_presentation_semantique_FR_2026-10-17.md	3214 bytes
 README-PLAYWRIGHT-FIX.md	633 bytes
-README.md	4335 bytes
-RELEASE-MANIFEST.json	41792 bytes
+README.md	8077 bytes
+README_Installer_Correctif_Semantique.txt	801 bytes
+RELEASE-MANIFEST.json	45704 bytes
 requirements-dev.txt	19 bytes
 SBOM.cdx.json	5190 bytes
 scripts/benchmark-navigation.mjs	6194 bytes
@@ -181,21 +202,28 @@ scripts/generate-sbom.mjs	4491 bytes
 scripts/import-kristal.mjs	7170 bytes
 scripts/pack.mjs	362 bytes
 scripts/prepare-playwright-corpus.mjs	3173 bytes
+scripts/project-discovery.mjs	2438 bytes
 scripts/release-check.mjs	2917 bytes
-scripts/release-manifest.mjs	2512 bytes
+scripts/release-manifest.mjs	2529 bytes
 scripts/smoke-dev.mjs	1640 bytes
 scripts/update-biblical-corpus.mjs	16842 bytes
 server/auth.mjs	3341 bytes
-server/config.mjs	2935 bytes
+server/config.mjs	3197 bytes
 server/contracts.mjs	1997 bytes
-server/engine.mjs	29329 bytes
+server/engine.mjs	30020 bytes
 server/errors.mjs	364 bytes
-server/index.mjs	18097 bytes
-server/integrations/fleet.mjs	5412 bytes
+server/index.mjs	19582 bytes
+server/integrations/discovery.mjs	5047 bytes
+server/integrations/fleet.mjs	7557 bytes
 server/integrations/kompiler-bridge.mjs	3861 bytes
+server/integrations/kristal-local-v10.mjs	20015 bytes
 server/integrations/kristal-v10.mjs	16148 bytes
+server/integrations/kristal-v11-envelope.mjs	4380 bytes
+server/integrations/kristal-v11.mjs	7204 bytes
 server/integrations/kristal-v6.mjs	20454 bytes
-server/integrations/kristal.mjs	23520 bytes
+server/integrations/kristal.mjs	24541 bytes
+server/integrations/local-catalog.mjs	3352 bytes
+server/integrations/manager-adapter.mjs	5838 bytes
 server/integrations/reader-policy.mjs	11719 bytes
 server/integrations/semantik.mjs	12249 bytes
 server/integrations/upstream.mjs	2279 bytes
@@ -203,25 +231,25 @@ server/navigation/index.mjs	4046 bytes
 server/navigation/planner.mjs	10955 bytes
 server/navigation/profiler.mjs	32618 bytes
 server/navigation/projection.mjs	33265 bytes
-server/navigation/projector.mjs	16784 bytes
+server/navigation/projector.mjs	16971 bytes
 server/navigation/registry.mjs	5723 bytes
 server/navigation/salience.mjs	2420 bytes
 server/observability.mjs	2237 bytes
 server/pack.mjs	6522 bytes
 server/version.mjs	1279 bytes
-SNAPSHOT_INDEX.txt	7196 bytes
+SNAPSHOT_INDEX.txt	9138 bytes
 src/components/AdaptiveProjectionView.svelte	5419 bytes
-src/components/Astrolabe.svelte	4385 bytes
+src/components/Astrolabe.svelte	3579 bytes
 src/components/CausalFeedbackView.svelte	3038 bytes
 src/components/Communication.svelte	5586 bytes
-src/components/ConstellationView.svelte	8748 bytes
+src/components/ConstellationView.svelte	15961 bytes
 src/components/DagProofView.svelte	4984 bytes
-src/components/Explorer.svelte	60708 bytes
+src/components/Explorer.svelte	65047 bytes
 src/components/FlowPathView.svelte	4589 bytes
 src/components/KompilerPanel.svelte	4758 bytes
 src/components/MatrixProfileView.svelte	835 bytes
 src/components/MultiscaleLayerView.svelte	1633 bytes
-src/components/MyKristals.svelte	5225 bytes
+src/components/MyKristals.svelte	6772 bytes
 src/components/QueryTree.svelte	1464 bytes
 src/components/RelationGraph.svelte	2785 bytes
 src/components/SpatialView.svelte	3386 bytes
@@ -229,9 +257,13 @@ src/components/StateFlowView.svelte	1195 bytes
 src/components/TimelineLineageView.svelte	1549 bytes
 src/components/TraceabilityView.svelte	1025 bytes
 src/components/TreeView.svelte	2939 bytes
+src/components/V11Reader.svelte	5943 bytes
 src/lib/constellation/layout.js	1504 bytes
+src/lib/constellation/profile.mjs	5381 bytes
+src/lib/semantic-display.mjs	6914 bytes
 src/pages/index.astro	666 bytes
-src/styles/global.css	63217 bytes
+src/pages/v11.astro	555 bytes
+src/styles/global.css	67972 bytes
 svelte.config.js	19 bytes
 Test_Konstellation.cmd	2987 bytes
 tests/api.test.mjs	3483 bytes
@@ -243,6 +275,7 @@ tests/browser/fixtures.mjs	3207 bytes
 tests/browser/navigation.spec.mjs	1764 bytes
 tests/browser/responsive.spec.mjs	826 bytes
 tests/browser/state.spec.mjs	1296 bytes
+tests/constellation-portrait.test.mjs	3285 bytes
 tests/constellation.test.mjs	3079 bytes
 tests/contracts-1.0.test.mjs	6573 bytes
 tests/engine.test.mjs	11706 bytes
@@ -250,17 +283,23 @@ tests/fleet.test.mjs	5193 bytes
 tests/import.test.mjs	2797 bytes
 tests/integrations.test.mjs	14497 bytes
 tests/kristal-kollection.test.mjs	4546 bytes
+tests/kristal-local-v10.test.mjs	10639 bytes
 tests/kristal-v10.test.mjs	6963 bytes
+tests/kristal-v11-reader.test.mjs	5375 bytes
 tests/kristal-v6-navigation.test.mjs	3360 bytes
 tests/lenses-1.0.test.mjs	1746 bytes
+tests/manager-discovery.test.mjs	9525 bytes
 tests/navigation-adaptive.test.mjs	4359 bytes
 tests/navigation-golden-1.0.test.mjs	6429 bytes
 tests/navigation-policy-1.0.test.mjs	5729 bytes
 tests/navigation-variety.test.mjs	3898 bytes
+tests/neutral-local-catalog.test.mjs	4276 bytes
 tests/security-1.0.test.mjs	2668 bytes
+tests/semantic-display.test.mjs	2849 bytes
 tests/ui/explorer.test.mjs	9051 bytes
 tests/ui/renderers.test.mjs	3158 bytes
+tools/maintenance/Ranger_anciens_lanceurs.cmd	120 bytes
+tools/maintenance/Ranger_anciens_lanceurs.ps1	1511 bytes
 tools/validate.py	13188 bytes
-Update_Biblical_Corpus.cmd	2168 bytes
+UPDATE_SUMMARY_2026-10-13.md	2243 bytes
 vitest.config.mjs	279 bytes
-ZmartZnap.pyw	22889 bytes
