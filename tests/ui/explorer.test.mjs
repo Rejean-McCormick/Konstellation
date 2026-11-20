@@ -5,25 +5,47 @@ import { Engine } from '../../server/engine.mjs';
 import { loadPack } from '../../server/pack.mjs';
 import { loadLenses } from '../../server/index.mjs';
 import { buildCommunicationRequest } from '../../server/integrations/semantik.mjs';
-import { validate } from '../../server/contracts.mjs';
+import { validate, ROOT } from '../../server/contracts.mjs';
+import path from 'node:path';
 let engine, lenses;
 beforeEach(() => {
   localStorage.clear();
   engine = new Engine(loadPack());
-  lenses = loadLenses(engine);
+  // The demo Explorer test explicitly exercises the sociodemography Lens.
+  // Generic loadLenses(engine) omits that named Lens, causing an invalid
+  // select value and an unrelated unhandled rejection in the UI.
+  lenses = loadLenses(engine, path.join(ROOT, 'examples', 'lenses'));
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url, options = {}) => {
       const data = options.body ? JSON.parse(options.body) : null;
+      // Explorer first discovers the local Kristal catalogue. Match the real
+      // server's pathname/GET-query routing, not the raw URL string.
+      const requestUrl = new URL(String(url), 'http://konstellation.test');
       let value;
       try {
-        switch (url) {
+        switch (requestUrl.pathname) {
+          case '/api/kristals':
+            // Neutral demo pack: no implicit Kristal selection or invented inventory.
+            value = { selectable: false, requiresSelection: false,
+              current: null, defaultKristal: null, items: [] };
+            break;
+          case '/api/fleet':
+            // Optional local-only fleet is unavailable, just like its explicit
+            // HTTP 404 contract; it must not block the demo Explorer.
+            return { ok: false, status: 404,
+              json: async () => ({ error: {
+                code: 'NOT_FOUND', message: 'Fleet navigation is unavailable.',
+              } }) };
           case '/api/sa/request':
             value = buildCommunicationRequest(engine, data);
             break;
-          case '/api/bootstrap':
-            value = engine.bootstrap(lenses);
+          case '/api/bootstrap': {
+            const policyRef = requestUrl.searchParams.get('readerPolicyRef');
+            const context = policyRef ? engine.context(policyRef) : engine.context();
+            value = engine.bootstrap(lenses, context);
             break;
+          }
           case '/api/query':
             value = engine.query(data.query, data.cursor);
             break;
@@ -129,6 +151,11 @@ test('inspector applies reading policy and reveals sourced conflict only in rese
   await fireEvent.change(screen.getByLabelText('Politique de lecture'), {
     target: { value: research },
   });
+  // Async bootstrap changes the Reader Policy before rerunning the query.
+  // Waiting only for aria-busy=false can observe the *previous* idle query.
+  await waitFor(() => expect(
+    document.querySelector('.results-heading p')?.textContent,
+  ).toBe(engine.policies.get(research).description));
   await done();
   await fireEvent.click(screen.getByLabelText('Inspecter Augustin d’Hippone'));
   await waitFor(() => expect(document.querySelector('.status-pill.disputed')).not.toBeNull());
@@ -189,4 +216,18 @@ test('unavailable facet capabilities display the cause without offering a false 
   await ready();
   expect(screen.getByText('Relation indisponible dans ce pack.')).toBeTruthy();
   expect(screen.queryByRole('checkbox', { name: /Philosophie/ })).toBeNull();
+});
+
+test('unknown perspective is refused without losing results or raising an unhandled rejection', async () => {
+  await ready();
+  const select = screen.getByLabelText('Perspective');
+  const unknown = document.createElement('option');
+  unknown.value = 'test:unavailable-lens';
+  unknown.textContent = 'Perspective non autorisée';
+  select.appendChild(unknown);
+  await fireEvent.change(select, { target: { value: unknown.value } });
+  await waitFor(() => expect(screen.getByText(
+    'Perspective indisponible pour cette politique de lecture.',
+  )).toBeTruthy());
+  expect(document.querySelector('.result-count').textContent).toBe('132');
 });

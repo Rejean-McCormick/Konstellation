@@ -4,6 +4,8 @@
  * human-readable label. The absence of a binding means neutral presentation.
  */
 import fs from 'node:fs';
+import path from 'node:path';
+import { ROOT } from '../../contracts.mjs';
 
 const FORMAT = 'konstellation.visual-attribute-bindings/0.1';
 const ID = /^[A-Za-z0-9][A-Za-z0-9_:./-]{0,159}$/;
@@ -91,7 +93,7 @@ export function parseVisualAttributeBindings(input) {
 export function loadVisualAttributeBindings() {
   // Never load a rule from a Kristal read surface or an HTTP request.
   return parseVisualAttributeBindings(JSON.parse(fs.readFileSync(
-    new URL('../../../config/visual-attributes.json', import.meta.url),'utf8')));
+    path.join(ROOT, 'config', 'visual-attributes.json'),'utf8')));
 }
 
 const selectionNodes = (projection) => {

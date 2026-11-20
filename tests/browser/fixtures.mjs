@@ -1,7 +1,25 @@
 import { test as base, expect } from '@playwright/test';
 
+// The local-only Explorer deliberately probes two optional integrations. Their
+// explicitly disabled response is not an application outage. No other 4xx/5xx
+// is allow-listed, and a different response payload remains a test failure.
+function optionalEndpoint(url, status) {
+  let pathname;
+  try { pathname = new URL(url).pathname; } catch { return null; }
+  if (pathname === '/api/fleet' && status === 404) return 'Fleet navigation is unavailable.';
+  if (pathname === '/api/kompiler/capabilities' && status === 503) return 'Kompiler non configuré.';
+  return null;
+}
+
+function expectedOptionalConsoleMessage(message) {
+  const location = message.location()?.url || '';
+  const match = message.text().match(/Failed to load resource.*status of (404|503)/i);
+  return Boolean(match && optionalEndpoint(location, Number(match[1])));
+}
+
 function interestingConsoleMessage(message) {
-  return message.type() === 'error' && !/favicon\.ico/i.test(message.text());
+  return message.type() === 'error' && !/favicon\.ico/i.test(message.text()) &&
+    !expectedOptionalConsoleMessage(message);
 }
 
 export const test = base.extend({
@@ -24,16 +42,20 @@ export const test = base.extend({
         }
       });
       page.on('response', async (response) => {
+        if (response.status() < 400) return;
+        const isApi = new URL(response.url()).pathname.startsWith('/api/');
+        let detail = '';
+        if (isApi) {
+          try { detail = (await response.text()).slice(0, 500); }
+          catch { detail = '<corps indisponible>'; }
+        }
+        const expectedMessage = optionalEndpoint(response.url(), response.status());
+        // Both status and the actual explicit unavailability must match.
+        if (expectedMessage && detail.includes(expectedMessage)) return;
         if (response.status() >= 500) {
           serverErrors.push(`${response.status()} ${response.request().method()} ${response.url()}`);
         }
-        if (response.status() >= 400 && response.url().includes('/api/')) {
-          let detail = '';
-          try {
-            detail = (await response.text()).slice(0, 500);
-          } catch {
-            detail = '<corps indisponible>';
-          }
+        if (isApi) {
           apiErrors.push(
             `${response.status()} ${response.request().method()} ${response.url()}${detail ? ` — ${detail}` : ''}`,
           );
@@ -64,7 +86,7 @@ export { expect };
 
 export async function gotoReady(page) {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: /Suivez le fil des idées/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: /Explorez la structure des connaissances/ })).toBeVisible();
   await expect(page.locator('.results-body')).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('.result-count')).not.toHaveText('—');
   await expect(page.getByRole('alert')).toHaveCount(0);

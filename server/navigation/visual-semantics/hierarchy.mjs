@@ -5,6 +5,8 @@
  * reader policy. The reader never accepts rules from a Kristal or HTTP input.
  */
 import fs from 'node:fs';
+import path from 'node:path';
+import { ROOT } from '../../contracts.mjs';
 
 export const HIERARCHY_REVIEW_FORMAT = 'konstellation.visual-hierarchy-reviews/0.1';
 const SHA = /^sha256:[a-f0-9]{64}$/;
@@ -46,7 +48,7 @@ export function parseHierarchyReviews(value) {
 
 export function loadHierarchyReviews() {
   // Local code-owned source only; no Kristal-supplied hints or API payloads.
-  const source = new URL('../../../config/visual-hierarchy-reviews.json', import.meta.url);
+  const source = path.join(ROOT, 'config', 'visual-hierarchy-reviews.json');
   return parseHierarchyReviews(JSON.parse(fs.readFileSync(source,'utf8')));
 }
 

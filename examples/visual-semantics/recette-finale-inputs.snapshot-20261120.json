@@ -1,0 +1,19 @@
+{
+  "format": "konstellation.final-private-audit-pins/1.0",
+  "snapshot": {
+    "filename": "kristal-public_Code_snapshot.zip",
+    "sha256": "sha256:a49e3c477da783b1cf175d4a9f3f2569b71b87a8aeff81fe1e6325d403133099"
+  },
+  "k7Results": {
+    "filename": "KONSTELLATION_K7_RESULTATS_PRIVES_126_KRISTALS_20261119.zip",
+    "sha256": "sha256:906b9fa16c1da4723b64621d72fcb19032bcf279021592b8203232066b0f9d4e"
+  },
+  "k9Results": {
+    "filename": "KONSTELLATION_K9_K12_REVUES_PRIVEES_126_KRISTALS_20261120.zip",
+    "sha256": "sha256:af72d09a33e6b45f9f5a1d3dbd292e32767aead60177491e1d8c1d008e9e5fa4"
+  },
+  "derivedReportsAreAuthority": false,
+  "sourceDataReaderPolicyFiltered": false,
+  "approvedRules": 0,
+  "publishable": false
+}

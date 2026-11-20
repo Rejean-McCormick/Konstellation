@@ -1,5 +1,7 @@
 /** Maintainer-reviewed exact relation bindings, never inferred from a Kristal label. */
 import fs from 'node:fs';
+import path from 'node:path';
+import { ROOT } from '../../contracts.mjs';
 
 export const CHANNEL_REGISTRY = Object.freeze({
   opposition: 'Opposition attestée dans un domaine de comparaison déclaré',
@@ -37,5 +39,5 @@ export function parseVisualEncodingBindings(input) {
 export function loadVisualEncodingBindings() {
   // Read only code-owned local configuration; NEVER from a loaded Kristal or HTTP input.
   return parseVisualEncodingBindings(JSON.parse(fs.readFileSync(
-    new URL('../../../config/visual-semantics.json', import.meta.url), 'utf8')));
+    path.join(ROOT, 'config', 'visual-semantics.json'), 'utf8')));
 }

@@ -6,6 +6,7 @@ import { compileVisualSemantics } from './visual-semantics/compiler.mjs';
 import { loadVisualEncodingBindings } from './visual-semantics/registry.mjs';
 import { loadVisualAttributeBindings, collectVisibleAttributeInput, compileVisualAttributes } from './visual-semantics/attributes.mjs';
 import { loadHierarchyReviews, compileReviewedHierarchy } from './visual-semantics/hierarchy.mjs';
+import { compileVisualEvidence } from './visual-semantics/evidence.mjs';
 
 const explicitVisualBindings = loadVisualEncodingBindings();
 const explicitAttributeBindings = loadVisualAttributeBindings();
@@ -459,8 +460,11 @@ export function projectAdaptiveNavigation(engine, request, lenses) {
   // Attribute plans are an OPTIONAL, separately versioned derived envelope.
   // This is the already-filtered `state` returned by engine.scope(), not raw
   // upstream input. If no rules are reviewed, no new semantics are emitted.
-  if (!explicitAttributeBindings.length) return result;
-  const input = collectVisibleAttributeInput(result,state);
-  const attributeSemantics = compileVisualAttributes(input,explicitAttributeBindings);
-  return validate('navigation-projection',{...result,attributeSemantics});
+  if (explicitAttributeBindings.length) {
+    const input = collectVisibleAttributeInput(result,state);
+    const attributeSemantics = compileVisualAttributes(input,explicitAttributeBindings);
+    result = { ...result, attributeSemantics };
+  }
+  // Universal K9 audit on every specialized renderer, never on raw sources.
+  return validate('navigation-projection',{...result, visualAudit:compileVisualEvidence(result,state)});
 }

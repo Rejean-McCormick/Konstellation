@@ -257,7 +257,7 @@ export function createServer({
   return server;
 }
 
-if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1])){
+if(process.argv[1]&&import.meta.url.startsWith('file:')&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1])){
   const config=loadConfig();
   const backendConfig=process.env.KONSTELLATION_BACKEND_CONFIG || null;
   const pack=backendConfig?await loadIntegration(backendConfig):loadPack();

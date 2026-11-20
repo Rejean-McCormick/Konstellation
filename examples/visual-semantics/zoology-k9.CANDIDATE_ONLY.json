@@ -1,0 +1,27 @@
+{
+  "format": "konstellation.k9-manual-review-candidate/1.0",
+  "status": "NOT_APPROVED_DO_NOT_LOAD_AS_CONFIG",
+  "source": "Snapshot K8 privé épinglé, non filtré",
+  "relationId": "zoology.lineage_child_of",
+  "observedAssertionCount": 65,
+  "observedDirection": "child-to-parent_CANDIDATE_TO_VERIFY",
+  "sampleAssertionRefs": [
+    "rel:zoology:00001",
+    "rel:zoology:00002",
+    "rel:zoology:00003",
+    "rel:zoology:00004"
+  ],
+  "runtimeDatasetRef": null,
+  "runtimeReaderPolicyRef": null,
+  "readerVisibleWitnesses": [],
+  "humanReviewer": null,
+  "reviewDate": null,
+  "decision": "PENDING",
+  "publicationAuthorization": false,
+  "requiredActions": [
+    "Comparer direction dans les vraies assertions filtrées",
+    "Obtenir identités exactes de dataset/policy",
+    "Examiner multi-parent, cycles et exceptions",
+    "Revoir sur une interface privée avant toute activation"
+  ]
+}

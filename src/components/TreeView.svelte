@@ -75,6 +75,7 @@
       role="treeitem"
       tabindex={index === activeIndex ? 0 : -1}
       aria-level={row.depth + 1}
+      aria-selected={index === activeIndex}
       aria-label={byId[row.id]?.label || row.id}
       data-tree-index={index}
       on:focus={() => activeIndex = index}

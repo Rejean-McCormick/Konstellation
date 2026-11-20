@@ -234,7 +234,8 @@
   onDestroy(() => { controller?.abort(); clearPreview(); });
 </script>
 
-<div class="constellation-view" aria-busy={busy} on:keydown={(e) => { if (e.key === 'Escape') { clearPreview(); if(openPortrait) { e.preventDefault(); closePortrait(); } } }}>
+<svelte:window on:keydown={(e) => { if (e.key === 'Escape') { clearPreview(); if(openPortrait) { e.preventDefault(); closePortrait(); } } }} />
+<div class="constellation-view" aria-busy={busy}>
   <div class="constellation-toolbar">
     <nav class="constellation-breadcrumb" aria-label="Chemin de constellation">
       <button on:click={() => go(-1)}>Sélection</button>
@@ -364,7 +365,7 @@
       {/if}
     </svg>
     {#if openPortrait}
-      <section class="constellation-portrait-card" role="dialog" aria-modal="false" aria-label={'Fiche de ' + openPortrait.title}>
+      <div class="constellation-portrait-card" role="dialog" aria-modal="false" aria-label={'Fiche de ' + openPortrait.title}>
         <button class="portrait-close" bind:this={portraitCloseButton} aria-label="Fermer la fiche" on:click={closePortrait}>×</button>
         <div class="portrait-eyebrow">FICHE · {openPortrait.typeLabel}</div>
         <div class="portrait-visual">
@@ -375,7 +376,7 @@
         {#if openPortrait.description}<p>{openPortrait.description}</p>{/if}
         {#each openPortrait.fields as field}<div class="portrait-field"><strong>{field.name}</strong><span>{field.value}</span></div>{/each}
         <p class="portrait-footnote">Informations déclarées dans le jeu de données.</p>
-      </section>
+      </div>
     {/if}
     <div class="constellation-footer">
       <span>{model.satellites.length} satellite{model.satellites.length > 1 ? 's' : ''}{model.truncated ? ` sur ${model.totalCandidates}` : ''}</span>

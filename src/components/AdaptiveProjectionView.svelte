@@ -12,6 +12,7 @@
   import SpatialView from './SpatialView.svelte';
   import SemanticEncodingView from './SemanticEncodingView.svelte';
   import SemanticAttributeView from './SemanticAttributeView.svelte';
+  import SemanticAuditView from './SemanticAuditView.svelte';
 
   export let query;
   export let lensRef;
@@ -86,6 +87,7 @@
   {:else if busy && !data}
     <div class="adaptive-loading" role="status">Projection de la structure visible…</div>
   {:else if Renderer && data}
+    <SemanticAuditView {data} />
     {#if data.visualSemantics}<SemanticEncodingView {data} />{/if}
     {#if data.attributeSemantics}<SemanticAttributeView {data} />{/if}
     <svelte:component this={Renderer} {data} {inspect} />

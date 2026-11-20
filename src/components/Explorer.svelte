@@ -490,7 +490,13 @@
     await restore(next, false);
   }
   async function changeLens(id) {
-    const nextLens = boot.lenses.find((l) => l.id === id);
+    const nextLens = boot?.lenses?.find((l) => l.id === id);
+    // Lenses can disappear after a Reader Policy change. Never dereference a
+    // stale or forged perspective; preserve the current selection and context.
+    if (!nextLens || !query) {
+      notice = 'Perspective indisponible pour cette politique de lecture.';
+      return;
+    }
     if (nextLens.rootType !== query.selection.entityType) {
       notice =
         'Cette perspective ouvre une nouvelle sélection de ' +

@@ -179,6 +179,9 @@
     },
     "hierarchySemantics": {
       "$ref": "#/$defs/hierarchySemantics"
+    },
+    "visualAudit": {
+      "$ref": "#/$defs/visualAudit"
     }
   },
   "$defs": {
@@ -1540,6 +1543,107 @@
         "explanation": {
           "type": "string",
           "maxLength": 900
+        }
+      }
+    },
+    "visualAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "derived",
+        "authoritative",
+        "publicationAuthorized",
+        "status",
+        "proofs",
+        "proofCount",
+        "truncated",
+        "warning"
+      ],
+      "properties": {
+        "version": {
+          "const": "1.0"
+        },
+        "derived": {
+          "const": true
+        },
+        "authoritative": {
+          "const": false
+        },
+        "publicationAuthorized": {
+          "const": false
+        },
+        "status": {
+          "enum": [
+            "unqualified",
+            "qualified",
+            "partial",
+            "refused"
+          ]
+        },
+        "proofs": {
+          "type": "array",
+          "maxItems": 96,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "channel",
+              "ruleId",
+              "scope",
+              "assertionRefs"
+            ],
+            "properties": {
+              "channel": {
+                "enum": [
+                  "hierarchy",
+                  "opposition",
+                  "causal",
+                  "shape",
+                  "color",
+                  "size",
+                  "x",
+                  "y"
+                ]
+              },
+              "ruleId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "entityId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "assertionRefs": {
+                "type": "array",
+                "maxItems": 16,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                }
+              }
+            }
+          }
+        },
+        "proofCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 96
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "warning": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }
