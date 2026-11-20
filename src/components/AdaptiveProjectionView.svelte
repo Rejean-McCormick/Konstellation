@@ -10,6 +10,8 @@
   import TraceabilityView from './TraceabilityView.svelte';
   import MultiscaleLayerView from './MultiscaleLayerView.svelte';
   import SpatialView from './SpatialView.svelte';
+  import SemanticEncodingView from './SemanticEncodingView.svelte';
+  import SemanticAttributeView from './SemanticAttributeView.svelte';
 
   export let query;
   export let lensRef;
@@ -84,6 +86,8 @@
   {:else if busy && !data}
     <div class="adaptive-loading" role="status">Projection de la structure visible…</div>
   {:else if Renderer && data}
+    {#if data.visualSemantics}<SemanticEncodingView {data} />{/if}
+    {#if data.attributeSemantics}<SemanticAttributeView {data} />{/if}
     <svelte:component this={Renderer} {data} {inspect} />
     {#if data.truncated}<p class="hint">Projection bornée pour préserver lisibilité et performance. {data.totalCandidates || 0} candidat(s) au total.</p>{/if}
     <div class="projection-pagination" aria-label="Niveau de détail de la projection">

@@ -1,0 +1,179 @@
+{
+  "format": "konstellation.k7-technical-index-pins/1.0",
+  "status": "PRIVATE_TECHNICAL_INVENTORY_NOT_QUALIFIED",
+  "snapshot": {
+    "name": "kristal-public_Code_snapshot.zip",
+    "sha256": "sha256:a49e3c477da783b1cf175d4a9f3f2569b71b87a8aeff81fe1e6325d403133099"
+  },
+  "k6PinsSha256": "sha256:8e9ca52ce97746b281377005e3a69dce9873847a0db8a37945e2e5bc23158796",
+  "indexes": [
+    {
+      "slug": "accounting",
+      "indexSha256": "sha256:a10fa125e0c780626d619e94a8ec108a26cffd3c11a089dfcb7ce76bcb67f6d6"
+    },
+    {
+      "slug": "aerospace",
+      "indexSha256": "sha256:a8b6e5854b65703366b358109a8f83492e7b39dc0753bc4f071082d1afafa0e9"
+    },
+    {
+      "slug": "aging",
+      "indexSha256": "sha256:1e96cfb47891e3751c33a2fe5567a2adc3435e0300abe43b2428b1cf37e1615e"
+    },
+    {
+      "slug": "agriculture",
+      "indexSha256": "sha256:e7571d6e3e6a4d8c6df5bf5c33a806e81e139e61b0e47c81ca3f7741295fd947"
+    },
+    {
+      "slug": "ai",
+      "indexSha256": "sha256:a22c8b15027a6773739b0b097d57b0316d6744c83c644eb1863f7d76f740cd17"
+    },
+    {
+      "slug": "anthropology",
+      "indexSha256": "sha256:8090fd17f13d53ff25cf1babf10d543fe1d173f0ba77944b4fd0945c46889b57"
+    },
+    {
+      "slug": "architecture",
+      "indexSha256": "sha256:7b10b06876a98c6ac404de6befd072c1793e91b4a8fe81291940a9043957e5f6"
+    },
+    {
+      "slug": "astronomy",
+      "indexSha256": "sha256:2ba14293f861075bd465430403c4b1eced595d4be5cea69a9a6c9ff0755485e0"
+    },
+    {
+      "slug": "atmosphere",
+      "indexSha256": "sha256:1745d6b65e903fc674b063e6a3458e0732029e23ffe32ffb842360ce3dd1b39b"
+    },
+    {
+      "slug": "bible",
+      "indexSha256": "sha256:869c03b2ffcfeef58c2399e36f68c49e1e3a3669bb151f39f0ece511f6fe3f5a"
+    },
+    {
+      "slug": "catho",
+      "indexSha256": "sha256:dffa6bce1ee82e1508cdaacb3faf9cd19334319c2e2a619a3392703ce94573d9"
+    },
+    {
+      "slug": "finance",
+      "indexSha256": "sha256:eace4474b036a105836be6664f07753bc3f8ec609a9b386545eb2b8894c6cef7"
+    },
+    {
+      "slug": "foodbrands",
+      "indexSha256": "sha256:1274cb6aecd788a21289166f363edac25c5c48c2bede322cd6c0be5db3f4cc2f"
+    },
+    {
+      "slug": "foodscience",
+      "indexSha256": "sha256:57b7975a79f4fbe60d26f25a9072ae282601cb340782da5b801554266681074a"
+    },
+    {
+      "slug": "forensics",
+      "indexSha256": "sha256:495e02f552b6e07286389ee30bb6611cf1c8c293bd0d0b8bf510d13dcdbdecdc"
+    },
+    {
+      "slug": "forestry",
+      "indexSha256": "sha256:e1d033cbc77f7c8837113156d184ccd35bf8ffd262d2e8c4e96341325cfed8b5"
+    },
+    {
+      "slug": "fungi",
+      "indexSha256": "sha256:eecec5cfe265dae22383c8a3fb95465bb780fa4a00afd0701c103ab8bd0ac8d4"
+    },
+    {
+      "slug": "games",
+      "indexSha256": "sha256:4dffd64e3ca9ea16252fe8f9784047820d87523e853bf6aa647e41e0d9255663"
+    },
+    {
+      "slug": "genetics",
+      "indexSha256": "sha256:c33a3d1e35752576265b8cdb2c98f8cb99c3c79f9293e299fff8c28e8effd58d"
+    },
+    {
+      "slug": "geographyspace",
+      "indexSha256": "sha256:0ef32a45d2e509007bb87d33fd28a346114ad33a5e7f01ae7c4405835e2d5a26"
+    },
+    {
+      "slug": "geology",
+      "indexSha256": "sha256:78b8c8df4b64eea3dd420de83c3c9bb0eb8adf0dbf34e89e2d2fff1e185c1698"
+    },
+    {
+      "slug": "governance",
+      "indexSha256": "sha256:ed833f535e266f9eead9883f6c71b2aac2555beb266b92dcd9a88b1ad355b731"
+    },
+    {
+      "slug": "hci",
+      "indexSha256": "sha256:a77c7ea5a831ed9ec9de751b9ce939796bb8f48f1ee8a57c7c88bbd1f7db7f4f"
+    },
+    {
+      "slug": "history",
+      "indexSha256": "sha256:5233bae285ff32e6201c2441dd5aa0dce158d54954bbe0fd489ba5c3bc9a3cca"
+    },
+    {
+      "slug": "historytech",
+      "indexSha256": "sha256:58d7227e8e90816a37295d1bab1f456822e50441d73c117e0ccb5219d81976d8"
+    },
+    {
+      "slug": "homecare",
+      "indexSha256": "sha256:5f69b30aea299539b8bac45b40e1eedb280ed618881954aaa6c03479d730be51"
+    },
+    {
+      "slug": "humanbody",
+      "indexSha256": "sha256:f18ecc76f70a93d6da1a2be19fc9b501c0644917926609322782c117556e4304"
+    },
+    {
+      "slug": "hydrology",
+      "indexSha256": "sha256:0c47f19469bd5dabaf74c70451510993e01f72fdce36575a3f4aef318aab17a4"
+    },
+    {
+      "slug": "infrastructure",
+      "indexSha256": "sha256:6586aa9311781340cb71f47efd0ac24ef74e8601fd269e025740f2a161456b7a"
+    },
+    {
+      "slug": "internet",
+      "indexSha256": "sha256:132c0e1eb9eaa89e832e915bc4ab6f565132a1a8868c7f127ed4bdfb8a7a25ad"
+    },
+    {
+      "slug": "k-monetary-system",
+      "indexSha256": "sha256:92cb5e65bd9384eb23f5e610f20458c0e8e1aa86710c029d1be4c41246fd259e"
+    },
+    {
+      "slug": "king-klown-media",
+      "indexSha256": "sha256:1495809d0f87a8ee2ebbdbc040e3f1f97bad37d3e777e7f63a01fedbd0dcb617"
+    },
+    {
+      "slug": "koa-ecosystem",
+      "indexSha256": "sha256:92d5e60854e8a18b90758cb887327278730c1a2e2f1f8687fa5f36066b5d78fe"
+    },
+    {
+      "slug": "law",
+      "indexSha256": "sha256:75e3f75c72f405ee6fad8700533831c1ce465d51058469bef65940cd5d4e6fbd"
+    },
+    {
+      "slug": "pi-theory",
+      "indexSha256": "sha256:7bb48f1691b254cbbcb272bb50530530fd0e795c6c5eb546b3f999e7a6b09f2b"
+    },
+    {
+      "slug": "policeops",
+      "indexSha256": "sha256:ff166944cbf31716deac28e0091fff942dd21c9a74ee528295849ac65347cb68"
+    },
+    {
+      "slug": "power-dynamics",
+      "indexSha256": "sha256:ce438ff75f345231a8754c55c04b284d9cd1ee155b0e956db9717ec45d51bb28"
+    },
+    {
+      "slug": "prime-numbers",
+      "indexSha256": "sha256:16a1f40707cdf42bb14c75c062aa2ed3396fd48f5ce9de09965b2008f9c66598"
+    },
+    {
+      "slug": "recipes",
+      "indexSha256": "sha256:465a04b1406d7f4abbc0a59def07e44998db208f0cbc1fd0ea66f8d5a2e60bdd"
+    },
+    {
+      "slug": "scolqc",
+      "indexSha256": "sha256:e405b6187e913c8d6ef689a0a54e117cafab4573840ab4ddd20d4be5275d3d46"
+    },
+    {
+      "slug": "vaticanops",
+      "indexSha256": "sha256:e62feacbf3c9bcfb1e1ff38faf2f1331754b519d3b416ff71ab94e07e9191330"
+    },
+    {
+      "slug": "vehiclediag",
+      "indexSha256": "sha256:98a628aa20349763bacf86596585059f1cd1d29e008f105d1c843a0ddc1e07b7"
+    }
+  ]
+}

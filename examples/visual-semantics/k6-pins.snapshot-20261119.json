@@ -1,0 +1,766 @@
+{
+  "format": "konstellation.k6-source-pins/0.1",
+  "status": "PRIVATE_CANDIDATE_INVENTORY_NOT_AUTHORIZED",
+  "snapshot": {
+    "name": "kristal-public_Code_snapshot.zip",
+    "sha256": "sha256:a49e3c477da783b1cf175d4a9f3f2569b71b87a8aeff81fe1e6325d403133099"
+  },
+  "entries": [
+    {
+      "slug": "accounting",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "aerospace",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "aging",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "agriculture",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "ai",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "anthropology",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "architecture",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "astronomy",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "atmosphere",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "bible",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "biodiversity",
+      "profile": "native-v6",
+      "path": "kristals/biodiversity/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:c7caf8471981dd18abfa6967986c3682ab89033c08b089f13ccb3f5a2a772039"
+    },
+    {
+      "slug": "biology",
+      "profile": "native-v6",
+      "path": "kristals/biology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:6de5d4d75ad2d6493cdd17f074f8f24997d73f041f525ac47fb413e66d9f584e"
+    },
+    {
+      "slug": "botany",
+      "profile": "native-v6",
+      "path": "kristals/botany/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:bfaa35259bd85c49179cf1908d00f095e4316f853ea17729688e82f7f62b13a2"
+    },
+    {
+      "slug": "cartography",
+      "profile": "native-v6",
+      "path": "kristals/cartography/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:681e4e0e105651245ba07ae79f104e228feeceae97460bfc569f0194a0f1b64e"
+    },
+    {
+      "slug": "catho",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "chemistry",
+      "profile": "native-v6",
+      "path": "kristals/chemistry/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:d80ed406f03b89cd014cbd779d2131ae24b1cdb8807288728215ddcbc9ac0975"
+    },
+    {
+      "slug": "civilengineering",
+      "profile": "native-v6",
+      "path": "kristals/civilengineering/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:613ae53d9a65cf2796f755ef711a6d26d96b2ea284401a2affb9b8ce5e8f25a6"
+    },
+    {
+      "slug": "climate",
+      "profile": "native-v6",
+      "path": "kristals/climate/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:6c083db17d643dc84fd012ad016bd7244b953e9a39de57e3193a4fa619f8a6a2"
+    },
+    {
+      "slug": "computing",
+      "profile": "native-v6",
+      "path": "kristals/computing/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:bd855980810c2a694d483a25dfa9ed7725fc18474664ca0c4d2fb3fcb8a88eab"
+    },
+    {
+      "slug": "controlsystems",
+      "profile": "native-v6",
+      "path": "kristals/controlsystems/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:3de772bde9e44937184cbb9c21c4fc7f6904a56f9a7b92d48e1c1905ac2baa5a"
+    },
+    {
+      "slug": "cosmology",
+      "profile": "native-v6",
+      "path": "kristals/cosmology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:46cf7981ac747c3af243ad7ffb9600f2b7858aa66ae3c28b7f158d50e9ab9fd8"
+    },
+    {
+      "slug": "craft",
+      "profile": "native-v6",
+      "path": "kristals/craft/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:09b58c1ee925a25557faaa75369eafc69ae3f7e72f10ffdc27bd23f087530bbb"
+    },
+    {
+      "slug": "cybersecurity",
+      "profile": "native-v6",
+      "path": "kristals/cybersecurity/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:7e16d3927b3d616d8e0ae8e97005a67911b03e219231368b3feb3b8d81b3de50"
+    },
+    {
+      "slug": "data",
+      "profile": "native-v6",
+      "path": "kristals/data/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:c858b3558e29d8e2b4817a8ce3f0ced1879a593726ded9a4f51b7c2eadf9ed70"
+    },
+    {
+      "slug": "demography",
+      "profile": "native-v6",
+      "path": "kristals/demography/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:cf7cde036dbcf4a9d52ccda93b10121fcf3ced938150ebbd99a705a451a6373c"
+    },
+    {
+      "slug": "design",
+      "profile": "native-v6",
+      "path": "kristals/design/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:a92e7b235709a0bab3303d8ac0f77f478a6c8f90e82d7f7a44f66a3e919e31d2"
+    },
+    {
+      "slug": "development",
+      "profile": "native-v6",
+      "path": "kristals/development/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:b4037b96c9249bd769c6e2446e5cb165a242482d3e4b2ee588656c7be705e5eb"
+    },
+    {
+      "slug": "disasters",
+      "profile": "native-v6",
+      "path": "kristals/disasters/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:406a5108860a9596381d8918f95a5b48d8e7286c748e2c07981ddd5a324a128f"
+    },
+    {
+      "slug": "droit-international-global",
+      "profile": "native-v6",
+      "path": "kristals/droit-international-global/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:2a5223cdcea9b5cccdef4427ed9743d10d1532888cf94c2aaad897071e6df333"
+    },
+    {
+      "slug": "earth",
+      "profile": "native-v6",
+      "path": "kristals/earth/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:0a95474d8166eb5cb798e1973286fa0a35b780d215d32e167648d5029417f2ba"
+    },
+    {
+      "slug": "ecology",
+      "profile": "native-v6",
+      "path": "kristals/ecology/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:106a596cd885b699e3b652a635497f7f0e2561e0f8c778c280ef4df64b1ea928"
+    },
+    {
+      "slug": "economics",
+      "profile": "native-v6",
+      "path": "kristals/economics/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:fdd592aa31aef5b336ca6040296bfee12e442ae95ab0b79048e5e351fe72046c"
+    },
+    {
+      "slug": "education",
+      "profile": "native-v6",
+      "path": "kristals/education/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:e2a1cf2108c8c43c582c01e8febff346301a2f52390846a9558f6747f13ff59b"
+    },
+    {
+      "slug": "electricalengineering",
+      "profile": "native-v6",
+      "path": "kristals/electricalengineering/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:8e85b98997b06fa0d4a7c46d09c005d8cb3d310a1545558f678fa0467679202c"
+    },
+    {
+      "slug": "electronics",
+      "profile": "native-v6",
+      "path": "kristals/electronics/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:58c9b38eff259320bb771d84ebd75d8588b5b4297643bb87c08e196d4b4e042c"
+    },
+    {
+      "slug": "energy",
+      "profile": "native-v6",
+      "path": "kristals/energy/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:136f8b27a3f1b8ebd6adb2a1efd782e7b3bef9651aa8785677643d0937a3c41a"
+    },
+    {
+      "slug": "engineeringconstraints",
+      "profile": "native-v6",
+      "path": "kristals/engineeringconstraints/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:ba2bb141a2e57375498387065400d6d0a8b280d6c6a0cfb8f1b3dd4a6357243b"
+    },
+    {
+      "slug": "epistemology",
+      "profile": "native-v6",
+      "path": "kristals/epistemology/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:096a3d5ae63ed6e46ce4d500d568cfc663684ae0710be47651d8537a89650ace"
+    },
+    {
+      "slug": "ethics",
+      "profile": "native-v6",
+      "path": "kristals/ethics/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:aeca9235fe22123f481457f9050cb105df34f6bca2dfe74636a303f405a34804"
+    },
+    {
+      "slug": "evolution",
+      "profile": "native-v6",
+      "path": "kristals/evolution/canon/domain/portable-epistemic-state.payload.json",
+      "sha256": "sha256:571227e2ea326adbfbe85044b0e65a202e9ebdd0bf531e2e730073fde64d15c2"
+    },
+    {
+      "slug": "finance",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "foodbrands",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "foodscience",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "forensics",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "forestry",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "fungi",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "games",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "genetics",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "geographyspace",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "geology",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "governance",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "hci",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "history",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "historytech",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "homecare",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "humanbody",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "hydrology",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "infrastructure",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "internet",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "k-monetary-system",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "king-klown-media",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "koa-ecosystem",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "koa-sales-pitch",
+      "profile": "native-v6",
+      "path": "kristals/koa-sales-pitch/canon/domain/sales-pitch.kristal-state.json",
+      "sha256": "sha256:1d90c23af770b205da0ee04032040ed6b1b62966a2cecf490997a66fd33d3478"
+    },
+    {
+      "slug": "law",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "linguistics",
+      "profile": "native-v6",
+      "path": "kristals/linguistics/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:42305aa4ac47d7357167edac5399aabd833751cd18316672d968b7d7339d0d27"
+    },
+    {
+      "slug": "literature",
+      "profile": "native-v6",
+      "path": "kristals/literature/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:6c90c4a20e98bedccd68d300be0bfd446d2a78ed644da168d4845d594b03caf0"
+    },
+    {
+      "slug": "logic",
+      "profile": "native-v6",
+      "path": "kristals/logic/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:8b71f36641ef057d0224f3d5262cc19fef0a2f6636b0957470cffdf3d7d84ace"
+    },
+    {
+      "slug": "logistics",
+      "profile": "native-v6",
+      "path": "kristals/logistics/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:3dd59bb963eebc3c689400a067374e60f6747646a519b71dbdec498443628437"
+    },
+    {
+      "slug": "manufacturing",
+      "profile": "native-v6",
+      "path": "kristals/manufacturing/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:ffec8e47b63abaeeffd235f638ecad15bf73b91ae93313c0a9205c980b0befb6"
+    },
+    {
+      "slug": "maritime",
+      "profile": "native-v6",
+      "path": "kristals/maritime/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:23c1740e875dc630685b7eb0b6afa39ff2b866fc40014f643b773d6057b60599"
+    },
+    {
+      "slug": "materials",
+      "profile": "native-v6",
+      "path": "kristals/materials/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:953efbd490c739ee613a665fbada718444d176b59c4d4c76311bcac388478b35"
+    },
+    {
+      "slug": "mechanicalengineering",
+      "profile": "native-v6",
+      "path": "kristals/mechanicalengineering/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:cd07ef1d150f9de7a48066cfc46641b3547df0873045c5dab7483279f49cea77"
+    },
+    {
+      "slug": "media",
+      "profile": "native-v6",
+      "path": "kristals/media/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:529e60fb536119903111064b606db784a3ece5483a7175bbbe2511b9fe7f209f"
+    },
+    {
+      "slug": "medicine",
+      "profile": "native-v6",
+      "path": "kristals/medicine/canon/domain/legacy-v6-logical-payload.json",
+      "sha256": "sha256:a22be6c400fe9e6559e0191ae01de43caeef3242fa9cbb21002c2a3fb1244033"
+    },
+    {
+      "slug": "metrology",
+      "profile": "native-v6",
+      "path": "kristals/metrology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:b9f121957ef9eae8d4603fbdbaca7281ab8654b63b71c7eb44fe792638b5cbfc"
+    },
+    {
+      "slug": "microbiology",
+      "profile": "native-v6",
+      "path": "kristals/microbiology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:de9de6facd09b5277a25c080d9250de31c9c606f3ec93867fbc212dc0575f9e5"
+    },
+    {
+      "slug": "mind",
+      "profile": "native-v6",
+      "path": "kristals/mind/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:dc3c4e58f285f48260aaa3a4f73e71ed2a7b1edcdea6a25ceb7b9ea58c508d43"
+    },
+    {
+      "slug": "mineralogy",
+      "profile": "native-v6",
+      "path": "kristals/mineralogy/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:a18aa3e9f80c3b3052c4ef94c927bd73f57c9855a4e7a863cfdb93e724cb58cf"
+    },
+    {
+      "slug": "music",
+      "profile": "native-v6",
+      "path": "kristals/music/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:31f961abfa0b324092c22d691f0986183463f7b25b3b924fb737ccd7ba36f8e6"
+    },
+    {
+      "slug": "mythology",
+      "profile": "native-v6",
+      "path": "kristals/mythology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:dde4ed9aa99e39f3e33a3ae288036126e6e03f3dd91a19a9d634b74373669998"
+    },
+    {
+      "slug": "naturalhazards",
+      "profile": "native-v6",
+      "path": "kristals/naturalhazards/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:013f6cd74f61653702f7c41e578e76c86b5e8d83f4c36f549624d78f1cd60b49"
+    },
+    {
+      "slug": "neuroscience",
+      "profile": "native-v6",
+      "path": "kristals/neuroscience/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:94df1f1760481732def1f3ee5fe6ebed60904bf18aadfa79ee841b57852863a2"
+    },
+    {
+      "slug": "nutrition",
+      "profile": "native-v6",
+      "path": "kristals/nutrition/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:639bf4e41a2d105b84373a3c6b8af0572284e517453e5e6829b7f8dbbdce1cd0"
+    },
+    {
+      "slug": "ocean",
+      "profile": "native-v6",
+      "path": "kristals/ocean/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:8dea37198bbbf05b38ff947d43ff55e33cf8e66429e7127ce88ac6af1e507729"
+    },
+    {
+      "slug": "organizations",
+      "profile": "native-v6",
+      "path": "kristals/organizations/canon/domain/v9-logical-payload.json",
+      "sha256": "sha256:b441f6e38448ce7a943a868ca6bfd825b5a3bbcfa6c322befa5681e55d2cd328"
+    },
+    {
+      "slug": "paleontology",
+      "profile": "native-v6",
+      "path": "kristals/paleontology/canon/domain/v9-logical-payload.json",
+      "sha256": "sha256:da42ea6a95d174b9efdf42b78d1fc7bf79e4f6086ae32f00db054ed6a044f02c"
+    },
+    {
+      "slug": "pharmacology",
+      "profile": "native-v6",
+      "path": "kristals/pharmacology/canon/domain/v9-logical-payload.json",
+      "sha256": "sha256:502fc7038b3ae11a5cde1e3f5807e9fe39144c71f860682d9cd60596ab24f2c5"
+    },
+    {
+      "slug": "philosophy",
+      "profile": "native-v6",
+      "path": "kristals/philosophy/canon/domain/v9-logical-payload.json",
+      "sha256": "sha256:87a8c264fc6477f078baef3e724ab9f8048b8a6d74a12fa0ccb42a48f014c1a1"
+    },
+    {
+      "slug": "physics",
+      "profile": "native-v6",
+      "path": "kristals/physics/canon/domain/v9-logical-payload.json",
+      "sha256": "sha256:d3a90f0b2c8f237c8b26e43910305b56fe6ad02378f541f943b842ad8f55a222"
+    },
+    {
+      "slug": "pi-theory",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "policeops",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "pouvoirs-australie",
+      "profile": "native-v6",
+      "path": "kristals/pouvoirs-australie/canon/domain/jurisdictional-power.payload.json",
+      "sha256": "sha256:ae7bec58dade25a89a9bf283694984a8cdb2bac12eeb557c08b2b5c091c73397"
+    },
+    {
+      "slug": "pouvoirs-canada-quebec",
+      "profile": "native-v6",
+      "path": "kristals/pouvoirs-canada-quebec/canon/domain/jurisdictional-power.payload.json",
+      "sha256": "sha256:be464d93796c8959f9f84acf1b536227b8eef4f0c19b78c4183496b7f254e3a5"
+    },
+    {
+      "slug": "pouvoirs-coree-du-sud",
+      "profile": "native-v6",
+      "path": "kristals/pouvoirs-coree-du-sud/canon/domain/jurisdictional-power.payload.json",
+      "sha256": "sha256:8d87e6274a6e1a5499ce5d6959f32fded6d73c00113e22301ceec7291ba8528b"
+    },
+    {
+      "slug": "pouvoirs-finlande",
+      "profile": "native-v6",
+      "path": "kristals/pouvoirs-finlande/canon/domain/jurisdictional-power.payload.json",
+      "sha256": "sha256:392edb5f2825bf4689513592f5c12bf08a46fe7541bdbcc475954c5bc03d4772"
+    },
+    {
+      "slug": "pouvoirs-france",
+      "profile": "native-v6",
+      "path": "kristals/pouvoirs-france/canon/domain/jurisdictional-power.payload.json",
+      "sha256": "sha256:7984882fe989f5f25410190d1b746d2cfed43424f6d684ff6e8798634bb83aba"
+    },
+    {
+      "slug": "pouvoirs-japon",
+      "profile": "native-v6",
+      "path": "kristals/pouvoirs-japon/canon/domain/jurisdictional-power.payload.json",
+      "sha256": "sha256:b95039f817aebc783685d7edd3d68aa0c622f83b71f87b250cbeaf70cacec005"
+    },
+    {
+      "slug": "pouvoirs-pays-bas",
+      "profile": "native-v6",
+      "path": "kristals/pouvoirs-pays-bas/canon/domain/jurisdictional-power.payload.json",
+      "sha256": "sha256:c6dd97ce280dac974954fc748f5274e86a7d24c2cafd622f731a1c30a5a9bacf"
+    },
+    {
+      "slug": "power-dynamics",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "prime-numbers",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "publichealth",
+      "profile": "native-v6",
+      "path": "kristals/publichealth/canon/domain/v9-logical-payload.json",
+      "sha256": "sha256:48b254f7ae42fe0116b62c40fae0d6226a31e9fa11715defdc84a970840894fe"
+    },
+    {
+      "slug": "recipes",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "religion",
+      "profile": "native-v6",
+      "path": "kristals/religion/canon/domain/v9-logical-payload.json",
+      "sha256": "sha256:45ad7f40b533bc5ce3144f96fb38fc388da77c577a9d06b689c037be4eb793dd"
+    },
+    {
+      "slug": "robotics",
+      "profile": "native-v6",
+      "path": "kristals/robotics/canon/domain/v9-logical-payload.json",
+      "sha256": "sha256:4a7cf4797b15e13c2687a26d716ecccc1845df69542508a83c7d67ce89f9a469"
+    },
+    {
+      "slug": "scolqc",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "sociology",
+      "profile": "native-v6",
+      "path": "kristals/sociology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:d83c32b3501fd4b95a259680305d65c71fa0320250b1d926262c8595578c4c15"
+    },
+    {
+      "slug": "software",
+      "profile": "native-v6",
+      "path": "kristals/software/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:7a616f85fe98351cf65d1090e2c7d1adc80e22bb027815b37e14b66e41ead5e4"
+    },
+    {
+      "slug": "soil",
+      "profile": "native-v6",
+      "path": "kristals/soil/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:7df97a7cb152782a8f7041d16d88572b64e9e60ba571a92f2c3ea28d00ecb38d"
+    },
+    {
+      "slug": "solarsystem",
+      "profile": "native-v6",
+      "path": "kristals/solarsystem/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:25d35b7bff56bc4fa7560f2ee0ccbb544190987a99d23ab3a884659e30d15466"
+    },
+    {
+      "slug": "sports",
+      "profile": "native-v6",
+      "path": "kristals/sports/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:7d777c83cfceb263fe639cdec0d6ea46ac8939123edcabc255eb90e3048f12c1"
+    },
+    {
+      "slug": "standards",
+      "profile": "native-v6",
+      "path": "kristals/standards/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:4aeb12f85076d357b25e91ca96f72f9a8112a6165ba77f6082868e0eb26ff43c"
+    },
+    {
+      "slug": "technology",
+      "profile": "native-v6",
+      "path": "kristals/technology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:b2222751714869484522c0cc8a74bddbf5a00439149dfc884b02a8e5171905c4"
+    },
+    {
+      "slug": "telecommunications",
+      "profile": "native-v6",
+      "path": "kristals/telecommunications/canon/domain/kristal-telecommunications.canonical-payload.json",
+      "sha256": "sha256:49a21a7ae7689cb49d3e70b337a5ccf1547a4637bf384ebbfce5b7242adeb7fb"
+    },
+    {
+      "slug": "textiles",
+      "profile": "native-v6",
+      "path": "kristals/textiles/canon/domain/kristal-textiles.canonical-payload.json",
+      "sha256": "sha256:60edd93f6975a96258d6b3fdb2cfda7163826c6427cd0ec76bc7724415fad4fe"
+    },
+    {
+      "slug": "theatre",
+      "profile": "native-v6",
+      "path": "kristals/theatre/canon/domain/kristal-theatre.canonical-payload.json",
+      "sha256": "sha256:3145e5cc07cee75e81127c0a02f59ce2e2e4f0f5f7a0cf0ba472056190f490e9"
+    },
+    {
+      "slug": "time",
+      "profile": "native-v6",
+      "path": "kristals/time/canon/domain/kristal-time.canonical-payload.json",
+      "sha256": "sha256:787b6ba0f9cfe193511cd777cd8d9e2b3258e461593009521182a1252a5131a8"
+    },
+    {
+      "slug": "transportation",
+      "profile": "native-v6",
+      "path": "kristals/transportation/canon/domain/kristal-transportation.canonical-payload.json",
+      "sha256": "sha256:d479b3372c4bc2e6e2ce1cb7846bb10dcc282a0a82dd0727811853634f99eec1"
+    },
+    {
+      "slug": "urbanism",
+      "profile": "native-v6",
+      "path": "kristals/urbanism/canon/domain/kristal-urbanism.canonical-payload.json",
+      "sha256": "sha256:40df311f3ba3cbbf6829dd96791a62f6e0a355911a7cff332c5377dab5255ccd"
+    },
+    {
+      "slug": "vaticanops",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "vehiclediag",
+      "profile": "requires-adapter",
+      "path": null,
+      "sha256": null
+    },
+    {
+      "slug": "veterinary",
+      "profile": "native-v6",
+      "path": "kristals/veterinary/canon/domain/kristal-veterinary.canonical-payload.json",
+      "sha256": "sha256:a1c73d743d230ea5b478c96906737e6741a1fdbd3ee0419acdf14a94b64b3a75"
+    },
+    {
+      "slug": "virology",
+      "profile": "native-v6",
+      "path": "kristals/virology/canon/domain/kristal-virology.canonical-payload.json",
+      "sha256": "sha256:651e6742c041fc5043689f7790b514667e7b1416ff5b9677e5ddbb7dd9c3b2fc"
+    },
+    {
+      "slug": "visualarts",
+      "profile": "native-v6",
+      "path": "kristals/visualarts/canon/domain/kristal-visualarts.canonical-payload.json",
+      "sha256": "sha256:b70e17f9416c90288f40ad0d8c658c580bb7c54b4e1f062e54b57333fcfd3e5f"
+    },
+    {
+      "slug": "weather",
+      "profile": "native-v6",
+      "path": "kristals/weather/canon/domain/kristal-weather.canonical-payload.json",
+      "sha256": "sha256:0778378dd8c2240267ed8184bad4b353d27f6aca74e727f41fa43eba20260ba7"
+    },
+    {
+      "slug": "work",
+      "profile": "native-v6",
+      "path": "kristals/work/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:9854d2050c9af8f453daec4d133f10f79f6e814f42dfedf92f917e2192dda9e3"
+    },
+    {
+      "slug": "zoology",
+      "profile": "native-v6",
+      "path": "kristals/zoology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "sha256:60bf441aa7e51e281626b6cb0e0050597abc284aed1090b8b4bbf0865e3ef7f8"
+    }
+  ]
+}

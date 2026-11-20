@@ -170,6 +170,15 @@
     "semantics": {
       "type": "string",
       "minLength": 1
+    },
+    "visualSemantics": {
+      "$ref": "#/$defs/visualSemantics"
+    },
+    "attributeSemantics": {
+      "$ref": "#/$defs/attributeSemantics"
+    },
+    "hierarchySemantics": {
+      "$ref": "#/$defs/hierarchySemantics"
     }
   },
   "$defs": {
@@ -1003,6 +1012,536 @@
           ]
         }
       ]
+    },
+    "visualSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "derived",
+        "authoritative",
+        "status",
+        "opposition",
+        "causalEdges",
+        "legend",
+        "warning"
+      ],
+      "properties": {
+        "version": {
+          "const": "0.1"
+        },
+        "derived": {
+          "const": true
+        },
+        "authoritative": {
+          "const": false
+        },
+        "status": {
+          "enum": [
+            "explicit-relations",
+            "no-qualified-encoding"
+          ]
+        },
+        "opposition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "components",
+            "unfulfilled"
+          ],
+          "properties": {
+            "components": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "scope",
+                  "left",
+                  "right",
+                  "relations",
+                  "explanation"
+                ],
+                "properties": {
+                  "scope": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "left": {
+                    "$ref": "#/$defs/idList"
+                  },
+                  "right": {
+                    "$ref": "#/$defs/idList"
+                  },
+                  "relations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "assertionRef",
+                        "source",
+                        "target",
+                        "relationId"
+                      ],
+                      "properties": {
+                        "assertionRef": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "source": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "target": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "relationId": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    }
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            },
+            "unfulfilled": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "scope",
+                  "reason",
+                  "nodeIds",
+                  "assertionRefs"
+                ],
+                "properties": {
+                  "scope": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reason": {
+                    "const": "NON_BIPARTITE_OPPOSITIONS"
+                  },
+                  "nodeIds": {
+                    "$ref": "#/$defs/idList"
+                  },
+                  "assertionRefs": {
+                    "$ref": "#/$defs/idList"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "causalEdges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "assertionRef",
+              "source",
+              "target",
+              "relationId",
+              "scope",
+              "sign"
+            ],
+            "properties": {
+              "assertionRef": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target": {
+                "type": "string",
+                "minLength": 1
+              },
+              "relationId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sign": {
+                "type": "integer",
+                "enum": [
+                  -1,
+                  0,
+                  1
+                ]
+              }
+            }
+          }
+        },
+        "legend": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "channel",
+              "explanation"
+            ],
+            "properties": {
+              "channel": {
+                "enum": [
+                  "opposition",
+                  "causal",
+                  "decorative"
+                ]
+              },
+              "explanation": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "warning": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "attributeSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "derived",
+        "authoritative",
+        "status",
+        "rules",
+        "nodes",
+        "distance",
+        "truncated",
+        "warning"
+      ],
+      "properties": {
+        "version": {
+          "const": "0.1"
+        },
+        "derived": {
+          "const": true
+        },
+        "authoritative": {
+          "const": false
+        },
+        "status": {
+          "enum": [
+            "explicit-attributes",
+            "no-qualified-attributes",
+            "incomplete"
+          ]
+        },
+        "rules": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "channel",
+              "scope",
+              "explanation"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "channel": {
+                "enum": [
+                  "shape",
+                  "color",
+                  "size",
+                  "x",
+                  "y"
+                ]
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              },
+              "explanation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "relationId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "dimension": {
+                "type": "string",
+                "minLength": 1
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "nodes": {
+          "type": "array",
+          "maxItems": 160,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "entityId",
+              "encodings"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "entityId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "encodings": {
+                "type": "array",
+                "maxItems": 5,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "channel",
+                    "ruleId",
+                    "value",
+                    "assertionRefs",
+                    "origin"
+                  ],
+                  "properties": {
+                    "channel": {
+                      "enum": [
+                        "shape",
+                        "color",
+                        "size",
+                        "x",
+                        "y"
+                      ]
+                    },
+                    "ruleId": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    },
+                    "token": {
+                      "enum": [
+                        "circle",
+                        "square",
+                        "diamond",
+                        "triangle",
+                        "navy",
+                        "teal",
+                        "amber",
+                        "rose",
+                        "slate"
+                      ]
+                    },
+                    "ratio": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "unit": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "assertionRefs": {
+                      "$ref": "#/$defs/idList"
+                    },
+                    "origin": {
+                      "enum": [
+                        "visible-entity-type",
+                        "visible-assertion-valuation"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "distance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "qualified",
+            "explanation"
+          ],
+          "properties": {
+            "qualified": {
+              "type": "boolean"
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "warning": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "hierarchySemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "derived",
+        "authoritative",
+        "status",
+        "ruleId",
+        "relationId",
+        "scope",
+        "direction",
+        "roots",
+        "edges",
+        "nodeIds",
+        "unfulfilled",
+        "truncated",
+        "explanation"
+      ],
+      "properties": {
+        "version": {
+          "const": "0.1"
+        },
+        "derived": {
+          "const": true
+        },
+        "authoritative": {
+          "const": false
+        },
+        "status": {
+          "enum": [
+            "reviewed-visible-hierarchy",
+            "constraints-unfulfilled"
+          ]
+        },
+        "ruleId": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "relationId": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "scope": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "direction": {
+          "enum": [
+            "child-to-parent",
+            "parent-to-child"
+          ]
+        },
+        "roots": {
+          "type": "array",
+          "maxItems": 1200,
+          "items": {
+            "type": "string"
+          }
+        },
+        "nodeIds": {
+          "type": "array",
+          "maxItems": 1200,
+          "items": {
+            "type": "string"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "maxItems": 2400,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source",
+              "target",
+              "relationId",
+              "assertionRefs"
+            ],
+            "properties": {
+              "source": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "relationId": {
+                "type": "string"
+              },
+              "assertionRefs": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 64,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "unfulfilled": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "enum": [
+              "SELF_PARENT",
+              "MULTIPLE_PARENTS",
+              "CYCLE",
+              "NO_ROOT"
+            ]
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "explanation": {
+          "type": "string",
+          "maxLength": 900
+        }
+      }
     }
   },
   "allOf": [
@@ -1060,6 +1599,9 @@
             "enum": [
               "hierarchy"
             ]
+          },
+          "hierarchySemantics": {
+            "$ref": "#/$defs/hierarchySemantics"
           }
         }
       }
@@ -1344,6 +1886,23 @@
         "properties": {
           "semantics": {
             "const": "derived-navigation-projection"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "hierarchySemantics": {}
+        },
+        "required": [
+          "hierarchySemantics"
+        ]
+      },
+      "then": {
+        "properties": {
+          "projectionKind": {
+            "const": "tree"
           }
         }
       }

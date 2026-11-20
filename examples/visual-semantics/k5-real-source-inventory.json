@@ -1,0 +1,32 @@
+{
+  "format": "konstellation.k5-real-source-inventory/0.1",
+  "status": "OBSERVATION_ONLY_NOT_REVIEWED_NOT_PUBLICATION_AUTHORITY",
+  "origin": "Provided kristal-public_Code_snapshot.zip; raw native v6 files inspected locally, 2026-11-19",
+  "examples": [
+    {
+      "collection": "weather",
+      "stateRef": "urn:kristal:state:kristal-weather",
+      "source": "kristals/weather/canon/domain/kristal-weather.canonical-payload.json",
+      "sha256": "0778378dd8c2240267ed8184bad4b353d27f6aca74e727f41fa43eba20260ba7",
+      "assertionCount": 234,
+      "predicates": { "weather.states": 234 },
+      "knownScalarValuations": 0,
+      "conclusion": "Not eligible for scalar size, metric distance or numeric axes from this source alone"
+    },
+    {
+      "collection": "zoology",
+      "stateRef": "urn:kristal:state:kristal-zoology",
+      "source": "kristals/zoology/canon/domain/legacy-v6-state.payload.json",
+      "sha256": "60bf441aa7e51e281626b6cb0e0050597abc284aed1090b8b4bbf0865e3ef7f8",
+      "assertionCount": 619,
+      "predicateCount": 10,
+      "candidateRelation": "zoology.lineage_child_of",
+      "candidateRelationCount": 65,
+      "observedObjectKind": "referent",
+      "knownScalarValuations": 0,
+      "sampleAssertionRefs": ["rel:zoology:00001", "rel:zoology:00002"],
+      "candidateDirection": "child-to-parent",
+      "conclusion": "Hierarchy candidate only, requires exact normalized runtime dataset/policy pins and editorial review"
+    }
+  ]
+}

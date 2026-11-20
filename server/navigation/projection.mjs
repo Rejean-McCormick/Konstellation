@@ -2,6 +2,14 @@ import { fail, validate } from '../contracts.mjs';
 import { hash } from '../pack.mjs';
 import { buildNavigationPlan } from './planner.mjs';
 import { rendererDefinition } from './registry.mjs';
+import { compileVisualSemantics } from './visual-semantics/compiler.mjs';
+import { loadVisualEncodingBindings } from './visual-semantics/registry.mjs';
+import { loadVisualAttributeBindings, collectVisibleAttributeInput, compileVisualAttributes } from './visual-semantics/attributes.mjs';
+import { loadHierarchyReviews, compileReviewedHierarchy } from './visual-semantics/hierarchy.mjs';
+
+const explicitVisualBindings = loadVisualEncodingBindings();
+const explicitAttributeBindings = loadVisualAttributeBindings();
+const reviewedHierarchies = loadHierarchyReviews();
 
 const int = (value, fallback, min, max) => Number.isInteger(value) ? Math.max(min, Math.min(max, value)) : fallback;
 const unique = (values) => [...new Set(values.filter((value) => value !== null && value !== undefined))];
@@ -292,7 +300,11 @@ function treeProjection(engine, state, request, view, entityIds, budget) {
   const nodeSet = new Set(nodes.map((node) => node.id));
   const boundedEdges = edges.filter((edge) => nodeSet.has(edge.source) && nodeSet.has(edge.target));
   const rt = rootsAndTerminals(new Map(nodes.map((node) => [node.id,node])), boundedEdges);
-  return common(engine, request, view, 'tree', { nodes, edges: boundedEdges, roots: rt.roots, truncated: graph.edges.length > boundedEdges.length || graph.nodes.size > nodes.length, totalCandidates: graph.edges.length });
+  const truncated = graph.edges.length > boundedEdges.length || graph.nodes.size > nodes.length;
+  const hierarchySemantics = compileReviewedHierarchy({ nodes, edges: boundedEdges, relationIds:view.relationIds },
+    state, request.query.context, reviewedHierarchies, { truncated });
+  return common(engine, request, view, 'tree', { nodes, edges: boundedEdges, roots: rt.roots,
+    ...(hierarchySemantics ? { hierarchySemantics } : {}), truncated, totalCandidates: graph.edges.length });
 }
 
 function dagProjection(engine, state, request, view, entityIds, budget) {
@@ -315,13 +327,16 @@ function flowProjection(engine, state, request, view, entityIds, budget) {
 function causalProjection(engine, state, request, view, entityIds, budget) {
   const graph = graphData(engine, state, entityIds, view.relationIds, { edgeBudget: budget.edgeBudget });
   const nodes = [...graph.nodes.values()].slice(0, budget.nodeBudget); const nodeSet = new Set(nodes.map((node) => node.id));
-  const edges = graph.edges.filter((edge) => nodeSet.has(edge.source) && nodeSet.has(edge.target)).slice(0, budget.edgeBudget).map((edge) => {
-    const text = edge.relationLabel.toLowerCase();
-    const sign = /inhibit|suppress|decrease|negative|inhibe|diminue|négatif|negatif/.test(text) ? -1 : /activate|stimulat|increase|positive|active|augmente|positif/.test(text) ? 1 : 0;
-    return { ...edge, sign };
-  });
-  const cycles = cycleInfo(new Map(nodes.map((node) => [node.id,node])), edges, 24);
-  return common(engine, request, view, 'causal-feedback', { nodes, edges, cycles, truncated: graph.edges.length > edges.length || graph.nodes.size > nodes.length, totalCandidates: graph.edges.length });
+  const graphEdges = graph.edges.filter((edge) => nodeSet.has(edge.source) && nodeSet.has(edge.target)).slice(0, budget.edgeBudget);
+  // A lexical affordance may suggest the feedback recipe, but it cannot
+  // certify causality/sign. Only explicit, maintainer-reviewed IDs can.
+  const visualSemantics = compileVisualSemantics({ nodes, edges: graphEdges }, explicitVisualBindings);
+  const qualified = new Map(visualSemantics.causalEdges.map((edge) => [edge.assertionRef, edge]));
+  const edges = graphEdges.map((edge) => ({ ...edge, sign: qualified.get(edge.id)?.sign ?? 0 }));
+  const confirmedEdges = edges.filter((edge) => qualified.has(edge.id));
+  const cycles = cycleInfo(new Map(nodes.map((node) => [node.id,node])), confirmedEdges, 24);
+  return common(engine, request, view, 'causal-feedback', { nodes, edges, cycles, visualSemantics,
+    truncated: graph.edges.length > edges.length || graph.nodes.size > nodes.length, totalCandidates: graph.edges.length });
 }
 
 function matrixProjection(engine, state, request, view, entityIds, budget) {
@@ -388,7 +403,14 @@ function traceabilityProjection(engine, state, request, view, entityIds, budget)
     if (edges.length >= budget.edgeBudget * 4) break;
   }
   const nodeList=[...nodes.values()].slice(0,budget.nodeBudget); const nodeSet=new Set(nodeList.map((node)=>node.id)); const edgeList=edges.filter((edge)=>nodeSet.has(edge.source)&&nodeSet.has(edge.target)).slice(0,budget.edgeBudget);
-  return common(engine,request,view,'traceability',{nodes:nodeList,edges:edgeList,truncated:nodes.size>nodeList.length||edges.length>edgeList.length,totalCandidates:edges.length});
+  // Explicit v6 conflictsWith is already policy-filtered into conflict edges
+  // between visible assertion nodes. This evidence is *not* inferred from names.
+  const visualSemantics = request.recipeId === 'divergences'
+    ? compileVisualSemantics({ nodes: nodeList, edges: edgeList }, explicitVisualBindings, { includeAssertionConflicts: true })
+    : null;
+  return common(engine,request,view,'traceability',{nodes:nodeList,edges:edgeList,
+    ...(visualSemantics ? { visualSemantics } : {}),
+    truncated:nodes.size>nodeList.length||edges.length>edgeList.length,totalCandidates:edges.length});
 }
 
 function multiscaleProjection(engine, state, profiler, request, view, entityIds, budget) {
@@ -420,17 +442,25 @@ export function projectAdaptiveNavigation(engine, request, lenses) {
   if (!request || typeof request !== 'object' || Array.isArray(request) || !request.query || !request.recipeId) fail('INVALID_QUERY', 'Projection adaptative invalide.');
   const { state, profiler, view } = matchingPlanView(engine, request, lenses);
   const budget = budgets(request); const entityIds = selectedIds(engine, request, Math.max(budget.nodeBudget, budget.pageSize));
+  let result;
   switch (view.rendererId) {
-    case 'timeline-lineage': return timelineProjection(engine,state,profiler,request,view,entityIds,budget);
-    case 'tree': return treeProjection(engine,state,request,view,entityIds,budget);
-    case 'dag-proof': return dagProjection(engine,state,request,view,entityIds,budget);
-    case 'flow-path': return flowProjection(engine,state,request,view,entityIds,budget);
-    case 'causal-feedback': return causalProjection(engine,state,request,view,entityIds,budget);
-    case 'matrix-profile': return matrixProjection(engine,state,request,view,entityIds,budget);
-    case 'state-flow': return stateFlowProjection(engine,state,profiler,request,view,entityIds,budget);
-    case 'traceability': return traceabilityProjection(engine,state,request,view,entityIds,budget);
-    case 'multiscale-layer': return multiscaleProjection(engine,state,profiler,request,view,entityIds,budget);
-    case 'spatial': return spatialProjection(engine,state,profiler,request,view,entityIds,budget);
+    case 'timeline-lineage': result = timelineProjection(engine,state,profiler,request,view,entityIds,budget); break;
+    case 'tree': result = treeProjection(engine,state,request,view,entityIds,budget); break;
+    case 'dag-proof': result = dagProjection(engine,state,request,view,entityIds,budget); break;
+    case 'flow-path': result = flowProjection(engine,state,request,view,entityIds,budget); break;
+    case 'causal-feedback': result = causalProjection(engine,state,request,view,entityIds,budget); break;
+    case 'matrix-profile': result = matrixProjection(engine,state,request,view,entityIds,budget); break;
+    case 'state-flow': result = stateFlowProjection(engine,state,profiler,request,view,entityIds,budget); break;
+    case 'traceability': result = traceabilityProjection(engine,state,request,view,entityIds,budget); break;
+    case 'multiscale-layer': result = multiscaleProjection(engine,state,profiler,request,view,entityIds,budget); break;
+    case 'spatial': result = spatialProjection(engine,state,profiler,request,view,entityIds,budget); break;
     default: fail('UNSUPPORTED_CAPABILITY','Cette projection est servie par une vue générique et ne nécessite pas /api/navigation/project.',422);
   }
+  // Attribute plans are an OPTIONAL, separately versioned derived envelope.
+  // This is the already-filtered `state` returned by engine.scope(), not raw
+  // upstream input. If no rules are reviewed, no new semantics are emitted.
+  if (!explicitAttributeBindings.length) return result;
+  const input = collectVisibleAttributeInput(result,state);
+  const attributeSemantics = compileVisualAttributes(input,explicitAttributeBindings);
+  return validate('navigation-projection',{...result,attributeSemantics});
 }

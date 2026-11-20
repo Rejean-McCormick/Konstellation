@@ -1,0 +1,34 @@
+{
+  "format": "konstellation.visual-attribute-bindings/0.1",
+  "rules": [
+    {
+      "id": "demo:shape", "channel": "shape", "scope": "demo:organisms",
+      "mapping": {"organism":"circle","facility":"square"},
+      "review": "SYNTHETIC EXAMPLE ONLY: entity types verified for this fictitious domain."
+    },
+    {
+      "id": "demo:color", "channel": "color", "scope": "demo:organisms",
+      "relationId":"demo:measurement", "dimension":"demo:category",
+      "mapping":{"groupA":"teal","groupB":"amber"},
+      "review":"SYNTHETIC EXAMPLE ONLY: exact categorical valuation in source assertion."
+    },
+    {
+      "id": "demo:size", "channel": "size", "scope": "demo:organisms",
+      "relationId":"demo:measurement", "dimension":"demo:weight",
+      "unit":"kg", "min":0, "max":100,
+      "review":"SYNTHETIC EXAMPLE ONLY: comparable nonnegative mass measurement in kg."
+    },
+    {
+      "id": "demo:x", "channel": "x", "scope": "demo:organisms",
+      "relationId":"demo:measurement", "dimension":"demo:x",
+      "unit":"m", "min":0, "max":100, "distanceGroup":"demo:position",
+      "review":"SYNTHETIC EXAMPLE ONLY: reviewed first spatial dimension in metres."
+    },
+    {
+      "id": "demo:y", "channel": "y", "scope": "demo:organisms",
+      "relationId":"demo:measurement", "dimension":"demo:y",
+      "unit":"m", "min":0, "max":100, "distanceGroup":"demo:position",
+      "review":"SYNTHETIC EXAMPLE ONLY: reviewed second spatial dimension in metres."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "format": "konstellation.k8-input-pins/1.0",
+  "status": "PRIVATE_REVIEW_ONLY_NOT_APPROVED",
+  "inputs": {
+    "snapshot": {
+      "name": "kristal-public_Code_snapshot.zip",
+      "sha256": "sha256:a49e3c477da783b1cf175d4a9f3f2569b71b87a8aeff81fe1e6325d403133099"
+    },
+    "k6Results": {
+      "name": "KONSTELLATION_K6_RESULTATS_PRIVES_84_KRISTALS_20261119.zip",
+      "sha256": "sha256:7319092f860c183943bc7c1b2707b645d01488948a0858c8ccb97d9d8b72f744"
+    },
+    "k7Results": {
+      "name": "KONSTELLATION_K7_RESULTATS_PRIVES_126_KRISTALS_20261119.zip",
+      "sha256": "sha256:906b9fa16c1da4723b64621d72fcb19032bcf279021592b8203232066b0f9d4e"
+    }
+  },
+  "nativePinsSha256": "sha256:8e9ca52ce97746b281377005e3a69dce9873847a0db8a37945e2e5bc23158796",
+  "profilePinsSha256": "sha256:ff9b9a5539e065075741a1fb6b2b477a41f99c7efe47cb14ed7fa5cfd1fcb75d"
+}

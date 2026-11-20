@@ -1,0 +1,18 @@
+{
+  "format": "konstellation.visual-encoding-bindings/0.1",
+  "rules": [
+    {
+      "relationId": "demo:explicit_conflict",
+      "kind": "opposition",
+      "scope": "demo-comparison-domain",
+      "review": "Example only. Review exact semantics before local installation."
+    },
+    {
+      "relationId": "demo:causes_increase",
+      "kind": "causal",
+      "sign": 1,
+      "scope": "demo-causal-domain",
+      "review": "Example only. Not a production semantic rule."
+    }
+  ]
+}

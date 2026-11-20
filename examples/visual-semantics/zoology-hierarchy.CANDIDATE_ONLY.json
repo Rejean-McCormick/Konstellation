@@ -1,0 +1,18 @@
+{
+  "format": "konstellation.visual-hierarchy-reviews/0.1",
+  "rules": [
+    {
+      "id": "zoology.lineage.parentage.20261119",
+      "datasetRef": "REMPLACER_PAR_LE_datasetRef_DU_LECTEUR",
+      "readerPolicyRef": "REMPLACER_PAR_LE_readerPolicyRef_DU_LECTEUR",
+      "stateRef": "urn:kristal:state:kristal-zoology",
+      "relationId": "zoology.lineage_child_of",
+      "scope": "zoology:lineage:2026",
+      "direction": "child-to-parent",
+      "sampleAssertionRefs": ["rel:zoology:00001", "rel:zoology:00002"],
+      "reviewer": "NON_REVISE",
+      "reviewedOn": "2026-11-19",
+      "review": "CANDIDAT NON EXAMINE : confirmer le sens de filiation, la revision exacte, les temoins visibles sous la politique de lecture et la validite des groupes avant toute activation de geometrie."
+    }
+  ]
+}
