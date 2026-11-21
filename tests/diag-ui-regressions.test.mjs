@@ -62,3 +62,16 @@ test('Explorer refuses missing lenses and awaits a visibly updated policy in its
   assert.match(fixture, /engine\.policies\.get\(research\)\.description/);
   assert.match(fixture, /unknown perspective is refused/);
 });
+
+
+test('hosted Explorer advertises only reachable navigation routes', () => {
+  const explorer = fs.readFileSync(path.join(ROOT, 'src/components/Explorer.svelte'), 'utf8');
+  const server = fs.readFileSync(path.join(ROOT, 'server/index.mjs'), 'utf8');
+  const routeTests = fs.readFileSync(path.join(ROOT, 'tests/render-navigation-routes.test.mjs'), 'utf8');
+  assert.match(explorer, /\{#if boot\?\.v11Available\}/);
+  assert.match(explorer, /\{#if boot && query/);
+  assert.match(explorer, /on:click=\{openAstrolabe\}/);
+  assert.match(server, /v11Available:config\.deploymentProfile==='local'&&Boolean\(v11Reader\?\.principals\?\.has\(principal\.id\)\)/);
+  assert.match(server, /const isV11File=/);
+  assert.match(routeTests, /Render\/shared keeps v11 local-only/);
+});

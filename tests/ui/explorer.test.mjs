@@ -231,3 +231,25 @@ test('unknown perspective is refused without losing results or raising an unhand
   )).toBeTruthy());
   expect(document.querySelector('.result-count').textContent).toBe('132');
 });
+
+
+test('unauthenticated navigation does not advertise Astrolabe or the local-only v11 reader', async () => {
+  sessionStorage.clear();
+  vi.stubGlobal('fetch', vi.fn(async () => ({
+    ok: false, status: 401,
+    json: async () => ({ error: { code: 'ACCESS_DENIED', message: 'Authentification requise.' } }),
+  })));
+  render(Explorer);
+  await waitFor(() => expect(screen.getByText('Cette instance Konstellation requiert une authentification.')).toBeTruthy());
+  expect(screen.queryByRole('link', { name: 'Astrolabe' })).toBeNull();
+  expect(screen.queryByRole('link', { name: 'Kristal v11' })).toBeNull();
+  expect(screen.getByText('Accès privé')).toBeTruthy();
+});
+
+test('Astrolabe menu reveals and focuses the available search after bootstrap', async () => {
+  sessionStorage.clear();
+  await ready();
+  expect(screen.queryByRole('link', { name: 'Kristal v11' })).toBeNull();
+  await fireEvent.click(screen.getByRole('link', { name: 'Astrolabe' }));
+  await waitFor(() => expect(document.activeElement?.getAttribute('aria-label')).toBe('Orienter l’Astrolabe'));
+});

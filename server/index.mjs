@@ -203,7 +203,7 @@ export function createServer({
           // scope() validates the requested policy before any registry/Lens metadata is exposed.
           requestEngine.scope(bootContext);
           const communication=await semantik.capabilities(); const bootStart=performance.now(); const boot=requestEngine.bootstrap(requestLenses,bootContext); observe('bootstrap_duration_ms',performance.now()-bootStart); boot.capabilities.sa=communication.available;
-          return send(url.pathname==='/api/bootstrap'?{...boot,communication,kristal:selectedKristal,principal:{id:principal.id,roles:principal.roles,scopes:principal.scopes}}:{...boot.capabilities,communication});
+          return send(url.pathname==='/api/bootstrap'?{...boot,communication,kristal:selectedKristal,v11Available:config.deploymentProfile==='local'&&Boolean(v11Reader?.principals?.has(principal.id)),principal:{id:principal.id,roles:principal.roles,scopes:principal.scopes}}:{...boot.capabilities,communication});
         }
         if(req.method!=='POST') fail('NOT_FOUND','Endpoint introuvable.',404);
         if(url.pathname.startsWith('/api/sa')) requireScope(principal,'sa'); else requireScope(principal,'read');
@@ -237,8 +237,18 @@ export function createServer({
         }
       }
       if(!['GET','HEAD'].includes(req.method)) fail('NOT_FOUND','Introuvable.',404);
-      const pathname=decodeURIComponent(url.pathname); const file=path.resolve(dist,'.'+(pathname==='/'?'/index.html':pathname));
+      const pathname=decodeURIComponent(url.pathname);
+      // Astro builds /v11 into dist/v11/index.html. Guard the resolved file,
+      // not only the literal URL: encoded paths or doubled slashes cannot
+      // bypass the v11 local-only boundary.
+      const isV11Entry=pathname==='/v11'||pathname==='/v11/';
+      const staticPath=isV11Entry?'/v11/index.html':pathname;
+      const file=path.resolve(dist,'.'+(staticPath==='/'?'/index.html':staticPath));
       if(!file.startsWith(path.resolve(dist)+path.sep)) fail('NOT_FOUND','Introuvable.',404);
+      const localV11Dir=path.resolve(dist,'v11');
+      const isV11File=file===localV11Dir||file.startsWith(localV11Dir+path.sep);
+      if(isV11File&&(config.deploymentProfile!=='local'||!v11Reader?.principals?.has(config.localPrincipal?.id)))
+        fail('NOT_FOUND','Lecteur v11 disponible uniquement sur une instance locale configurée.',404);
       if(!fs.existsSync(file)||!fs.statSync(file).isFile()) fail('NOT_FOUND','Page introuvable. Exécutez npm run build.',404);
       res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':pathname.startsWith('/_astro/')?'public, max-age=31536000, immutable':'no-cache','X-Request-ID':rid});
       if(req.method==='HEAD') return res.end(); fs.createReadStream(file).pipe(res);

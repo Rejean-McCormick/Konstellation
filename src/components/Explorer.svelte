@@ -741,6 +741,17 @@
       }
     };
   }
+  // The Astrolabe target does not exist before authentication, and may be
+  // hidden while the optional local fleet view is active. Reveal it first.
+  async function openAstrolabe(event) {
+    event.preventDefault();
+    if (!boot || !query) return;
+    fleetView = false;
+    await tick();
+    const target = document.getElementById('astrolabe');
+    target?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+    target?.querySelector('input[aria-label="Orienter l’Astrolabe"]')?.focus({ preventScroll: true });
+  }
   onMount(() => {
     let alive = true;
     (async () => {
@@ -831,13 +842,13 @@
       <span>Konstellation<small>DES ÉTOILES POUR S’ORIENTER</small></span>
     </a>
     <nav aria-label="Navigation principale">
-      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}<a href="/v11">Kristal v11</a>{#if !selectionRequired || kristal}<a href="#astrolabe" on:click={() => (fleetView = false)}>Astrolabe</a>{/if}<button
+      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}{#if boot?.v11Available}<a href="/v11">Kristal v11</a>{/if}{#if boot && query && (!selectionRequired || kristal)}<a href="#astrolabe" on:click={openAstrolabe}>Astrolabe</a>{/if}<button
         class:active={showSaved}
         on:click={() => (showSaved = !showSaved)}
         >Mes explorations <span class="nav-count">{saved.length}</span></button
       ><button on:click={() => (showSource = !showSource)}>À propos du corpus</button>
     </nav>
-    <span class="local-indicator"><i></i> {boot?.principal?.id || 'Espace local'}</span>
+    <span class="local-indicator"><i></i> {boot?.principal?.id || (authRequired ? 'Accès privé' : 'Connexion en cours')}</span>
   </header>
   {#if (!boot || !query) && !(fleetEnabled && fleetView)}<main class="loading-screen">
       <div class="brand-mark"><img src="/brand-logo.svg" alt="Konstellation" class="loading-logo" /></div>
