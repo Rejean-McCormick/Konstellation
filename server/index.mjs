@@ -9,7 +9,7 @@ import { Engine } from './engine.mjs';
 import { loadPack, readJson } from './pack.mjs';
 import { ROOT, AppError, fail, validate } from './contracts.mjs';
 import { loadConfig, cspFor } from './config.mjs';
-import { authenticate, requireScope } from './auth.mjs';
+import { authenticate, requireScope, issueSessionCookie, expireSessionCookie } from './auth.mjs';
 import { requestId, increment, observe, gauge, metricsSnapshot, log } from './observability.mjs';
 import { versionInfo } from './version.mjs';
 import { fleetForPrincipal, readFleetExport, readDiscoveryCatalog } from './integrations/fleet.mjs';
@@ -152,6 +152,22 @@ export function createServer({
         if(req.method==='GET' && url.pathname==='/api/ready') return send({status:'ready',version:versionInfo().version,corpusLoaded:Boolean(engine?.pack),registryLoaded:Boolean(engine?.relations?.size),policyLoaded:Boolean(engine?.policies?.size),lensesLoaded:Array.isArray(lenses),scopeIndexReady:Boolean(engine?.scopeCache?.size),navigationProfileReady:Boolean(engine?.policyProfilerCache?.size),requestId:rid});
         if(req.method==='GET' && url.pathname==='/api/version') return send({...versionInfo(engine,{exposeCorpusIdentity:config.exposeCorpusIdentity}),requestId:rid});
         if(!allowRate(`${remote}|preauth`)) fail('RATE_LIMITED','Trop de requêtes.',429);
+        // Browser-only login: HttpOnly session cookie, never a persisted JS bearer token.
+        // Strict SameSite and existing Origin / Sec-Fetch-Site checks protect this route.
+        if (url.pathname === '/api/session' && req.method === 'POST') {
+          if (!req.headers['content-type']?.startsWith('application/json'))
+            fail('INVALID_QUERY', 'Content-Type application/json requis.', 415);
+          const credentials = await body(req, 4096);
+          if (!credentials || typeof credentials.token !== 'string')
+            fail('INVALID_QUERY', 'Jeton requis.', 400);
+          const session = issueSessionCookie(credentials.token, config);
+          res.setHeader('Set-Cookie', session.header);
+          return send({ authenticated: true, principal: { id: session.principal.id } });
+        }
+        if (url.pathname === '/api/session' && req.method === 'DELETE') {
+          res.setHeader('Set-Cookie', expireSessionCookie(config));
+          return send({ authenticated: false });
+        }
         principal = authenticate(req, config);
         if(!allowRate(`${remote}|${principal.id}`)) fail('RATE_LIMITED','Trop de requêtes.',429);
         if(req.method==='GET' && url.pathname==='/api/metrics') { requireScope(principal,'metrics'); return send(metricsSnapshot()); }

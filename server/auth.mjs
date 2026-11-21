@@ -1,4 +1,4 @@
-import { timingSafeEqual } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { fail } from './errors.mjs';
 
 function safeEqual(a, b) {
@@ -43,6 +43,51 @@ export function parseAuthConfig(env = process.env) {
   return principals;
 }
 
+// A session is an opaque, time-limited HMAC receipt. Never store the raw
+// Render AUTH_TOKEN in a browser cookie or an exposed JS environment variable.
+const SESSION_COOKIE = 'konstellation_session_v1';
+const SESSION_LIFETIME = 14 * 24 * 60 * 60; // 14 days; Rotate the auth token to revoke.
+function signature(secret, payload) {
+  return createHmac('sha256', secret).update('konstellation-session-v1\n').update(payload).digest('base64url');
+}
+function cookieValue(req, name) {
+  const raw = req.headers.cookie;
+  const cookies = typeof raw === 'string' ? raw : '';
+  if (cookies.length > 8192) return '';
+  for (const pair of cookies.split(';')) {
+    const i = pair.indexOf('=');
+    if (i >= 0 && pair.slice(0, i).trim() === name) return pair.slice(i + 1).trim();
+  }
+  return '';
+}
+function cookiePrincipal(req, config) {
+  const cookie = cookieValue(req, SESSION_COOKIE);
+  const match = /^v1\.(\d{10})\.([A-Za-z0-9_-]{22})\.([A-Za-z0-9_-]{43})$/.exec(cookie);
+  if (!match) return null;
+  const expires = Number(match[1]);
+  const now = Math.floor(Date.now() / 1000);
+  if (!Number.isSafeInteger(expires) || expires <= now || expires > now + SESSION_LIFETIME) return null;
+  const payload = `v1.${match[1]}.${match[2]}`;
+  for (const entry of config.authPrincipals || []) {
+    if (safeEqual(match[3], signature(entry.token, payload))) return entry.principal;
+  }
+  return null;
+}
+export function issueSessionCookie(token, config) {
+  const user = (config.authPrincipals || []).find((entry) => safeEqual(entry.token, token));
+  if (!user) fail('ACCESS_DENIED', 'Jeton d’authentification invalide.', 401);
+  const expires = Math.floor(Date.now() / 1000) + SESSION_LIFETIME;
+  const payload = `v1.${expires}.${randomBytes(16).toString('base64url')}`;
+  const value = `${payload}.${signature(user.token, payload)}`;
+  const secure = config.deploymentProfile === 'local' ? '' : '; Secure';
+  return { principal: user.principal,
+    header: `${SESSION_COOKIE}=${value}; Path=/api; HttpOnly; SameSite=Strict; Max-Age=${SESSION_LIFETIME}${secure}` };
+}
+export function expireSessionCookie(config) {
+  const secure = config.deploymentProfile === 'local' ? '' : '; Secure';
+  return `${SESSION_COOKIE}=; Path=/api; HttpOnly; SameSite=Strict; Max-Age=0${secure}`;
+}
+
 export function authenticate(req, config) {
   const auth = String(req.headers.authorization || '');
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
@@ -50,6 +95,8 @@ export function authenticate(req, config) {
     for (const entry of config.authPrincipals || []) if (safeEqual(token, entry.token)) return entry.principal;
     fail('ACCESS_DENIED', 'Jeton d’authentification invalide.', 401);
   }
+  const session = cookiePrincipal(req, config);
+  if (session) return session;
   if (config.deploymentProfile === 'local') return config.localPrincipal;
   if (config.anonymousReadonly) return Object.freeze({ id: 'anonymous', roles: ['public'], scopes: ['read'] });
   fail('ACCESS_DENIED', 'Authentification requise.', 401);

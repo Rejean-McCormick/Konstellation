@@ -24,6 +24,7 @@
     navigationRecipe = 'catalogue',
     navigationPinned = false,
     authToken = '',
+    loggingIn = false,
     authRequired = false,
     kristal = '',
     kristalSelectable = false,
@@ -222,6 +223,36 @@
     const j = await r.json();
     if (!r.ok) { const e = Error(j.error?.message || 'La requête a échoué.'); e.status = r.status; e.code = j.error?.code; throw e; }
     return j;
+  }
+  async function signIn() {
+    if (loggingIn || !authToken.trim()) return;
+    loggingIn = true;
+    error = '';
+    try {
+      const response = await fetch('/api/session', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: authToken.trim() }),
+      });
+      if (!response.ok) {
+        const reason = await response.json();
+        throw Error(reason?.error?.message || 'Connexion refusée.');
+      }
+      // The server now owns the persistent session in a secure HttpOnly cookie.
+      sessionStorage.removeItem('konstellation.auth.token');
+      authToken = '';
+      location.reload();
+    } catch (cause) { error = cause.message; }
+    finally { loggingIn = false; }
+  }
+  async function signOut() {
+    try {
+      const response = await fetch('/api/session', { method: 'DELETE', credentials: 'same-origin' });
+      if (!response.ok) throw Error('La déconnexion a échoué.');
+      sessionStorage.removeItem('konstellation.auth.token');
+      authToken = '';
+      location.reload();
+    } catch (cause) { error = cause.message; }
   }
   async function bootstrapForPolicy(readerPolicyRef) {
     const suffix = readerPolicyRef ? `?readerPolicyRef=${encodeURIComponent(readerPolicyRef)}` : '';
@@ -848,16 +879,18 @@
         >Mes explorations <span class="nav-count">{saved.length}</span></button
       ><button on:click={() => (showSource = !showSource)}>À propos du corpus</button>
     </nav>
-    <span class="local-indicator"><i></i> {boot?.principal?.id || (authRequired ? 'Accès privé' : 'Connexion en cours')}</span>
+    <span class="local-indicator"><i></i> {boot?.principal?.id || (authRequired ? 'Accès privé' : 'Connexion en cours')}{#if boot?.principal && boot.principal.id !== 'local-user'} <button class="logout-link" type="button" on:click={signOut}>Déconnexion</button>{/if}</span>
   </header>
   {#if (!boot || !query) && !(fleetEnabled && fleetView)}<main class="loading-screen">
       <div class="brand-mark"><img src="/brand-logo.svg" alt="Konstellation" class="loading-logo" /></div>
       <h1>Ouvrir de nouvelles perspectives.</h1>
       {#if authRequired}
         <p>Cette instance Konstellation requiert une authentification.</p>
-        <form class="auth-form" on:submit|preventDefault={() => { sessionStorage.setItem('konstellation.auth.token', authToken.trim()); location.reload(); }}>
+         <form class="auth-form" on:submit|preventDefault={signIn}>
           <label>Jeton d’accès<input type="password" bind:value={authToken} autocomplete="current-password" required /></label>
-          <button class="button primary" type="submit">Ouvrir Konstellation</button>
+          <button class="button primary" type="submit" disabled={loggingIn}>{loggingIn ? 'Connexion…' : 'Ouvrir Konstellation'}</button>
+           <small>Connexion mémorisée dans ce navigateur pendant 14 jours, sans conserver le jeton en JavaScript.</small>
+           {#if error}<p role="alert">{error}</p>{/if}
         </form>
       {:else}
         <p>{error || 'Chargement du corpus et des relations…'}</p>
