@@ -4,6 +4,7 @@
   import KompilerPanel from './KompilerPanel.svelte';
   import MyKristals from './MyKristals.svelte';
   import Astrolabe from './Astrolabe.svelte';
+  import { LOCALES, LANGUAGE_NAMES, ui, normalizeLocale, localizedLabel, localizedEntityLabel, hasLocalizedLabel } from '../lib/i18n.mjs';
   import QueryTree from './QueryTree.svelte';
   import { readableCode, readableStatus } from '../lib/semantic-display.mjs';
   import ConstellationView from './ConstellationView.svelte';
@@ -56,6 +57,12 @@
     selectedIds = [],
     constellationPath = [],
     satelliteLimit = 8;
+  let locale = 'fr';
+  function setLocale(value) {
+    locale = normalizeLocale(value);
+    if (typeof document !== 'undefined') document.documentElement.lang = locale;
+    try { localStorage.setItem('konstellation.locale.v1', locale); } catch {}
+  }
   const typeLabels = {};
   function humanizeType(value) {
     const text = String(value || '')
@@ -66,7 +73,7 @@
     return text ? text.charAt(0).toUpperCase() + text.slice(1) : '';
   }
   function typeLabel(type) {
-    return typeLabels[type] || boot?.presentation?.typeLabels?.[type] || boot?.structuralProfile?.entityTypeLabels?.[type] || humanizeType(type);
+    return localizedLabel(typeLabels[type] || boot?.presentation?.typeLabels?.[type] || boot?.structuralProfile?.entityTypeLabels?.[type], locale) || humanizeType(type);
   }
   const capabilityLabels = {
     temporal: 'temporel', hierarchy: 'hiérarchique', dependency: 'dépendances', sequence: 'séquentiel',
@@ -95,7 +102,7 @@
   $: featuredEntries = (boot?.presentation?.featuredTypes || []).map((type) => {
     const entryLens = boot?.lenses?.find((item) => item.rootType === type);
     if (!entryLens) return null;
-    return { type, id: entryLens.id, title: entryLens.label.fr,
+    return { type, id: entryLens.id, title: localizedLabel(entryLens.label, locale),
       count: (boot?.entities || []).filter((entity) => entity.type === type).length };
   }).filter(Boolean);
   $: currentFacets =
@@ -138,9 +145,10 @@
   function displayEntityLabel(entity, counts = duplicatePersonLabels) {
     if (!entity) return '';
     const duplicated = entity.type === 'person' && counts[personKey(entity)] > 1;
+    const label = localizedEntityLabel(entity, locale);
     return duplicated && entity.disambiguation
-      ? `${entity.label} — ${entity.disambiguation}`
-      : entity.label;
+      ? `${label} — ${entity.disambiguation}`
+      : label;
   }
   function entityTypeLabel(entity) {
     return typeLabel(entity?.type) || entity?.type;
@@ -149,21 +157,22 @@
     const q = normalizeSearch(rawQuery);
     if (!q) return 0;
     const label = normalizeSearch(entity.label);
+    const localized = normalizeSearch(localizedEntityLabel(entity, locale));
     const display = normalizeSearch(displayEntityLabel(entity, counts));
     const aliases = (entity.aliases || []).map(normalizeSearch);
     const description = normalizeSearch(entity.description);
-    if (label === q) return 160;
+    if (label === q || localized === q) return 160;
     if (aliases.some((alias) => alias === q)) return 150;
     if (display.includes(q)) return 125;
-    if (label.startsWith(q)) return 115;
-    if (label.includes(q)) return 105;
+    if (label.startsWith(q) || localized.startsWith(q)) return 115;
+    if (label.includes(q) || localized.includes(q)) return 105;
     if (aliases.some((alias) => alias.includes(q))) return 95;
     if (description.includes(q)) return 65;
     return 0;
   }
-  $: labelMap = Object.fromEntries((boot?.entities || []).map((e) => [e.id, displayEntityLabel(e, duplicatePersonLabels)]));
+  $: labelMap = locale ? Object.fromEntries((boot?.entities || []).map((e) => [e.id, displayEntityLabel(e, duplicatePersonLabels)])) : {};
   $: entityMap = Object.fromEntries((boot?.entities || []).map((e) => [e.id, e]));
-  $: catalogRanked = search.trim()
+  $: catalogRanked = search.trim() && locale
     ? (boot?.entities || [])
         .map((entity) => ({ entity, score: catalogScore(entity, search, duplicatePersonLabels) }))
         .filter((item) => item.score > 0)
@@ -736,7 +745,7 @@
     }
   }
   function filterSummary(f) {
-    const r = relation(f.relation)?.label.fr || f.relation;
+    const r = localizedLabel(relation(f.relation)?.label, locale) || f.relation;
     if (f.interval) return `${r} : ${f.interval.from}–${f.interval.to}`;
     if (f.values)
       return `${r} ${f.op === 'none_of' ? 'exclut' : ':'} ${f.values.map((v) => labelMap[v.id] || v.value || v.id).join(', ')}`;
@@ -781,10 +790,11 @@
     await tick();
     const target = document.getElementById('astrolabe');
     target?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
-    target?.querySelector('input[aria-label="Orienter l’Astrolabe"]')?.focus({ preventScroll: true });
+    target?.querySelector('input[data-testid="astrolabe-search"]')?.focus({ preventScroll: true });
   }
   onMount(() => {
     let alive = true;
+    try { setLocale(localStorage.getItem('konstellation.locale.v1') || 'fr'); } catch { setLocale('fr'); }
     (async () => {
       try {
         authToken = sessionStorage.getItem('konstellation.auth.token') || '';
@@ -865,7 +875,7 @@
   });
 </script>
 
-<svelte:head><title>Konstellation — Explorer les idées</title></svelte:head>
+<svelte:head><title>Konstellation — {ui(locale,'explorer')}</title></svelte:head>
 <div class="app-shell">
   <header class="topbar">
     <a href="/" class="brand">
@@ -876,24 +886,30 @@
       {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}{#if boot?.v11Available}<a href="/v11">Kristal v11</a>{/if}{#if boot && query && (!selectionRequired || kristal)}<a href="#astrolabe" on:click={openAstrolabe}>Astrolabe</a>{/if}<button
         class:active={showSaved}
         on:click={() => (showSaved = !showSaved)}
-        >Mes explorations <span class="nav-count">{saved.length}</span></button
-      ><button on:click={() => (showSource = !showSource)}>À propos du corpus</button>
+        >{ui(locale,'saved')} <span class="nav-count">{saved.length}</span></button
+      ><button on:click={() => (showSource = !showSource)}>{ui(locale,'about')}</button>
     </nav>
-    <span class="local-indicator"><i></i> {boot?.principal?.id || (authRequired ? 'Accès privé' : 'Connexion en cours')}{#if boot?.principal && boot.principal.id !== 'local-user'} <button class="logout-link" type="button" on:click={signOut}>Déconnexion</button>{/if}</span>
+    <label class="language-switch" for="konstellation-language">
+      <span>{ui(locale,'language')}</span>
+      <select id="konstellation-language" aria-label={ui(locale,'language')} value={locale} on:change={(e) => setLocale(e.currentTarget.value)}>
+        {#each LOCALES as language}<option value={language}>{LANGUAGE_NAMES[language]}</option>{/each}
+      </select>
+    </label>
+    <span class="local-indicator"><i></i> {boot?.principal?.id || (authRequired ? ui(locale,'private') : ui(locale,'loading'))}{#if boot?.principal && boot.principal.id !== 'local-user'} <button class="logout-link" type="button" on:click={signOut}>{ui(locale,'logout')}</button>{/if}</span>
   </header>
   {#if (!boot || !query) && !(fleetEnabled && fleetView)}<main class="loading-screen">
       <div class="brand-mark"><img src="/brand-logo.svg" alt="Konstellation" class="loading-logo" /></div>
-      <h1>Ouvrir de nouvelles perspectives.</h1>
+      <h1>{ui(locale,'introTitle')}</h1>
       {#if authRequired}
-        <p>Cette instance Konstellation requiert une authentification.</p>
+        <p>{ui(locale,'authRequired')}</p>
          <form class="auth-form" on:submit|preventDefault={signIn}>
-          <label>Jeton d’accès<input type="password" bind:value={authToken} autocomplete="current-password" required /></label>
-          <button class="button primary" type="submit" disabled={loggingIn}>{loggingIn ? 'Connexion…' : 'Ouvrir Konstellation'}</button>
+          <label>{ui(locale,'authToken')}<input type="password" bind:value={authToken} autocomplete="current-password" required /></label>
+          <button class="button primary" type="submit" disabled={loggingIn}>{loggingIn ? ui(locale,'signingIn') : ui(locale,'login')}</button>
            <small>Connexion mémorisée dans ce navigateur pendant 14 jours, sans conserver le jeton en JavaScript.</small>
            {#if error}<p role="alert">{error}</p>{/if}
         </form>
       {:else}
-        <p>{error || 'Chargement du corpus et des relations…'}</p>
+        <p>{error || ui(locale,'loading')}</p>
         {#if error}<button on:click={() => location.reload()}>Réessayer</button>{/if}
       {/if}
     </main>
@@ -905,21 +921,21 @@
       {#if boot && query}<div hidden={fleetEnabled && fleetView}>
       <section class="intro">
         <div>
-          <div class="eyebrow">EXPLORATEUR DE CONNAISSANCES <span> / </span> {boot.title}</div>
-          <h1>Explorez la structure des connaissances<span>.</span></h1>
-          <p>Konstellation détecte les formes du Kristal et propose les parcours, vues et comparaisons les plus pertinents.</p>
+          <div class="eyebrow">{ui(locale,'introEyebrow')} <span> / </span> {boot.title}</div>
+          <h1>{ui(locale,'introTitle')}<span>.</span></h1>
+          <p>{ui(locale,'introDescription')}</p>
         </div>
         <div class="intro-actions">
-          <button class="button subtle-button" on:click={share}>↗ Partager</button><button
+          <button class="button subtle-button" on:click={share}>{'↗ ' + ui(locale,'share')}</button><button
             class="button primary"
-            on:click={() => (showSaved = true)}>＋ Enregistrer</button
+            on:click={() => (showSaved = true)}>{'＋ ' + ui(locale,'save')}</button
           >
         </div>
       </section>
       {#if featuredEntries.length}<section class="reader-guide" aria-label="Parcours du Kristal">
         <div class="reader-guide-heading"><div><span class="eyebrow">EXPLORER LE KRISTAL</span>
-          <h2>Par où commencer ?</h2></div>
-          <p>Choisissez une famille d’éléments du graphe, puis suivez ses relations documentées.</p>
+          <h2>{ui(locale,'guideTitle')}</h2></div>
+          <p>{ui(locale,'guideDescription')}</p>
         </div>
         <div class="reader-guide-grid">
           {#each featuredEntries as entry}
@@ -928,21 +944,24 @@
               on:click={errorGuard(() => changeLens(entry.id))}>
               <span class="reader-guide-count">{entry.count.toLocaleString('fr-CA')}</span>
               <strong>{entry.title}</strong>
-              <span class="reader-guide-action">Explorer →</span>
+              <span class="reader-guide-action">{ui(locale,'guideExplore')} →</span>
             </button>
           {/each}
         </div>
       </section>{/if}
-      <Astrolabe entities={boot.entities} typeLabels={boot?.presentation?.typeLabels || {}} preferredType={boot.lenses[0]?.rootType || ''} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />
+      <Astrolabe {locale} entities={boot.entities} typeLabels={boot?.presentation?.typeLabels || {}} preferredType={boot.lenses[0]?.rootType || ''} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />
       {#if boot.readingNotice}<div class="demo-banner" role="note">
           <span class="tiny-star">✦</span><strong>{boot.readingNotice.heading}</strong><span>{boot.readingNotice.text}</span>
         </div>{/if}
       {#if boot.synthetic}<div class="demo-banner">
-          <span class="tiny-star">✦</span><strong>Corpus de démonstration</strong><span
-            >Notices illustratives et relations synthétiques. Aucune validation historique
-            revendiquée.</span
+          <span class="tiny-star">✦</span><strong>{ui(locale,'demo')}</strong><span
+            >{ui(locale,'demoDescription')}</span
           >
         </div>{/if}
+      {#if locale !== 'fr'}<div class="language-fallback" role="status">
+        <span>{ui(locale,'readingFallback')}</span>
+        <small>diK · 14 · NOT_PROVEN_FOR_ALL_14</small>
+      </div>{/if}
       {#if error}<div role="alert" class="alert error">
           <span>{error}</span><button aria-label="Fermer l’erreur" on:click={() => (error = '')}
             >×</button
@@ -1031,19 +1050,19 @@
           ></label
         >{/if}<label
           ><span class="context-icon">◈</span><span
-            ><small>PERSPECTIVE</small><select
+            ><small>{ui(locale,'perspective')}</small><select
               aria-label="Perspective"
               value={lensId}
               on:change={(e) => changeLens(e.target.value)}
               >{#if !boot.lenses.some((l) => l.id === lensId)}<option value={lensId}
                   >{typeLabel(query.selection.entityType)}</option
-                >{/if}{#each boot.lenses as l}<option value={l.id}>{l.label.fr}</option
+                >{/if}{#each boot.lenses as l}<option value={l.id}>{localizedLabel(l.label,locale)}</option
                 >{/each}</select
             ></span
           ></label
         ><label
           ><span class="context-icon">◉</span><span
-            ><small>POLITIQUE DE LECTURE</small><select
+            ><small>{ui(locale,'policy')}</small><select
               aria-label="Politique de lecture"
               value={query.context.readerPolicyRef}
               on:change={(e) => changePolicy(e.target.value)}
@@ -1054,8 +1073,8 @@
           ></label
         >
         <div class="context-end">
-          <span>{boot.entities.length} entités au catalogue</span><span class="version-pill"
-            >CORPUS ÉPINGLÉ</span
+          <span>{boot.entities.length} {ui(locale,'catalog')}</span><span class="version-pill"
+            >{ui(locale,'pinned')}</span
           >
         </div>
       </section>
@@ -1072,27 +1091,27 @@
       <div class="workspace">
         <aside class="filters-panel" aria-label="Filtres">
           <div class="panel-heading">
-            <h2>Affiner la sélection</h2>
+            <h2>{ui(locale,'refine')}</h2>
             <button
               class="text-button"
               on:click={() => {
                 const next = clone(query);
                 next.selection = { entityType: query.selection.entityType, filters: [], links: [] };
                 commit(next);
-              }}>Réinitialiser</button
+              }}>{ui(locale,'reset')}</button
             >
           </div>
-          <p class="panel-caption">Les filtres disponibles dépendent de la perspective.</p>{#if hiddenEmptyFacets > 0}<p class="hint">{hiddenEmptyFacets} filtre{hiddenEmptyFacets > 1 ? 's' : ''} non pertinent{hiddenEmptyFacets > 1 ? 's' : ''} masqué{hiddenEmptyFacets > 1 ? 's' : ''}.</p>{/if}
+          <p class="panel-caption">{ui(locale,'filtersDepend')}</p>{#if hiddenEmptyFacets > 0}<p class="hint">{hiddenEmptyFacets} filtre{hiddenEmptyFacets > 1 ? 's' : ''} non pertinent{hiddenEmptyFacets > 1 ? 's' : ''} masqué{hiddenEmptyFacets > 1 ? 's' : ''}.</p>{/if}
           {#each visibleFacets as facet}
             {@const r = relation(facet.relation)}{@const f = filterFor(
               facet.relation,
             )}{@const data = facets[facet.relation]}
             <section class="facet">
               <div class="facet-title">
-                <h3>{r.label.fr}</h3>
+                <h3>{localizedLabel(r.label,locale)}</h3>
                 {#if f}<button
                     class="clear-facet"
-                    aria-label={'Effacer ' + r.label.fr}
+                    aria-label={'Effacer ' + localizedLabel(r.label,locale)}
                     on:click={() => setFilter(r.id, null)}>×</button
                   >{:else}<span>⌄</span>{/if}
               </div>
@@ -1120,14 +1139,14 @@
                   >
                 </div>
                 <button class="apply-period" on:click={() => applyYears(r.id)}
-                  >Appliquer la période →</button
+                  >{ui(locale,'applyPeriod')} →</button
                 >
               {:else}<select
                   class="operator"
-                  aria-label={'Opérateur ' + r.label.fr}
+                  aria-label={'Opérateur ' + localizedLabel(r.label,locale)}
                   value={f?.op || ''}
                   on:change={(e) => changeOperator(r.id, e.target.value)}
-                  ><option value="">Toutes les valeurs</option
+                  ><option value="">{ui(locale,'allValues')}</option
                   >{#if r.operators.includes('in')}<option value="in"
                       >Correspond à une valeur</option
                     ><option value="none_of">Exclut ces valeurs</option>{/if}<option value="exists"
@@ -1212,7 +1231,7 @@
                   on:click={() => setFilter(f.relation, null)}
                   >{filterSummary(f)} <span>×</span></button
                 >{/each}{#each query.selection.links as link}<span class="filter-chip linked"
-                  >↳ {relation(link.relation)?.label.fr} satisfait la sélection précédente</span
+                  >↳ {localizedLabel(relation(link.relation)?.label,locale)} satisfait la sélection précédente</span
                 >{/each}
             </div>{/if}
           {#if omitted.length}<p class="hidden-filters-note">
@@ -1242,9 +1261,9 @@
                   >
                 {/each}
               {:else}
-                <button class:active={view === 'list'} aria-pressed={view === 'list'} on:click={() => (view = 'list')}>▤ <span>Liste</span></button>
-                <button class:active={view === 'table'} aria-pressed={view === 'table'} on:click={() => (view = 'table')}>▦ <span>Tableau</span></button>
-                <button class:active={view === 'constellation' || view === 'graph'} aria-pressed={view === 'constellation' || view === 'graph'} on:click={openConstellation}>◈ <span>Constellation</span></button>
+                <button class:active={view === 'list'} aria-pressed={view === 'list'} on:click={() => (view = 'list')}>▤ <span>{ui(locale,'list')}</span></button>
+                <button class:active={view === 'table'} aria-pressed={view === 'table'} on:click={() => (view = 'table')}>▦ <span>{ui(locale,'table')}</span></button>
+                <button class:active={view === 'constellation' || view === 'graph'} aria-pressed={view === 'constellation' || view === 'graph'} on:click={openConstellation}>◈ <span>{ui(locale,'constellation')}</span></button>
               {/if}
             </div>
           </div>
@@ -1260,9 +1279,9 @@
           <div class="results-actions">
             <label class="search-input"
               ><span>⌕</span><input
-                aria-label="Chercher dans le corpus"
+                aria-label={ui(locale,'search')}
                 bind:value={search}
-                placeholder="Chercher dans le corpus…"
+                placeholder={ui(locale,'search') + '…'}
                 autocomplete="off"
               /></label
             ><select
@@ -1276,7 +1295,7 @@
                   ? selectedIds.length + ' sélectionnés'
                   : 'toute la sélection'} →</option
               >{#each pivots.filter((r) => r.inverseOf) as r}<option value={r.id}
-                  >{r.label.fr}</option
+                  >{localizedLabel(r.label,locale)}</option
                 >{/each}</select
             >
           </div>
@@ -1317,6 +1336,7 @@
                 <p>Essayez d’élargir un filtre ou de changer la politique de lecture.</p>
               </div>
             {:else if view === 'adaptive' && currentNavigationView}<AdaptiveProjectionView
+                {locale}
                 {query}
                 lensRef={lensId}
                 recipe={currentNavigationView}
@@ -1327,6 +1347,7 @@
                 {kristal}
               />
             {:else if view === 'constellation' || view === 'graph'}<ConstellationView
+                {locale}
                 {rows}
                 labels={labelMap}
                 entities={entityMap}
@@ -1405,14 +1426,14 @@
                 on:click={() => {
                   selectedIds = [];
                   run();
-                }}>Première page</button
+                }}>{ui(locale,'firstPage')}</button
               ><button
                 class="button"
                 disabled={!result?.nextCursor || busy}
                 on:click={() => {
                   selectedIds = [];
                   run(result.nextCursor);
-                }}>Suivante →</button
+                }}>{ui(locale,'nextPage')} →</button
               >
             </div>
           </footer>
@@ -1435,7 +1456,7 @@
               >
                 {#each relations.filter((r) => r.domain.includes(detail.entity.type) && r.inverseOf) as r}<button
                     class="button"
-                    on:click={() => pivot(r.id, [selected])}>{r.label.fr} →</button
+                    on:click={() => pivot(r.id, [selected])}>{localizedLabel(r.label,locale)} →</button
                   >{/each}
               </div>
               {#if result?.rows.find((r) => r.entityId === selected)?.witnesses.length}<details
@@ -1457,7 +1478,7 @@
               <p class="hint">Chaque statut décrit une assertion, pas la personne entière.</p>
               {#each detail.assertions as a}<div class="assertion-card">
                   <div class="assertion-heading">
-                    <span>{relation(a.payload.relation)?.label.fr}</span><span
+                    <span>{localizedLabel(relation(a.payload.relation)?.label,locale)}</span><span
                       class:disputed={a.payload.status === 'disputed'}
                       class="status-pill">{statusLabels[a.payload.status] || readableStatus(a.payload.status)}</span
                     >

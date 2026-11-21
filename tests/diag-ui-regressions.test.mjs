@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { ui } from '../src/lib/i18n.mjs';
 import { ROOT } from '../server/contracts.mjs';
 import { loadVisualEncodingBindings } from '../server/navigation/visual-semantics/registry.mjs';
 import { loadVisualAttributeBindings } from '../server/navigation/visual-semantics/attributes.mjs';
@@ -20,7 +21,8 @@ test('visual registries remain code-owned and loadable via the canonical project
 test('Playwright readiness is anchored to current Explorer heading, not legacy copy', () => {
   const explorer = fs.readFileSync(path.join(ROOT, 'src/components/Explorer.svelte'), 'utf8');
   const fixtures = fs.readFileSync(path.join(ROOT, 'tests/browser/fixtures.mjs'), 'utf8');
-  assert.match(explorer, /Explorez la structure des connaissances/);
+  assert.match(explorer, /\{ui\(locale,\s*'introTitle'\)\}/);
+  assert.equal(ui('fr', 'introTitle'), 'Explorez la structure des connaissances');
   assert.match(fixtures, /Explorez la structure des connaissances/);
   assert.doesNotMatch(fixtures, /Suivez le fil des idées/);
   assert.match(fixtures, /expect\.soft\(apiErrors/);

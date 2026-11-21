@@ -1,5 +1,6 @@
 <script>
   import { onDestroy } from 'svelte';
+  import { ui } from '../lib/i18n.mjs';
   import TimelineLineageView from './TimelineLineageView.svelte';
   import TreeView from './TreeView.svelte';
   import DagProofView from './DagProofView.svelte';
@@ -14,6 +15,7 @@
   import SemanticAttributeView from './SemanticAttributeView.svelte';
   import SemanticAuditView from './SemanticAuditView.svelte';
 
+  export let locale = 'fr';
   export let query;
   export let lensRef;
   export let recipe;
@@ -76,9 +78,9 @@
 
 <div class="adaptive-projection" aria-busy={busy} data-recipe={recipe?.id} data-renderer={recipe?.rendererId}>
   <div class="adaptive-projection-head">
-    <div><small>NAVIGATION ADAPTATIVE</small><strong>{recipe?.label}</strong></div>
+    <div><small>{ui(locale,'explorer')}</small><strong>{recipe?.label}</strong></div>
     <div class="adaptive-projection-actions">
-      {#if data}<button class="text-button" on:click={exportProjection}>Exporter JSON</button>{/if}
+      {#if data}<button class="text-button" on:click={exportProjection}>{ui(locale,'save')} JSON</button>{/if}
       {#if recipe?.reason}<span title={recipe.reason}>Détecté depuis la structure visible</span>{/if}
     </div>
   </div>
@@ -93,7 +95,7 @@
     <svelte:component this={Renderer} {data} {inspect} />
     {#if data.truncated}<p class="hint">Projection bornée pour préserver lisibilité et performance. {data.totalCandidates || 0} candidat(s) au total.</p>{/if}
     <div class="projection-pagination" aria-label="Niveau de détail de la projection">
-      {#if cursor}<button class="button" disabled={busy} on:click={() => load(requestKey, cursor)}>{busy ? 'Chargement…' : 'Page suivante →'}</button>{/if}
+      {#if cursor}<button class="button" disabled={busy} on:click={() => load(requestKey, cursor)}>{busy ? ui(locale,'loading') : ui(locale,'nextPage') + ' →'}</button>{/if}
       {#if canExpand}<button class="button" disabled={busy} on:click={expandDetail}>{busy ? 'Chargement…' : 'Afficher plus de détails'}</button>{/if}
       <button class="text-button" on:click={fallback}>Vue tabulaire accessible</button>
     </div>

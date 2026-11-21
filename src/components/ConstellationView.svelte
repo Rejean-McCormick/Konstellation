@@ -2,6 +2,7 @@
   import { onDestroy, tick } from 'svelte';
   import { layoutConstellation, splitLabel } from '../lib/constellation/layout.js';
   import { portraitFor, orbitPreview } from '../lib/constellation/profile.mjs';
+  export let locale = 'fr';
   export let rows = [];
   export let labels = {};
   export let entities = {};
