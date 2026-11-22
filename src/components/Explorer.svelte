@@ -3,6 +3,7 @@
   import Communication from './Communication.svelte';
   import KompilerPanel from './KompilerPanel.svelte';
   import MyKristals from './MyKristals.svelte';
+  import { publicKristalsLabel } from '../lib/public-kristals-ui.mjs';
   import Astrolabe from './Astrolabe.svelte';
   import { uiFinish as ui, localizedRecipeLabel, assertionStatusLabel, localizedCapabilityLabel } from '../lib/i18n-finish.mjs';
   import { LOCALES, LANGUAGE_NAMES, normalizeLocale, localizedLabel, localizedEntityLabel, hasLocalizedLabel } from '../lib/i18n.mjs';
@@ -884,7 +885,7 @@
       <span>Konstellation<small>{ui(locale,'brandTagline')}</small></span>
     </a>
     <nav aria-label="Navigation principale">
-      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}{#if boot?.v11Available}<a href="/v11">Kristal v11</a>{/if}{#if boot && query && (!selectionRequired || kristal)}<a href="#astrolabe" on:click={openAstrolabe}>Astrolabe</a>{/if}<button
+      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}<a href="/kristals-publics/index.html">✦ {publicKristalsLabel(locale)}</a>{#if boot?.v11Available}<a href="/v11">Kristal v11</a>{/if}{#if boot && query && (!selectionRequired || kristal)}<a href="#astrolabe" on:click={openAstrolabe}>Astrolabe</a>{/if}<button
         class:active={showSaved}
         on:click={() => (showSaved = !showSaved)}
         >{ui(locale,'saved')} <span class="nav-count">{saved.length}</span></button

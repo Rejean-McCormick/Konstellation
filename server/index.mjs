@@ -14,6 +14,7 @@ import { requestId, increment, observe, gauge, metricsSnapshot, log } from './ob
 import { versionInfo } from './version.mjs';
 import { fleetForPrincipal, readFleetExport, readDiscoveryCatalog } from './integrations/fleet.mjs';
 import { loadV11Config, v11Catalog, v11View, v11Neighborhood } from './integrations/kristal-v11.mjs';
+import { publicKristalsProvider } from './public-kristals.mjs';
 
 export function loadLenses(engine, dir) {
   const configured = [];
@@ -253,6 +254,18 @@ export function createServer({
         }
       }
       if(!['GET','HEAD'].includes(req.method)) fail('NOT_FOUND','Introuvable.',404);
+      if(url.pathname==='/kristals-publics'||url.pathname==='/kristals-publics/') {
+        status=302;res.writeHead(302,{'Location':'/kristals-publics/index.html','Cache-Control':'no-store'});return res.end();
+      }
+      if(url.pathname==='/kristals-publics/data/catalog.json'||
+        /^\/kristals-publics\/data\/pack-[a-f0-9]{64}\.json$/.test(url.pathname)) {
+        let bytes;
+        try {bytes=await publicKristalsProvider.serve(url.pathname);}
+        catch(error) {log('warn','public_catalog_read_error',{reason:String(error?.message||error).slice(0,180)});
+          fail('PUBLIC_CATALOG_UNAVAILABLE','Lecture du catalogue public temporairement indisponible ou non conforme.',502);}
+        status=200;res.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Request-ID':rid});
+        if(req.method==='HEAD')return res.end();return res.end(bytes);
+      }
       const pathname=decodeURIComponent(url.pathname);
       // Astro builds /v11 into dist/v11/index.html. Guard the resolved file,
       // not only the literal URL: encoded paths or doubled slashes cannot
