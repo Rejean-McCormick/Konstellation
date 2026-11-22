@@ -1,5 +1,6 @@
 import { beforeEach, afterEach, test, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, cleanup, within } from '@testing-library/svelte';
+import { uiFinish } from '../../src/lib/i18n-finish.mjs';
 import Explorer from '../../src/components/Explorer.svelte';
 import { Engine } from '../../server/engine.mjs';
 import { loadPack } from '../../server/pack.mjs';
@@ -134,7 +135,7 @@ test('constellation recenters an entity and exposes bounded semantic groups', as
   await fireEvent.click(augustin);
   await waitFor(() => expect(document.querySelector('.constellation-center')?.textContent).toContain('Augustin'));
   await waitFor(() => expect(document.querySelectorAll('.constellation-node').length).toBeGreaterThan(0));
-  expect(screen.getByLabelText('Nombre maximal de satellites')).toBeTruthy();
+  expect(screen.getByLabelText(uiFinish('fr','constellationSatellitesAria'))).toBeTruthy();
   const next = document.querySelector('.constellation-node.kind-group') || document.querySelector('.constellation-node');
   await fireEvent.click(next);
   await waitFor(() => expect(document.querySelector('.constellation-history-node')).not.toBeNull());
@@ -162,8 +163,8 @@ test('inspector applies reading policy and reveals sourced conflict only in rese
 });
 test('period, saved exploration, restoration and page cursor work', async () => {
   await ready();
-  await fireEvent.input(screen.getByLabelText('Année de début'), { target: { value: '300' } });
-  await fireEvent.input(screen.getByLabelText('Année de fin'), { target: { value: '500' } });
+  await fireEvent.input(screen.getByLabelText(uiFinish('fr','fromYearAria')), { target: { value: '300' } });
+  await fireEvent.input(screen.getByLabelText(uiFinish('fr','toYearAria')), { target: { value: '500' } });
   await fireEvent.click(screen.getByRole('button', { name: 'Appliquer la période →' }));
   await done();
   expect(document.querySelector('.active-filters').textContent).toContain('300–500');
@@ -191,7 +192,7 @@ test('communication exports real structured criteria and clears them when the ex
   await fireEvent.click(screen.getByText('Expliquer cette exploration'));
   await fireEvent.click(screen.getByRole('button', { name: 'Préparer la requête' }));
   await waitFor(() =>
-    expect(screen.getByRole('button', { name: 'Exporter CommunicationRequest' })).toBeTruthy(),
+    expect(screen.getByRole('button', { name: uiFinish('fr','communicationExport') })).toBeTruthy(),
   );
   expect(document.querySelector('.communication pre').textContent).toContain(
     'konstellation:selection-type',
@@ -199,7 +200,7 @@ test('communication exports real structured criteria and clears them when the ex
   expect(screen.getByRole('button', { name: 'Formuler avec SA' }).disabled).toBe(true);
   await fireEvent.click(screen.getByRole('checkbox', { name: /Philosophie/ }));
   await done();
-  expect(screen.queryByRole('button', { name: 'Exporter CommunicationRequest' })).toBeNull();
+  expect(screen.queryByRole('button', { name: uiFinish('fr','communicationExport') })).toBeNull();
 });
 test('unavailable facet capabilities display the cause without offering a false absence filter', async () => {
   engine.pack.integration = {

@@ -1,6 +1,6 @@
 <script>
   import { onDestroy } from 'svelte';
-  import { ui } from '../lib/i18n.mjs';
+  import { uiFinish as ui, localizedRecipeLabel } from '../lib/i18n-finish.mjs';
   import TimelineLineageView from './TimelineLineageView.svelte';
   import TreeView from './TreeView.svelte';
   import DagProofView from './DagProofView.svelte';
@@ -78,28 +78,28 @@
 
 <div class="adaptive-projection" aria-busy={busy} data-recipe={recipe?.id} data-renderer={recipe?.rendererId}>
   <div class="adaptive-projection-head">
-    <div><small>{ui(locale,'explorer')}</small><strong>{recipe?.label}</strong></div>
+    <div><small>{ui(locale,'explorer')}</small><strong>{localizedRecipeLabel(recipe,locale)}</strong></div>
     <div class="adaptive-projection-actions">
       {#if data}<button class="text-button" on:click={exportProjection}>{ui(locale,'save')} JSON</button>{/if}
-      {#if recipe?.reason}<span title={recipe.reason}>Détecté depuis la structure visible</span>{/if}
+      {#if recipe?.reason}<span title={recipe.reason}>{ui(locale,'viewDetected')}</span>{/if}
     </div>
   </div>
   {#if error}
-    <div class="constellation-message error" role="alert">{error}<p>La sélection et l’historique sont conservés.</p><button class="button" on:click={fallback}>Ouvrir le fallback accessible</button></div>
+    <div class="constellation-message error" role="alert">{error}<p>{ui(locale,'viewRetained')}</p><button class="button" on:click={fallback}>{ui(locale,'viewFallback')}</button></div>
   {:else if busy && !data}
-    <div class="adaptive-loading" role="status">Projection de la structure visible…</div>
+    <div class="adaptive-loading" role="status">{ui(locale,'viewLoading')}</div>
   {:else if Renderer && data}
     <SemanticAuditView {data} />
     {#if data.visualSemantics}<SemanticEncodingView {data} />{/if}
     {#if data.attributeSemantics}<SemanticAttributeView {data} />{/if}
     <svelte:component this={Renderer} {data} {inspect} />
-    {#if data.truncated}<p class="hint">Projection bornée pour préserver lisibilité et performance. {data.totalCandidates || 0} candidat(s) au total.</p>{/if}
+    {#if data.truncated}<p class="hint">{ui(locale,'viewTruncated')} {data.totalCandidates || 0} {ui(locale,'catalog')}.</p>{/if}
     <div class="projection-pagination" aria-label="Niveau de détail de la projection">
       {#if cursor}<button class="button" disabled={busy} on:click={() => load(requestKey, cursor)}>{busy ? ui(locale,'loading') : ui(locale,'nextPage') + ' →'}</button>{/if}
-      {#if canExpand}<button class="button" disabled={busy} on:click={expandDetail}>{busy ? 'Chargement…' : 'Afficher plus de détails'}</button>{/if}
-      <button class="text-button" on:click={fallback}>Vue tabulaire accessible</button>
+      {#if canExpand}<button class="button" disabled={busy} on:click={expandDetail}>{busy ? ui(locale,'loading') : ui(locale,'viewMore')}</button>{/if}
+      <button class="text-button" on:click={fallback}>{ui(locale,'viewTable')}</button>
     </div>
   {:else if data}
-    <div class="empty-state compact"><span>◇</span><h3>Renderer indisponible.</h3><p>La projection spécialisée ne peut pas être affichée ici.</p><button class="button" on:click={fallback}>Utiliser le fallback déclaré</button></div>
+    <div class="empty-state compact"><span>◇</span><h3>{ui(locale,'viewRendererUnavailable')}</h3><p>{ui(locale,'viewUnavailableDescription')}</p><button class="button" on:click={fallback}>{ui(locale,'viewFallback')}</button></div>
   {/if}
 </div>

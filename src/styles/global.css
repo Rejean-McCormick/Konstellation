@@ -3045,3 +3045,20 @@ td {
 .language-fallback { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:14px 0; padding:10px 14px; background:#e8f3f2; color:#1e6864; border-left:3px solid #1e6864; border-radius:7px; font-size:.88rem; }
 .language-fallback small { opacity:.8; white-space:nowrap; }
 @media (max-width:850px) { .language-switch { width:auto; } .language-switch select { max-width:145px; } }
+
+/* konstellation-v4-view-labels: keep names readable in adaptive navigator. */
+.view-switch.adaptive-switch {
+  max-width: 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.view-switch.adaptive-switch > button { flex: 0 0 auto; min-height: 36px; }
+.view-switch.adaptive-switch > button > span { display: inline; }
+@media (max-width: 1200px) {
+  .view-switch.adaptive-switch > button > span { display: inline; }
+}

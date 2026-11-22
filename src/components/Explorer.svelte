@@ -4,7 +4,8 @@
   import KompilerPanel from './KompilerPanel.svelte';
   import MyKristals from './MyKristals.svelte';
   import Astrolabe from './Astrolabe.svelte';
-  import { LOCALES, LANGUAGE_NAMES, ui, normalizeLocale, localizedLabel, localizedEntityLabel, hasLocalizedLabel } from '../lib/i18n.mjs';
+  import { uiFinish as ui, localizedRecipeLabel, assertionStatusLabel, localizedCapabilityLabel } from '../lib/i18n-finish.mjs';
+  import { LOCALES, LANGUAGE_NAMES, normalizeLocale, localizedLabel, localizedEntityLabel, hasLocalizedLabel } from '../lib/i18n.mjs';
   import QueryTree from './QueryTree.svelte';
   import { readableCode, readableStatus } from '../lib/semantic-display.mjs';
   import ConstellationView from './ConstellationView.svelte';
@@ -880,7 +881,7 @@
   <header class="topbar">
     <a href="/" class="brand">
       <img src="/brand-logo.svg" alt="" class="brand-logo" aria-hidden="true" />
-      <span>Konstellation<small>DES ÉTOILES POUR S’ORIENTER</small></span>
+      <span>Konstellation<small>{ui(locale,'brandTagline')}</small></span>
     </a>
     <nav aria-label="Navigation principale">
       {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}{#if boot?.v11Available}<a href="/v11">Kristal v11</a>{/if}{#if boot && query && (!selectionRequired || kristal)}<a href="#astrolabe" on:click={openAstrolabe}>Astrolabe</a>{/if}<button
@@ -895,7 +896,7 @@
         {#each LOCALES as language}<option value={language}>{LANGUAGE_NAMES[language]}</option>{/each}
       </select>
     </label>
-    <span class="local-indicator"><i></i> {boot?.principal?.id || (authRequired ? ui(locale,'private') : ui(locale,'loading'))}{#if boot?.principal && boot.principal.id !== 'local-user'} <button class="logout-link" type="button" on:click={signOut}>{ui(locale,'logout')}</button>{/if}</span>
+    <span class="local-indicator"><i></i> {boot?.principal ? ui(locale,'connected') : (authRequired ? ui(locale,'private') : ui(locale,'loading'))}{#if boot?.principal && boot.principal.id !== 'local-user'} <button class="logout-link" type="button" on:click={signOut}>{ui(locale,'logout')}</button>{/if}</span>
   </header>
   {#if (!boot || !query) && !(fleetEnabled && fleetView)}<main class="loading-screen">
       <div class="brand-mark"><img src="/brand-logo.svg" alt="Konstellation" class="loading-logo" /></div>
@@ -905,7 +906,7 @@
          <form class="auth-form" on:submit|preventDefault={signIn}>
           <label>{ui(locale,'authToken')}<input type="password" bind:value={authToken} autocomplete="current-password" required /></label>
           <button class="button primary" type="submit" disabled={loggingIn}>{loggingIn ? ui(locale,'signingIn') : ui(locale,'login')}</button>
-           <small>Connexion mémorisée dans ce navigateur pendant 14 jours, sans conserver le jeton en JavaScript.</small>
+           <small>{ui(locale,'rememberLogin')}</small>
            {#if error}<p role="alert">{error}</p>{/if}
         </form>
       {:else}
@@ -963,23 +964,22 @@
         <small>diK · 14 · NOT_PROVEN_FOR_ALL_14</small>
       </div>{/if}
       {#if error}<div role="alert" class="alert error">
-          <span>{error}</span><button aria-label="Fermer l’erreur" on:click={() => (error = '')}
+          <span>{error}</span><button aria-label={ui(locale,'closeError')} on:click={() => (error = '')}
             >×</button
           >
         </div>{/if}
       {#if notice}<div role="status" class="alert notice">
           <span>{notice}</span><button
-            aria-label="Fermer la notification"
+            aria-label={ui(locale,'closeNotice')}
             on:click={() => (notice = '')}>×</button
           >
         </div>{/if}
       {#if showSource}<section class="utility-panel">
           <div>
-            <h2>Un corpus, des perspectives</h2>
+            <h2>{ui(locale,'aboutCorpusTitle')}</h2>
             <p>{boot.description}</p>
             <p>
-              Les résultats respectent la politique de lecture choisie. Une assertion sourcée n’est
-              pas automatiquement validée. Les sources et statuts restent inspectables.
+              {ui(locale,'aboutCorpusBody')}
             </p>
             <p>
               Adaptateur : {boot.capabilities.packAdapter}. Communication : {boot.communication
@@ -993,23 +993,23 @@
           </div>
           <button
             class="close"
-            aria-label="Fermer les informations"
+            aria-label={ui(locale,'close')}
             on:click={() => (showSource = false)}>×</button
           >
         </section>{/if}
       {#if showSaved}<section class="utility-panel saved-panel">
           <div class="saved-header">
-            <h2>Mes explorations</h2>
-            <p>Enregistrées sur cet appareil. Exportez un fichier pour les conserver ailleurs.</p>
+            <h2>{ui(locale,'saved')}</h2>
+            <p>{ui(locale,'savedHelp')}</p>
             <div class="save-form">
               <input
-                aria-label="Nom de l’exploration"
-                placeholder="Donnez un nom à ce parcours"
+                aria-label={ui(locale,'savedName')}
+                placeholder={ui(locale,'savedNamePlaceholder')}
                 bind:value={saveName}
-              /><button class="button primary" on:click={remember}>Enregistrer ici</button><button
+              /><button class="button primary" on:click={remember}>{ui(locale,'savedHere')}</button><button
                 class="button"
-                on:click={download}>Exporter JSON</button
-              ><button class="button" on:click={() => importInput.click()}>Importer</button><input
+                on:click={download}>{ui(locale,'exportJson')}</button
+              ><button class="button" on:click={() => importInput.click()}>{ui(locale,'import')}</button><input
                 hidden
                 type="file"
                 accept=".json,application/json"
@@ -1020,7 +1020,7 @@
           </div>
           <button
             class="close"
-            aria-label="Fermer les explorations"
+            aria-label={ui(locale,'close')}
             on:click={() => (showSaved = false)}>×</button
           >
           <div class="saved-list">
@@ -1032,7 +1032,7 @@
                 ><button aria-label={'Supprimer ' + item.name} on:click={() => removeSaved(item.id)}
                   >×</button
                 >
-              </div>{:else}<p class="subtle">Vos prochaines pistes commencent ici.</p>{/each}
+              </div>{:else}<p class="subtle">{ui(locale,'savedEmpty')}</p>{/each}
           </div>
         </section>{/if}
       <section class="context-bar" aria-label="Contexte de lecture">
@@ -1079,6 +1079,7 @@
         </div>
       </section>
       <Communication
+        uiLocale={locale}
         {query}
         cursor={currentCursor}
         entityId={selected}
@@ -1101,7 +1102,7 @@
               }}>{ui(locale,'reset')}</button
             >
           </div>
-          <p class="panel-caption">{ui(locale,'filtersDepend')}</p>{#if hiddenEmptyFacets > 0}<p class="hint">{hiddenEmptyFacets} filtre{hiddenEmptyFacets > 1 ? 's' : ''} non pertinent{hiddenEmptyFacets > 1 ? 's' : ''} masqué{hiddenEmptyFacets > 1 ? 's' : ''}.</p>{/if}
+          <p class="panel-caption">{ui(locale,'filtersDepend')}</p>{#if hiddenEmptyFacets > 0}<p class="hint">{hiddenEmptyFacets} {ui(locale,'hiddenFilters')}</p>{/if}
           {#each visibleFacets as facet}
             {@const r = relation(facet.relation)}{@const f = filterFor(
               facet.relation,
@@ -1111,7 +1112,7 @@
                 <h3>{localizedLabel(r.label,locale)}</h3>
                 {#if f}<button
                     class="clear-facet"
-                    aria-label={'Effacer ' + localizedLabel(r.label,locale)}
+                    aria-label={ui(locale,'clear') + ' ' + localizedLabel(r.label,locale)}
                     on:click={() => setFilter(r.id, null)}>×</button
                   >{:else}<span>⌄</span>{/if}
               </div>
@@ -1119,20 +1120,20 @@
                   {boot.capabilities.relations[r.id].reason}
                 </p>
               {:else if r.valueKind === 'interval'}<p class="hint">
-                  Période de vie · chevauchement certain
+                  {ui(locale,'periodHint')}
                 </p>
                 <div class="year-inputs">
                   <label
-                    >De<input
+                    >{ui(locale,'fromYear')}<input
                       type="number"
-                      aria-label="Année de début"
+                      aria-label={ui(locale,'fromYearAria')}
                       bind:value={epochFrom}
                       placeholder="300"
                     /></label
                   ><span>—</span><label
-                    >À<input
+                    >{ui(locale,'toYear')}<input
                       type="number"
-                      aria-label="Année de fin"
+                      aria-label={ui(locale,'toYearAria')}
                       bind:value={epochTo}
                       placeholder="500"
                     /></label
@@ -1143,15 +1144,15 @@
                 >
               {:else}<select
                   class="operator"
-                  aria-label={'Opérateur ' + localizedLabel(r.label,locale)}
+                  aria-label={ui(locale,'operator') + ' ' + localizedLabel(r.label,locale)}
                   value={f?.op || ''}
                   on:change={(e) => changeOperator(r.id, e.target.value)}
                   ><option value="">{ui(locale,'allValues')}</option
                   >{#if r.operators.includes('in')}<option value="in"
-                      >Correspond à une valeur</option
-                    ><option value="none_of">Exclut ces valeurs</option>{/if}<option value="exists"
-                    >Relation renseignée</option
-                  ><option value="missing_in_view">Absente de cette vue</option></select
+                      >{ui(locale,'matchValue')}</option
+                    ><option value="none_of">{ui(locale,'excludeValue')}</option>{/if}<option value="exists"
+                    >{ui(locale,'relationExists')}</option
+                  ><option value="missing_in_view">{ui(locale,'relationMissing')}</option></select
                 >
                 <div class="facet-values">
                   {#each data?.values?.slice(0, 100) || [] as option}{@const checked =
@@ -1165,12 +1166,12 @@
                         >{option.count}</small
                       ></label
                     >{:else}<p class="hint">
-                      {busy ? 'Calcul des facettes…' : 'Aucune valeur dans la sélection.'}
+                      {busy ? ui(locale,'facetLoading') : ui(locale,'facetEmpty')}
                     </p>{/each}
                 </div>
               {/if}
               {#if data?.available}<div class="facet-footer">
-                  <span>{data.present} renseignés</span><span>{data.missing} absents de la vue</span
+                  <span>{data.present} {ui(locale,'present')}</span><span>{data.missing} {ui(locale,'missing')}</span
                   >
                 </div>{/if}
             </section>
@@ -1178,7 +1179,7 @@
           <div class="filter-note">
             <span>◎</span>
             <p>
-              Un filtre absent de la perspective reste actif et visible au-dessus des résultats.
+              {ui(locale,'filterNote')}
             </p>
           </div>
         </aside>
@@ -1186,17 +1187,17 @@
           <div class="journey-toolbar">
             <div class="history-controls">
               <button
-                aria-label="Revenir"
+                aria-label={ui(locale,'undo')}
                 disabled={!history.length || busy}
                 on:click={errorGuard(undo)}>←</button
               ><button
-                aria-label="Rétablir"
+                aria-label={ui(locale,'redo')}
                 disabled={!future.length || busy}
                 on:click={errorGuard(redo)}>→</button
               >
             </div>
             <div class="breadcrumb">
-              <span>Explorer</span><span>/</span><strong
+              <span>{ui(locale,'explorer')}</span><span>/</span><strong
                 >{typeLabel(query.selection.entityType) || query.selection.entityType}</strong
               >{#if query.selection.links.length}<span class="pivot-tag"
                   >via {query.selection.links.length} relation</span
@@ -1207,19 +1208,19 @@
               on:click={() => {
                 showQuery = !showQuery;
                 jsonInput = JSON.stringify(query, null, 2);
-              }}>{showQuery ? 'Masquer' : 'Voir'} la requête ↗</button
+              }}>{showQuery ? ui(locale,'hideQuery') : ui(locale,'viewQuery')} ↗</button
             >
           </div>
           {#if showQuery}<div class="query-panel">
-              <div class="eyebrow">VOTRE PARCOURS</div>
-              <QueryTree selection={query.selection} registry={relations} labels={labelMap} />
+              <div class="eyebrow">{ui(locale,'yourPath')}</div>
+              <QueryTree {locale} selection={query.selection} registry={relations} labels={labelMap} />
               <details>
-                <summary>QuerySpec · inspecter ou modifier</summary><textarea
+                <summary>{ui(locale,'queryInspect')}</summary><textarea
                   aria-label="QuerySpec JSON"
                   value={jsonInput || JSON.stringify(query, null, 2)}
                   on:input={(e) => (jsonInput = e.target.value)}
                   spellcheck="false"></textarea><button class="button" on:click={editQuery}
-                  >Valider et exécuter</button
+                  >{ui(locale,'queryRun')}</button
                 >
               </details>
             </div>{/if}
@@ -1240,7 +1241,7 @@
           <div class="results-heading">
             <div>
               <div class="eyebrow">
-                {query.selection.links.length ? 'UN NOUVEAU POINT DE VUE' : 'VOTRE SÉLECTION'}
+                {query.selection.links.length ? ui(locale,'newPerspective') : ui(locale,'mySelection')}
               </div>
               <h2>
                 {typeLabel(query.selection.entityType) || query.selection.entityType}<span
@@ -1257,7 +1258,7 @@
                     class:recommended={navigationPlan.primaryRecipeId === item.id && navigationRecipe !== item.id}
                     aria-pressed={navigationRecipe === item.id}
                     title={item.reason || item.description}
-                    on:click={() => applyNavigationRecipe(item, true)}>{item.icon} <span>{item.label}</span></button
+                    on:click={() => applyNavigationRecipe(item, true)}>{item.icon} <span>{localizedRecipeLabel(item,locale)}</span></button
                   >
                 {/each}
               {:else}
@@ -1269,9 +1270,9 @@
           </div>
           {#if navigationPlan}
             <div class="navigation-signals" aria-label="Affordances structurelles détectées">
-              <span class="navigation-mode">✦ Navigation adaptative · affordances</span>
+              <span class="navigation-mode">✦ {ui(locale,'navigationAdaptive')}</span>
               {#each navigationCapabilities as capability}
-                <span class="capability-chip" title={(capability[1].evidence || []).join(' · ')}>{capabilityLabel(capability[0])}</span>
+                <span class="capability-chip" title={(capability[1].evidence || []).join(' · ')}>{localizedCapabilityLabel(capability[0], locale) || capabilityLabel(capability[0])}</span>
               {/each}
               {#if currentNavigationView?.reason}<small>{currentNavigationView.reason}</small>{/if}
             </div>
@@ -1291,9 +1292,7 @@
                 if (e.target.value) pivot(e.target.value, selectedIds.length ? selectedIds : null);
               }}
               ><option value=""
-                >Explorer {selectedIds.length
-                  ? selectedIds.length + ' sélectionnés'
-                  : 'toute la sélection'} →</option
+                >{selectedIds.length ? ui(locale,'explorer') + ' ' + selectedIds.length + ' ' + ui(locale,'selectedEntities') : ui(locale,'exploreAll')} →</option
               >{#each pivots.filter((r) => r.inverseOf) as r}<option value={r.id}
                   >{localizedLabel(r.label,locale)}</option
                 >{/each}</select
@@ -1302,8 +1301,8 @@
           {#if search.trim()}
             <div class="catalog-search-results" aria-live="polite">
               <div class="catalog-search-head">
-                <strong>Dans tout le corpus</strong>
-                <span>{catalogMatchTotal} résultat{catalogMatchTotal > 1 ? 's' : ''}</span>
+                <strong>{ui(locale,'allCorpus')}</strong>
+                <span>{catalogMatchTotal} {ui(locale,'searchResult')}</span>
               </div>
               {#if catalogMatches.length}
                 <div class="catalog-search-grid">
@@ -1316,24 +1315,24 @@
                   {/each}
                 </div>
               {:else}
-                <p>Aucune entité du corpus ne correspond à « {search} ».</p>
+                <p>{ui(locale,'noSearchMatch')} « {search} ».</p>
               {/if}
             </div>
           {/if}
           {#if selectedIds.length}<div class="selection-bar">
-              {selectedIds.length} entités cochées
-              <button on:click={() => (selectedIds = [])}>Tout désélectionner</button>
+              {selectedIds.length} {ui(locale,'selectedEntities')}
+              <button on:click={() => (selectedIds = [])}>{ui(locale,'deselectAll')}</button>
             </div>{/if}
           <div class="results-body" aria-busy={busy}>
             {#if !result && !busy}<div class="empty-state">
                 <span>◎</span>
-                <h3>La sélection n’a pas pu être évaluée.</h3>
-                <p>Corrigez la requête ou restaurez un contexte disponible.</p>
+                <h3>{ui(locale,'evaluationFailed')}</h3>
+                <p>{ui(locale,'evaluationHelp')}</p>
               </div>
             {:else if result && rows.length === 0}<div class="empty-state">
                 <span>◌</span>
-                <h3>Aucune correspondance dans cette vue.</h3>
-                <p>Essayez d’élargir un filtre ou de changer la politique de lecture.</p>
+                <h3>{ui(locale,'noViewMatch')}</h3>
+                <p>{ui(locale,'noViewHelp')}</p>
               </div>
             {:else if view === 'adaptive' && currentNavigationView}<AdaptiveProjectionView
                 {locale}
@@ -1364,7 +1363,7 @@
                 <table>
                   <thead
                     ><tr
-                      ><th>Entité</th><th>Type</th><th>Témoins de filtre</th><th>Inspecter</th></tr
+                      ><th>{ui(locale,'entity')}</th><th>{ui(locale,'type')}</th><th>{ui(locale,'filterWitnesses')}</th><th>{ui(locale,'inspector')}</th></tr
                     ></thead
                   ><tbody
                     >{#each rows as row}<tr class:selected={selected === row.entityId}
@@ -1372,7 +1371,7 @@
                           >{typeLabel(query.selection.entityType)}</td
                         ><td>{row.witnesses.length}</td><td
                           ><button class="text-button" on:click={() => inspect(row.entityId)}
-                            >Sources →</button
+                            >{ui(locale,'sources')} →</button
                           ></td
                         ></tr
                       >{/each}</tbody
@@ -1406,7 +1405,7 @@
                       <span
                         >{row.witnesses.length
                           ? row.witnesses.length + ' témoin' + (row.witnesses.length > 1 ? 's' : '')
-                          : 'Dans le catalogue'}</span
+                          : ui(locale,'inCatalog')}</span
                       ><button
                         aria-label={'Inspecter ' + (labelMap[row.entityId] || entity?.label)}
                         on:click={() => inspect(row.entityId)}>↗</button
@@ -1417,7 +1416,7 @@
           </div>
           <footer class="results-footer">
             <span
-              >{rows.length} affichés sur {result?.total.value ?? '—'} · ordre stable par identifiant</span
+              >{rows.length} {ui(locale,'shown')} {ui(locale,'outOf')} {result?.total.value ?? '—'} · {ui(locale,'stableOrder')}</span
             >
             <div>
               <button
@@ -1440,7 +1439,7 @@
         </section>
         {#if selected}<aside class="inspector" aria-label="Inspecteur d’entité">
             <div class="panel-heading">
-              <span class="eyebrow">REGARDER DE PLUS PRÈS</span><button
+              <span class="eyebrow">{ui(locale,'closerLook')}</span><button
                 class="close"
                 aria-label="Fermer l’inspecteur"
                 on:click={resetDetail}>×</button
@@ -1474,13 +1473,13 @@
                           : 'Une assertion documentée soutient cette correspondance.'}
                       </p>{/if}{/each}
                 </details>{/if}
-              <h3>Assertions visibles <span>{detail.assertions.length}</span></h3>
-              <p class="hint">Chaque statut décrit une assertion, pas la personne entière.</p>
+              <h3>{ui(locale,'visibleAssertions')} <span>{detail.assertions.length}</span></h3>
+              <p class="hint">{ui(locale,'statusScope')}</p>
               {#each detail.assertions as a}<div class="assertion-card">
                   <div class="assertion-heading">
                     <span>{localizedLabel(relation(a.payload.relation)?.label,locale)}</span><span
                       class:disputed={a.payload.status === 'disputed'}
-                      class="status-pill">{statusLabels[a.payload.status] || readableStatus(a.payload.status)}</span
+                      class="status-pill">{assertionStatusLabel(a.payload.status,locale,statusLabels[a.payload.status] || readableStatus(a.payload.status))}</span
                     >
                   </div>
                   <strong
@@ -1488,41 +1487,41 @@
                       ? humanValue(a.payload)
                       : labelMap[a.payload.subject]}</strong
                   ><small
-                    >Certitude : {readableStatus(a.payload.certainty)} · Validation : {readableStatus(a.payload.validationStatus)}</small
+                    >{ui(locale,'certainty')} : {readableStatus(a.payload.certainty)} · {ui(locale,'validation')} : {readableStatus(a.payload.validationStatus)}</small
                   >{#if a.payload.conflictsWith?.length}<p class="conflict-note">
                       Une divergence est présente dans cette vue.
                     </p>{/if}
                   <details>
-                    <summary>Provenance et détails techniques</summary>
-                    {#if a.payload.originalPredicate}<p>Propriété source : <code>{a.payload.originalPredicate}</code></p>{/if}
-                    {#if a.payload.sourceEdgeId}<p>Relation source : <code>{a.payload.sourceEdgeId}</code></p>{/if}
-                    <p>Autorité : {readableStatus(a.payload.authority)}</p>
+                    <summary>{ui(locale,'provenanceDetails')}</summary>
+                    {#if a.payload.originalPredicate}<p>{ui(locale,'sourceProperty')} : <code>{a.payload.originalPredicate}</code></p>{/if}
+                    {#if a.payload.sourceEdgeId}<p>{ui(locale,'sourceRelation')} : <code>{a.payload.sourceEdgeId}</code></p>{/if}
+                    <p>{ui(locale,'authority')} : {readableStatus(a.payload.authority)}</p>
                     {#if a.payload.scope}<dl class="detail-list scope-list">
                         {#each Object.entries(a.payload.scope) as [key, value]}<div><dt>{scopeLabels[key] || key.replaceAll('_', ' ')}</dt><dd>{readableStatus(value)}</dd></div>{/each}
                       </dl>{/if}
-                    <p>Validée comme : {readableStatus(a.payload.validatedAs)}</p>
+                    <p>{ui(locale,'validatedAs')} : {readableStatus(a.payload.validatedAs)}</p>
                     {#if a.payload.recognitionStatus}<p>
-                        Reconnaissance : {readableStatus(a.payload.recognitionStatus)}
+                        {ui(locale,'recognition')} : {readableStatus(a.payload.recognitionStatus)}
                       </p>{/if}
                     {#if a.payload.artifactStatus}<p>
-                        Statut du corpus : {readableStatus(a.payload.artifactStatus)}
+                        {ui(locale,'corpusStatus')} : {readableStatus(a.payload.artifactStatus)}
                       </p>{/if}
                     {#each a.payload.readerLabels || [] as label}<p>{label}</p>{/each}
                     {#if a.payload.qualifiers?.length}<dl class="detail-list qualifier-list">
                         {#each a.payload.qualifiers as qualifier}<div><dt>{qualifierLabel(qualifier)}</dt><dd>{qualifierValue(qualifier)}</dd></div>{/each}
                       </dl>{/if}
-                    {#if a.payload.lineage}<p>Lignée technique : {JSON.stringify(a.payload.lineage)}</p>{/if}
+                    {#if a.payload.lineage}<p>{ui(locale,'technicalLineage')} : {JSON.stringify(a.payload.lineage)}</p>{/if}
                     {#each a.payload.sourceRefs as sid}<p class="source-ref">
                         ↗ {sourceTitle(sid)}
                       </p>{/each}{#if a.payload.ruleRef && !isOpaqueRef(a.payload.ruleRef)}<p>
-                        Dérivation : {a.payload.ruleRef}
+                        {ui(locale,'derivation')} : {a.payload.ruleRef}
                       </p>{/if}
                   </details>
-                </div>{:else}<p>Aucune assertion visible sous cette politique.</p>{/each}{/if}
+                </div>{:else}<p>{ui(locale,'noVisibleAssertion')}</p>{/each}{/if}
           </aside>{/if}
       </div>
       <footer class="page-footer">
-        <span class="footer-brand"><img src="/brand-logo.svg" alt="" aria-hidden="true" />Relier. Comprendre. Explorer.</span><span>Requêtes explicites · Sources préservées · v0.5</span>
+        <span class="footer-brand"><img src="/brand-logo.svg" alt="" aria-hidden="true" />{ui(locale,'footerBrand')}</span><span>{ui(locale,'footerDetails')} · v0.5</span>
       </footer>
       </div>{/if}
     </main>

@@ -1,6 +1,7 @@
 <script>
   import { normalizeTerm, rankOrientation, readableCode } from '../lib/semantic-display.mjs';
-  import { ui, localizedEntityLabel } from '../lib/i18n.mjs';
+  import { localizedEntityLabel } from '../lib/i18n.mjs';
+  import { uiFinish as ui } from '../lib/i18n-finish.mjs';
   export let locale = 'fr';
   export let entities = [];
   export let corpusTitle = '';
@@ -26,9 +27,9 @@
   <div class="astrolabe-orbit" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="astrolabe-star">✦</span></div>
   <div class="astrolabe-copy"><div class="eyebrow">ASTROLABE</div><h2 id="astrolabe-title">{ui(locale,'astrolabeTitle')}</h2><p>{ui(locale,'astrolabeDescription')} — {corpusTitle}</p>
     <form class="astrolabe-search" on:submit|preventDefault={submit}><span aria-hidden="true">⌖</span><input data-testid="astrolabe-search" aria-label={locale === 'fr' ? 'Orienter l’Astrolabe' : ui(locale,'astrolabeSearch')} bind:value={term} placeholder={examples.length?`Ex. ${examples.slice(0,3).join(', ')}…`:ui(locale,'astrolabeSearch')+'…'} autocomplete="off"/><button class="button primary" type="submit" disabled={!results.length}>{ui(locale,'astrolabeAction')} →</button></form>
-    <div class="astrolabe-examples" aria-label="Exemples de mots-clés">{#each examples as example}<button class:active={normalize(term)===normalize(example)} on:click={()=>term=example}>{example}</button>{/each}<button class="surprise" on:click={surprise}>✦ {ui(locale,'astrolabeSurprise')}</button></div>
+    <div class="astrolabe-examples" aria-label={ui(locale,'astrolabeExamples')}>{#each examples as example}<button class:active={normalize(term)===normalize(example)} on:click={()=>term=example}>{example}</button>{/each}<button class="surprise" on:click={surprise}>✦ {ui(locale,'astrolabeSurprise')}</button></div>
   </div>
-  {#if term.trim()}<div class="astrolabe-reading" data-testid="astrolabe-reading" aria-live="polite"><div class="astrolabe-reading-head"><div><small>LECTURE DE L’ASTROLABE</small><strong>{term}</strong></div><span class:direct={results.length} class:empty={!results.length} class="astrolabe-status">{results.length} piste{results.length>1?'s':''} affichée{results.length>1?'s':''}</span></div>
-    {#if results.length}<div class="astrolabe-caps" data-testid="astrolabe-caps">{#each results.slice(0,12) as item}<button class="astrolabe-cap" data-entity-id={item.entity.id} data-entity-type={item.entity.type} on:click={()=>onNavigate(item.entity)}><span class="cap-mark" aria-hidden="true">✦</span><span class="cap-copy"><small>Correspondance · {humanize(item.entity.type)}</small><strong>{localizedEntityLabel(item.entity,locale)}</strong>{#if item.entity.description}<em>{item.entity.description}</em>{/if}</span><span class="cap-arrow" aria-hidden="true">→</span></button>{/each}</div>{:else}<p class="astrolabe-note">{ui(locale,'astrolabeNoResults')}</p>{/if}
+  {#if term.trim()}<div class="astrolabe-reading" data-testid="astrolabe-reading" aria-live="polite"><div class="astrolabe-reading-head"><div><small>{ui(locale,'astrolabeReading')}</small><strong>{term}</strong></div><span class:direct={results.length} class:empty={!results.length} class="astrolabe-status">{results.length} {ui(locale,'astrolabeTracks')}</span></div>
+    {#if results.length}<div class="astrolabe-caps" data-testid="astrolabe-caps">{#each results.slice(0,12) as item}<button class="astrolabe-cap" data-entity-id={item.entity.id} data-entity-type={item.entity.type} on:click={()=>onNavigate(item.entity)}><span class="cap-mark" aria-hidden="true">✦</span><span class="cap-copy"><small>{ui(locale,'astrolabeMatch')} · {humanize(item.entity.type)}</small><strong>{localizedEntityLabel(item.entity,locale)}</strong>{#if item.entity.description}<em>{item.entity.description}</em>{/if}</span><span class="cap-arrow" aria-hidden="true">→</span></button>{/each}</div>{:else}<p class="astrolabe-note">{ui(locale,'astrolabeNoResults')}</p>{/if}
   </div>{/if}
 </section>

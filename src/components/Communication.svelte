@@ -1,4 +1,6 @@
 <script>
+  import { uiFinish as ui } from '../lib/i18n-finish.mjs';
+  export let uiLocale = 'fr';
   export let query;
   export let cursor = null;
   export let entityId = null;
@@ -61,22 +63,22 @@
 </script>
 
 <details class="communication">
-  <summary>Expliquer cette exploration</summary>
+  <summary>{ui(uiLocale,'communicationTitle')}</summary>
   <p>
-    La communication conserve les critères, le contexte de lecture et les statuts des assertions.
+    {ui(uiLocale,'communicationHelp')}
   </p>
   <div class="controls">
     <label
-      >Portée<select aria-label="Portée de communication" bind:value={action}
-        ><option value="query">Les critères</option><option value="page">La page affichée</option
-        ><option value="entity" disabled={!entityId}>L’entité inspectée</option></select
+      >{ui(uiLocale,'communicationScope')}<select aria-label={ui(uiLocale,'communicationScope')} bind:value={action}
+        ><option value="query">{ui(uiLocale,'communicationCriteria')}</option><option value="page">{ui(uiLocale,'communicationPage')}</option
+        ><option value="entity" disabled={!entityId}>{ui(uiLocale,'communicationEntity')}</option></select
       ></label
     >
-    <label>Langue<input aria-label="Langue de communication" bind:value={language} /></label>
+    <label>{ui(uiLocale,'language')}<input aria-label="Langue de communication" bind:value={language} /></label>
     <label>Locale<input aria-label="Locale de communication" bind:value={locale} /></label>
     <button
       disabled={busy || disabled || (action === 'entity' && !entityId)}
-      on:click={() => communicate(false)}>Préparer la requête</button
+      on:click={() => communicate(false)}>{ui(uiLocale,'communicationPrepare')}</button
     >
     <button
       disabled={busy ||
@@ -84,18 +86,18 @@
         !capabilities?.available ||
         !capabilities?.languages?.includes(language) ||
         (action === 'entity' && !entityId)}
-      on:click={() => communicate(true)}>Formuler avec SA</button
+      on:click={() => communicate(true)}>{ui(uiLocale,'communicationRender')}</button
     >
   </div>
   {#if !capabilities?.available}<p>
       {capabilities?.reason ||
-        'Aucun service SA configuré. La requête structurée peut être exportée.'}
+        ui(uiLocale,'communicationNotConfigured')}
     </p>{/if}
-  {#if busy}<p role="status">Communication en cours…</p>{/if}
+  {#if busy}<p role="status">{ui(uiLocale,'communicationBusy')}</p>{/if}
   {#if error}<p role="alert">{error}</p>{/if}
-  {#if request}<button on:click={download}>Exporter CommunicationRequest</button>
+  {#if request}<button on:click={download}>{ui(uiLocale,'communicationExport')}</button>
     <details>
-      <summary>Voir la requête structurée</summary>
+      <summary>{ui(uiLocale,'communicationView')}</summary>
       <pre>{JSON.stringify(request, null, 2)}</pre>
     </details>{/if}
   {#if result}<section aria-label="Formulation SA">
@@ -113,7 +115,7 @@
         >Runtime : {result.runtime.runtime_set_id} · {result.coverage.length} obligations couvertes</small
       >
       {#if visibleSourceRefs.length}<details>
-        <summary>Références communiquées</summary>
+        <summary>{ui(uiLocale,'communicationReferences')}</summary>
         <ul>
           {#each visibleSourceRefs as ref}<li>{ref}</li>{/each}
         </ul>
