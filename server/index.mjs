@@ -55,7 +55,7 @@ async function body(req, maxBytes = 65536) {
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { fail('INVALID_QUERY', 'JSON invalide.'); }
 }
 
-const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.json':'application/json; charset=utf-8','.png':'image/png','.ico':'image/x-icon','.woff2':'font/woff2'};
+const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.json':'application/json; charset=utf-8','.png':'image/png','.ico':'image/x-icon','.woff2':'font/woff2'};
 
 function rateLimiter(limit) {
   const windows = new Map();
