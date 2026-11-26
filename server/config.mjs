@@ -27,6 +27,7 @@ export function loadConfig(env = process.env) {
   return {
     deploymentProfile, host, port, anonymousReadonly, authPrincipals, localPrincipal,
     allowedHosts, rateLimitPerMinute, exposeCorpusIdentity, devOrigin: env.KONSTELLATION_DEV_ORIGIN || null,
+    koreographEnabled: deploymentProfile === 'local' && ['127.0.0.1','::1','localhost'].includes(host) && env.KONSTELLATION_ENABLE_KOREOGRAPH === 'true',
     fleetEnabled: deploymentProfile === 'local' && ['127.0.0.1','::1','localhost'].includes(host) && env.KONSTELLATION_ENABLE_MY_KRISTALS === 'true',
     fleetExportFile: deploymentProfile === 'local' ? (env.KONSTELLATION_FLEET_EXPORT || null) : null,
     fleetPolicyFile: deploymentProfile === 'local' ? (env.KONSTELLATION_FLEET_POLICY || null) : null,

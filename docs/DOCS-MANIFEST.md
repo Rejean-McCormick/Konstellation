@@ -97,3 +97,8 @@ Toute modification de contrat, affordance, recette, renderer ou invariant doit m
 4. un ADR si la décision est structurante ;
 5. les golden tests ;
 6. `CHANGELOG.md`.
+
+## Koreograph
+
+- [Koreograph](koreograph/README.md) — design, schemas and examples.
+- [Local implementation](koreograph/ETAT-IMPLEMENTATION.md) — activation, operations and scope.

@@ -220,7 +220,7 @@ export function createServer({
           // scope() validates the requested policy before any registry/Lens metadata is exposed.
           requestEngine.scope(bootContext);
           const communication=await semantik.capabilities(); const bootStart=performance.now(); const boot=requestEngine.bootstrap(requestLenses,bootContext); observe('bootstrap_duration_ms',performance.now()-bootStart); boot.capabilities.sa=communication.available;
-          return send(url.pathname==='/api/bootstrap'?{...boot,communication,kristal:selectedKristal,v11Available:config.deploymentProfile==='local'&&Boolean(v11Reader?.principals?.has(principal.id)),principal:{id:principal.id,roles:principal.roles,scopes:principal.scopes}}:{...boot.capabilities,communication});
+          return send(url.pathname==='/api/bootstrap'?{...boot,communication,kristal:selectedKristal,...(config.koreographEnabled?{koreographAvailable:true,koreographRevision:config.exposeCorpusIdentity?requestEngine.pack.integration?.declaredStateCommitment?.digest||null:null}:{}),v11Available:config.deploymentProfile==='local'&&Boolean(v11Reader?.principals?.has(principal.id)),principal:{id:principal.id,roles:principal.roles,scopes:principal.scopes}}:{...boot.capabilities,communication});
         }
         if(req.method!=='POST') fail('NOT_FOUND','Endpoint introuvable.',404);
         if(url.pathname.startsWith('/api/sa')) requireScope(principal,'sa'); else requireScope(principal,'read');

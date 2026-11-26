@@ -1,5 +1,6 @@
 <script>
   import { uiFinish as ui } from '../lib/i18n-finish.mjs';
+  import KoreographPanel from './KoreographPanel.svelte';
   import { onDestroy, tick } from 'svelte';
   import { layoutConstellation, splitLabel } from '../lib/constellation/layout.js';
   import { portraitFor, orbitPreview } from '../lib/constellation/profile.mjs';
@@ -15,6 +16,27 @@
   export let inspect = () => {};
   export let authToken = '';
   export let kristal = '';
+  export let koreographEnabled = false;
+  export let koreographPrincipal = '';
+  export let koreographRevision = null;
+  export let koreographRequest = null;
+  let koreographVisit = null;
+  let koreographGeneration = 0;
+  let koreographScope = null;
+  $: resetKoreograph(context, lensRef, kristal, authToken, koreographPrincipal, koreographEnabled, koreographRevision);
+  function resetKoreograph(context, lens, kristal, token, principal, enabled, revision) {
+    // The dependency on the live token invalidates state. No credential enters a Score.
+    koreographGeneration += 1;
+    koreographVisit = null;
+    koreographScope = enabled && context && lens ? {
+      source: { ...context, lensRef: lens, ...(kristal ? { kristalRef: kristal } : {}) },
+      generation: koreographGeneration, revision,
+    } : null;
+  }
+  const koreographReader = {
+    currentContext: () => koreographScope,
+    constellation: (target, density, signal) => koreographRequest(target, density, signal),
+  };
 
   const VIEW_WIDTH = 1000;
   const VIEW_HEIGHT = 620;
@@ -52,7 +74,7 @@
     clearPreview();
   }
   $: requestKey = current
-    ? JSON.stringify({ context, lensRef, focus: current.focus, groupId: current.groupId, limit, kristal, authToken })
+    ? JSON.stringify({ context, lensRef, focus: current.focus, groupId: current.groupId, limit, kristal, authToken, ...(koreographScope ? { generation: koreographScope.generation } : {}) })
     : '';
   $: if (requestKey && requestKey !== requestedKey) load(requestKey, path.length);
 
@@ -92,10 +114,12 @@
     controller?.abort();
     requestedKey = key;
     controller = new AbortController();
+    const active = controller;
+    const generation = koreographGeneration;
     busy = true;
     error = '';
     try {
-      const { kristal: _kristal, authToken: _authToken, ...payload } = JSON.parse(key);
+      const { kristal: _kristal, authToken: _authToken, generation: _generation, ...payload } = JSON.parse(key);
       const response = await fetch('/api/constellation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}), ...(kristal ? { 'X-Konstellation-Kristal': kristal } : {}) },
@@ -104,16 +128,17 @@
       });
       const value = await response.json();
       if (!response.ok) throw Error(value.error?.message || 'Constellation indisponible.');
-      if (requestedKey === key) {
+      if (requestedKey === key && controller === active && !active.signal.aborted) {
+        if (koreographEnabled && generation === koreographGeneration) koreographVisit = value;
         data = value;
         resolvedKey = key;
         resolvedPathDepth = depth;
         resolvedCenterKey = JSON.stringify({ focus: payload.focus, groupId: payload.groupId });
       }
     } catch (e) {
-      if (e.name !== 'AbortError' && requestedKey === key) error = e.message;
+      if (e.name !== 'AbortError' && requestedKey === key && controller === active) error = e.message;
     } finally {
-      if (requestedKey === key) busy = false;
+      if (requestedKey === key && controller === active) busy = false;
     }
   }
 
@@ -210,6 +235,7 @@
       busy = false;
       error = '';
       data = rootModel;
+      koreographVisit = null;
       return;
     }
 
@@ -387,3 +413,9 @@
     {#if !current}<p class="hint constellation-hint">{ui(locale,'constellationHint')}</p>{/if}
   {/if}
 </div>
+
+{#if koreographScope}
+  {#key koreographScope.generation}
+    <KoreographPanel {locale} visit={koreographVisit} available={!busy && !error && Boolean(current)} reader={koreographReader} />
+  {/key}
+{/if}

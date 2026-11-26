@@ -51,6 +51,11 @@ This directory is the **repository documentation index**. Read the [documentatio
 
 Historical reports are retained for traceability. They do **not** override the current code, contracts or validation gates.
 
+## Koreograph
+
+- [Local replay and export guide](koreograph/ETAT-IMPLEMENTATION.md)
+- [Design and contracts](koreograph/README.md)
+
 ## Architectural decisions and role guides
 
 - [ADRs](adr/README.md): ADR-0005 to ADR-0010

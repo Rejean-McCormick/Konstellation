@@ -1,0 +1,142 @@
+{
+  "format": "koreograph.bundle/0.1",
+  "title": "Conscience → Identité — illustration non compilée",
+  "locale": "fr",
+  "provenance": {
+    "source": {
+      "datasetRef": "demo:synthetic",
+      "registryRef": "demo:registry",
+      "readerPolicyRef": "demo:policy",
+      "executionProfileRef": "demo:execution",
+      "lensRef": "demo:lens"
+    },
+    "konstellationVersion": "example-only",
+    "compilerVersion": "not-implemented",
+    "adapterVersion": "not-implemented",
+    "derived": true,
+    "authoritative": false,
+    "publicationAuthorized": false
+  },
+  "viewport": {
+    "width": 1600,
+    "height": 900,
+    "aspectRatio": "16:9"
+  },
+  "durationMs": 4400,
+  "scenes": [
+    {
+      "id": "s1",
+      "focusKey": "demo:conscience",
+      "objects": [
+        {
+          "key": "demo:conscience",
+          "label": "Conscience",
+          "role": "center",
+          "kind": "entity",
+          "x": 800,
+          "y": 450,
+          "radius": 55,
+          "opacity": 1
+        },
+        {
+          "key": "demo:identite",
+          "label": "Identité",
+          "role": "satellite",
+          "kind": "entity",
+          "x": 1250,
+          "y": 300,
+          "radius": 32,
+          "opacity": 1
+        }
+      ],
+      "links": [
+        {
+          "key": "conscience-identite",
+          "from": "demo:conscience",
+          "to": "demo:identite",
+          "kind": "navigation"
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "id": "s2",
+      "focusKey": "demo:identite",
+      "objects": [
+        {
+          "key": "demo:identite",
+          "label": "Identité",
+          "role": "center",
+          "kind": "entity",
+          "x": 800,
+          "y": 450,
+          "radius": 55,
+          "opacity": 1
+        },
+        {
+          "key": "demo:conscience",
+          "label": "Conscience",
+          "role": "satellite",
+          "kind": "entity",
+          "x": 350,
+          "y": 300,
+          "radius": 32,
+          "opacity": 1
+        },
+        {
+          "key": "demo:memoire",
+          "label": "Mémoire",
+          "role": "satellite",
+          "kind": "entity",
+          "x": 1250,
+          "y": 550,
+          "radius": 32,
+          "opacity": 1
+        }
+      ],
+      "links": [
+        {
+          "key": "identite-conscience",
+          "from": "demo:identite",
+          "to": "demo:conscience",
+          "kind": "navigation"
+        },
+        {
+          "key": "identite-memoire",
+          "from": "demo:identite",
+          "to": "demo:memoire",
+          "kind": "navigation"
+        }
+      ],
+      "truncated": false
+    }
+  ],
+  "segments": [
+    {
+      "fromScene": "s1",
+      "toScene": "s1",
+      "startMs": 0,
+      "endMs": 1200,
+      "primitive": "hold",
+      "easing": "linear"
+    },
+    {
+      "fromScene": "s1",
+      "toScene": "s2",
+      "startMs": 1200,
+      "endMs": 2600,
+      "primitive": "focus",
+      "easing": "smoothstep"
+    },
+    {
+      "fromScene": "s2",
+      "toScene": "s2",
+      "startMs": 2600,
+      "endMs": 4400,
+      "primitive": "hold",
+      "easing": "linear"
+    }
+  ],
+  "warnings": [],
+  "style": "cinematic"
+}

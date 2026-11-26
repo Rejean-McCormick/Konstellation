@@ -1,0 +1,369 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:koreograph:draft:bundle:0.1",
+  "title": "Koreograph Bundle 0.1 — draft",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "koreograph.bundle/0.1"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "locale": {
+      "enum": [
+        "fr",
+        "en"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "datasetRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "registryRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "readerPolicyRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "executionProfileRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "lensRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "kristalRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "datasetRef",
+            "registryRef",
+            "readerPolicyRef",
+            "executionProfileRef",
+            "lensRef"
+          ]
+        },
+        "konstellationVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "compilerVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "adapterVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "derived": {
+          "const": true
+        },
+        "authoritative": {
+          "const": false
+        },
+        "publicationAuthorized": {
+          "const": false
+        }
+      },
+      "required": [
+        "source",
+        "konstellationVersion",
+        "compilerVersion",
+        "adapterVersion",
+        "derived",
+        "authoritative",
+        "publicationAuthorized"
+      ]
+    },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 320,
+          "maximum": 3840
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 320,
+          "maximum": 3840
+        },
+        "aspectRatio": {
+          "enum": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ]
+        }
+      },
+      "required": [
+        "width",
+        "height",
+        "aspectRatio"
+      ]
+    },
+    "durationMs": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 120000
+    },
+    "specialization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter", "status", "assertionRefs"],
+      "properties": {
+        "adapter": { "enum": ["traceability/1", "tree/1", "causal-feedback/1", "timeline-lineage/1", "dag-proof/1", "flow-path/1", "matrix-profile/1", "state-flow/1", "multiscale-layer/1", "spatial/1"] },
+        "sign": { "type": "integer", "enum": [-1, 0, 1] },
+        "status": { "enum": ["qualified", "partial", "unqualified", "refused"] },
+        "assertionRefs": {
+          "type": "array", "maxItems": 16, "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 2200 }
+        }
+      }
+    },
+    "scenes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "focusKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "objects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "role": {
+                  "enum": [
+                    "center",
+                    "satellite"
+                  ]
+                },
+                "kind": {
+                  "enum": [
+                    "entity",
+                    "source",
+                    "concept",
+                    "value",
+                    "group"
+                  ]
+                },
+                "x": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 3840
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 3840
+                },
+                "radius": {
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "opacity": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "key",
+                "label",
+                "role",
+                "kind",
+                "x",
+                "y",
+                "radius",
+                "opacity"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 11
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "from": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "to": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "kind": {
+                  "const": "navigation"
+                }
+              },
+              "required": [
+                "key",
+                "from",
+                "to",
+                "kind"
+              ]
+            },
+            "minItems": 0,
+            "maxItems": 10
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "focusKey",
+          "objects",
+          "links",
+          "truncated"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 24
+    },
+    "segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fromScene": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "toScene": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "startMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 120000
+          },
+          "endMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120000
+          },
+          "primitive": {
+            "enum": [
+              "focus",
+              "reveal",
+              "hold",
+              "fade"
+            ]
+          },
+          "easing": {
+            "enum": [
+              "linear",
+              "smoothstep"
+            ]
+          }
+        },
+        "required": [
+          "fromScene",
+          "toScene",
+          "startMs",
+          "endMs",
+          "primitive",
+          "easing"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 48
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "SOURCE_TRUNCATED",
+          "PRESENTATION_TRUNCATED",
+          "EARLY_STOP",
+          "NEUTRAL_FADE"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 12
+    },
+    "style": {
+      "enum": [
+        "minimal",
+        "cinematic",
+        "didactic"
+      ]
+    }
+  },
+  "required": [
+    "format",
+    "title",
+    "locale",
+    "provenance",
+    "viewport",
+    "durationMs",
+    "scenes",
+    "segments",
+    "warnings",
+    "style"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "format": "koreograph.score/0.1",
+  "title": "Explorer la conscience — exemple fictif",
+  "locale": "fr",
+  "source": {
+    "datasetRef": "demo:synthetic",
+    "registryRef": "demo:registry",
+    "readerPolicyRef": "demo:policy",
+    "executionProfileRef": "demo:execution",
+    "lensRef": "demo:lens"
+  },
+  "presentation": {
+    "style": "cinematic",
+    "durationMs": "auto",
+    "aspectRatio": "16:9",
+    "density": 5
+  },
+  "mode": "script",
+  "steps": [
+    {
+      "action": "focus",
+      "target": {
+        "focus": {
+          "kind": "entity",
+          "id": "demo:conscience"
+        },
+        "groupId": null
+      }
+    },
+    {
+      "action": "reveal",
+      "limit": 3
+    },
+    {
+      "action": "follow",
+      "target": {
+        "focus": {
+          "kind": "entity",
+          "id": "demo:identite"
+        },
+        "groupId": null
+      }
+    },
+    {
+      "action": "hold",
+      "durationMs": 1800
+    },
+    {
+      "action": "follow",
+      "target": {
+        "focus": {
+          "kind": "entity",
+          "id": "demo:memoire"
+        },
+        "groupId": null
+      }
+    }
+  ]
+}

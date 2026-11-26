@@ -1343,6 +1343,8 @@
                 selectedEntityId={selected}
                 inspect={(id) => inspect(id)}
                 fallback={fallbackAdaptive}
+                koreographEnabled={boot?.koreographAvailable === true}
+                koreographRevision={boot?.koreographRevision || null}
                 {authToken}
                 {kristal}
               />
@@ -1356,6 +1358,10 @@
                 lensRef={lensId}
                 bind:path={constellationPath}
                 bind:limit={satelliteLimit}
+                koreographEnabled={boot?.koreographAvailable === true}
+                koreographPrincipal={boot?.principal?.id ?? ''}
+                koreographRevision={boot?.koreographRevision || null}
+                koreographRequest={(target, density, signal) => api('constellation', { context: query.context, lensRef: lensId, ...target, limit: density }, signal)}
                 inspect={(id) => inspect(id)}
                 {authToken}
                 {kristal}

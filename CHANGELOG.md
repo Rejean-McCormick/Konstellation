@@ -1,3 +1,8 @@
+## Unreleased — Koreograph local preview
+
+- Add optional replay in Constellation with Script, Kapture, Auto and private SVG, HTML, PNG and video exports.
+- Add traceability, hierarchy and causality projection adapters with exact witness checks and a neutral fallback.
+
 ## 2026-10-27 — v11 local reader opt-in preview (post RC2)
 
 - Lecteur Framework v11 isolé, validateur officiel épinglé, UI `/v11` et API local-only; KQ/KP/KA/KS et couverture lexicale préservées.

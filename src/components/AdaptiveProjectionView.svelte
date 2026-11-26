@@ -1,4 +1,6 @@
 <script>
+  import KoreographProjection from './KoreographProjection.svelte';
+  import { supportsProjection } from '../lib/koreograph/specialized.mjs';
   import { onDestroy } from 'svelte';
   import { uiFinish as ui, localizedRecipeLabel } from '../lib/i18n-finish.mjs';
   import TimelineLineageView from './TimelineLineageView.svelte';
@@ -24,6 +26,8 @@
   export let fallback = () => {};
   export let authToken = '';
   export let kristal = '';
+  export let koreographEnabled = false;
+  export let koreographRevision = null;
 
   let data = null, busy = false, error = '', controller, requestedKey = '', cursor = null;
   let nodeBudget = 280, edgeBudget = 420;
@@ -41,23 +45,23 @@
     spatial: SpatialView,
   };
 
-  $: requestBase = query && recipe ? { query, lensRef, recipeId: recipe.id, selectedEntityId, kristal } : null;
+  $: requestBase = query && recipe ? { query, lensRef, recipeId: recipe.id, selectedEntityId, kristal, authToken } : null;
   $: requestKey = requestBase ? JSON.stringify(requestBase) : '';
   $: if (requestKey && requestKey !== requestedKey) { cursor = null; nodeBudget = 280; edgeBudget = 420; load(requestKey, null); }
   $: Renderer = components[data?.rendererId] || components[recipe?.rendererId] || null;
   $: canExpand = Boolean(data?.truncated && !cursor && (nodeBudget < 1200 || edgeBudget < 2400));
 
   async function load(key, nextCursor) {
-    controller?.abort(); controller = new AbortController(); requestedKey = key; busy = true; error = '';
+    controller?.abort(); controller = new AbortController(); const active = controller; requestedKey = key; busy = true; error = '';
     try {
-      const { kristal: _kristal, ...request } = JSON.parse(key);
+      const { kristal: _kristal, authToken: _authToken, ...request } = JSON.parse(key);
       const payload = { ...request, ...(nextCursor ? { cursor: nextCursor } : {}), pageSize: 160, nodeBudget, edgeBudget };
       const response = await fetch('/api/navigation/project', { method:'POST', headers:{'Content-Type':'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}), ...(kristal ? { 'X-Konstellation-Kristal': kristal } : {})}, body:JSON.stringify(payload), signal:controller.signal });
       const value = await response.json();
       if (!response.ok) throw Error(value.error?.message || 'Projection adaptative indisponible.');
-      if (requestedKey === key) { data = value; cursor = value.nextCursor || null; }
-    } catch (e) { if (e.name !== 'AbortError' && requestedKey === key) error = e.message; }
-    finally { if (requestedKey === key) busy = false; }
+      if (requestedKey === key && controller === active) { data = value; cursor = value.nextCursor || null; }
+    } catch (e) { if (e.name !== 'AbortError' && requestedKey === key && controller === active) error = e.message; }
+    finally { if (requestedKey === key && controller === active) busy = false; }
   }
   function expandDetail() {
     nodeBudget = Math.min(1200, nodeBudget * 2);
@@ -93,6 +97,11 @@
     {#if data.visualSemantics}<SemanticEncodingView {data} />{/if}
     {#if data.attributeSemantics}<SemanticAttributeView {data} />{/if}
     <svelte:component this={Renderer} {data} {inspect} />
+    {#if koreographEnabled && !busy && supportsProjection(data)}
+      {#key data}
+        <KoreographProjection {data} {locale} revision={koreographRevision} source={{ ...query.context, lensRef, ...(kristal ? { kristalRef: kristal } : {}) }} />
+      {/key}
+    {/if}
     {#if data.truncated}<p class="hint">{ui(locale,'viewTruncated')} {data.totalCandidates || 0} {ui(locale,'catalog')}.</p>{/if}
     <div class="projection-pagination" aria-label="Niveau de détail de la projection">
       {#if cursor}<button class="button" disabled={busy} on:click={() => load(requestKey, cursor)}>{busy ? ui(locale,'loading') : ui(locale,'nextPage') + ' →'}</button>{/if}

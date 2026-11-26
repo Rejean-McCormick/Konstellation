@@ -1,0 +1,441 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:koreograph:draft:score:0.1",
+  "title": "Koreograph Score 0.1 — draft",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": "koreograph.score/0.1"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "locale": {
+          "enum": [
+            "fr",
+            "en"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "presentation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "style": {
+              "enum": [
+                "minimal",
+                "cinematic",
+                "didactic"
+              ]
+            },
+            "durationMs": {
+              "oneOf": [
+                {
+                  "const": "auto"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1000,
+                  "maximum": 120000
+                }
+              ]
+            },
+            "aspectRatio": {
+              "enum": [
+                "16:9",
+                "9:16",
+                "1:1"
+              ]
+            },
+            "density": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 10
+            }
+          },
+          "required": [
+            "style",
+            "durationMs",
+            "aspectRatio",
+            "density"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "capture",
+            "script"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/follow"
+              },
+              {
+                "$ref": "#/$defs/reveal"
+              },
+              {
+                "$ref": "#/$defs/hold"
+              }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 12,
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/initial"
+            }
+          ]
+        }
+      },
+      "required": [
+        "format",
+        "title",
+        "locale",
+        "source",
+        "presentation",
+        "mode",
+        "steps"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": "koreograph.score/0.1"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "locale": {
+          "enum": [
+            "fr",
+            "en"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "presentation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "style": {
+              "enum": [
+                "minimal",
+                "cinematic",
+                "didactic"
+              ]
+            },
+            "durationMs": {
+              "oneOf": [
+                {
+                  "const": "auto"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1000,
+                  "maximum": 120000
+                }
+              ]
+            },
+            "aspectRatio": {
+              "enum": [
+                "16:9",
+                "9:16",
+                "1:1"
+              ]
+            },
+            "density": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 10
+            }
+          },
+          "required": [
+            "style",
+            "durationMs",
+            "aspectRatio",
+            "density"
+          ]
+        },
+        "mode": {
+          "const": "auto"
+        },
+        "auto": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "start": {
+              "$ref": "#/$defs/target"
+            },
+            "recipe": {
+              "enum": [
+                "exploration",
+                "association"
+              ]
+            },
+            "maxHops": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            }
+          },
+          "required": [
+            "start",
+            "recipe",
+            "maxHops",
+            "seed"
+          ]
+        }
+      },
+      "required": [
+        "format",
+        "title",
+        "locale",
+        "source",
+        "presentation",
+        "mode",
+        "auto"
+      ]
+    }
+  ],
+  "$defs": {
+    "focus": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "entity"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "source"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "predicate",
+            "key"
+          ],
+          "properties": {
+            "kind": {
+              "const": "qualifier"
+            },
+            "predicate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "relation",
+            "key"
+          ],
+          "properties": {
+            "kind": {
+              "const": "relation-value"
+            },
+            "relation": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "datasetRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "registryRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "readerPolicyRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "executionProfileRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "lensRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "kristalRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "datasetRef",
+        "registryRef",
+        "readerPolicyRef",
+        "executionProfileRef",
+        "lensRef"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "focus": {
+          "$ref": "#/$defs/focus"
+        },
+        "groupId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        }
+      },
+      "required": [
+        "focus",
+        "groupId"
+      ]
+    },
+    "initial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "focus"
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        }
+      },
+      "required": [
+        "action",
+        "target"
+      ]
+    },
+    "follow": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "follow"
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        }
+      },
+      "required": [
+        "action",
+        "target"
+      ]
+    },
+    "reveal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "reveal"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 10
+        }
+      },
+      "required": [
+        "action",
+        "limit"
+      ]
+    },
+    "hold": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "hold"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 250,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "action",
+        "durationMs"
+      ]
+    }
+  }
+}
