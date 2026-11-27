@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.0",
+  "projectionKind": "causal-feedback",
+  "recipeId": "feedback",
+  "rendererId": "causal-feedback",
+  "derived": true,
+  "truncated": false,
+  "nextCursor": null,
+  "totalCandidates": 3,
+  "explanation": {
+    "reason": "Scénario fictif Koreograph, sans autorité ni données réelles.",
+    "relationIds": [
+      "r"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "type": "demo",
+      "label": "Température simulée"
+    },
+    {
+      "id": "b",
+      "type": "demo",
+      "label": "Chauffage simulé"
+    },
+    {
+      "id": "c",
+      "type": "demo",
+      "label": "Thermostat simulé"
+    }
+  ],
+  "edges": [
+    {
+      "id": "x",
+      "source": "b",
+      "target": "a",
+      "relationId": "r",
+      "relationLabel": "augmente",
+      "sign": 1
+    },
+    {
+      "id": "y",
+      "source": "a",
+      "target": "c",
+      "relationId": "r",
+      "relationLabel": "augmente",
+      "sign": 1
+    },
+    {
+      "id": "z",
+      "source": "c",
+      "target": "b",
+      "relationId": "r",
+      "relationLabel": "diminue",
+      "sign": -1
+    }
+  ],
+  "cycles": [
+    [
+      "b",
+      "a",
+      "c",
+      "b"
+    ]
+  ],
+  "visualSemantics": {
+    "version": "0.1",
+    "derived": true,
+    "authoritative": false,
+    "status": "explicit-relations",
+    "opposition": {
+      "components": [],
+      "unfulfilled": []
+    },
+    "causalEdges": [
+      {
+        "assertionRef": "x",
+        "source": "b",
+        "target": "a",
+        "relationId": "r",
+        "scope": "demo",
+        "sign": 1
+      },
+      {
+        "assertionRef": "y",
+        "source": "a",
+        "target": "c",
+        "relationId": "r",
+        "scope": "demo",
+        "sign": 1
+      },
+      {
+        "assertionRef": "z",
+        "source": "c",
+        "target": "b",
+        "relationId": "r",
+        "scope": "demo",
+        "sign": -1
+      }
+    ],
+    "legend": [
+      {
+        "channel": "causal",
+        "explanation": "Signes fictifs à des fins de test."
+      }
+    ],
+    "warning": "Qualification simulée dans cette fixture."
+  }
+}

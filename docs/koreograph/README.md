@@ -1,6 +1,6 @@
 # Koreograph — chorégraphie procédurale des connaissances
 
-**Statut :** spécification de conception v0.2 et première implémentation expérimentale Koreograph 0.1.0.  
+**Statut :** spécification de conception v0.2 et implémentation Koreograph 0.3.0 (tranche spécialisée et production locale).  
 **Base inspectée :** `znapshot_Konstellation_11260852.zip`, Konstellation `1.0.0-rc.2`.  
 **Périmètre :** une première tranche de code et un laboratoire autonome sont disponibles ; aucune qualification de release ou autorisation de publication n'est revendiquée. Les contrats existants, la Reader Policy et les décisions acceptées de Konstellation prévalent.
 
@@ -10,7 +10,7 @@ Koreograph transforme une navigation sémantique autorisée en une animation rep
 
 ## Démarrage de la tranche implémentée
 
-Consulter en premier le [guide de livraison du code 0.1.0](22-implementation-v0.1.md). Les chapitres 00–21 restent les spécifications de cible, pas une preuve que toutes leurs fonctionnalités sont livrées.
+Consulter en premier le [guide de spécialisations 0.3.0](24-specialisations-v0.3.md), puis le [guide de durcissement 0.2.0](23-durcissement-v0.2.md), puis le [guide de livraison du code 0.1.0](22-implementation-v0.1.md). Les chapitres 00–21 restent les spécifications de cible, pas une preuve que toutes leurs fonctionnalités sont livrées.
 
 ## Parcours de lecture
 

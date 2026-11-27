@@ -26,3 +26,11 @@ Les assertions du script Python doivent rester actives (ne pas lancer avec `-O`)
 Pas de build Astro, tests Vitest/Playwright, implémentation Svelte, intégration effective des API, test réel Reader Policy, mesure de performance, export vidéo, test de compatibilité des animations SVG, ni qualification de release. Les noms de presets, tokens secondaires, choix de formes, seuils, budgets, ordre des lots et contrats d'extension restent des propositions techniques. Les deux choix propriétaires sont la marque #1E6864 et la possibilité de choisir des thèmes monochromes ou polychromes. Les familles spécialisées et la coloration par type de relation sont documentées comme extensions conditionnées aux preuves ; leur contrat Bundle spécialisé reste à finaliser et valider lors de KOR-6. L'extension multilingue est hors cible de cette itération.
 
 Aucun commit/push, publication, changement de droits ou de code applicatif. Ce livrable est une archive documentaire, non le dépôt distant.
+
+## Mise à jour moteur 0.2.0
+
+Voir [23 — Durcissement](23-durcissement-v0.2.md) et [matrice Chromium synthétique](qualification/runtime-matrix-synthetic.json). Les résultats documentaires historiques ci-dessus ne sont pas une qualification de release.
+
+## Mise à jour 0.3.0
+
+Voir [24 — Spécialisations et production](24-specialisations-v0.3.md) pour les résultats de la tranche 0.3.0 et les limites de qualification sur données réelles.

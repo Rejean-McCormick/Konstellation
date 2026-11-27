@@ -1,5 +1,7 @@
 # 22 — Livraison du moteur expérimental 0.1.0
 
+> État historique 0.1.0 : voir [durcissement 0.2.0](23-durcissement-v0.2.md) pour les évolutions et qualifications récentes.
+
 ## Statut et périmètre
 
 Cette livraison ajoute une première tranche fonctionnelle de Koreograph sur le snapshot Konstellation `1.0.0-rc.2`. Les chapitres de conception v0.2 sont conservés comme cible ; ce document prime pour l'état effectif du code. Aucun commit distant, changement de Reader Policy, publication ni qualification de release n'a été effectué. Aucun modèle génératif, service de montage, base de données ni dépendance npm supplémentaire.

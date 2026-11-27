@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "projectionKind": "dag",
+  "recipeId": "dependencies",
+  "rendererId": "dag-proof",
+  "derived": true,
+  "truncated": false,
+  "nextCursor": null,
+  "totalCandidates": 3,
+  "explanation": {
+    "reason": "Scénario fictif Koreograph, sans autorité ni données réelles.",
+    "relationIds": [
+      "r"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "type": "demo",
+      "label": "Mesure"
+    },
+    {
+      "id": "b",
+      "type": "demo",
+      "label": "Observation"
+    },
+    {
+      "id": "c",
+      "type": "demo",
+      "label": "Contexte"
+    },
+    {
+      "id": "d",
+      "type": "demo",
+      "label": "Analyse"
+    }
+  ],
+  "edges": [
+    {
+      "id": "x",
+      "source": "a",
+      "target": "d",
+      "relationId": "r",
+      "relationLabel": "contribue à",
+      "kind": "dependency"
+    },
+    {
+      "id": "y",
+      "source": "b",
+      "target": "d",
+      "relationId": "r",
+      "relationLabel": "contribue à",
+      "kind": "dependency"
+    },
+    {
+      "id": "z",
+      "source": "c",
+      "target": "d",
+      "relationId": "r",
+      "relationLabel": "contribue à",
+      "kind": "dependency"
+    }
+  ],
+  "roots": [
+    "a",
+    "b",
+    "c"
+  ],
+  "terminals": [
+    "d"
+  ],
+  "acyclic": true,
+  "cycles": []
+}

@@ -1,6 +1,6 @@
 // Koreograph 0.1 — pure navigation compiler; no direct access to Kristal storage.
 import { layoutConstellation } from '../constellation/layout.js';
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
 const KINDS = ['entity','concept','source','value','group'];
 const FIELDS = ['datasetRef','registryRef','readerPolicyRef','executionProfileRef'];
 const check = (ok, message) => { if (!ok) throw new Error(message); };
@@ -16,7 +16,8 @@ export function canonical(value) {
 export function targetOf(t) {
   const f=t?.focus; const g=t?.groupId;
   check(f && (g===null || typeof g==='string' && g.length<=300),'Cible invalide.');
-  const keys={entity:['id'],source:['id'],qualifier:['predicate','key'],'relation-value':['relation','key']}[f.kind];
+  const kinds={entity:['id'],source:['id'],qualifier:['predicate','key'],'relation-value':['relation','key']};
+  const keys=Object.hasOwn(kinds,f.kind)?kinds[f.kind]:null;
   check(Array.isArray(keys)&&keys.every(k=>str(f[k],k==='key'?2048:k==='id'?1000:500)), 'Focus invalide.');
   check(exact(f,['kind',...keys]),'Champs de focus inattendus.');
   const focus={kind:f.kind}; for(const k of keys) focus[k]=f[k];
@@ -31,7 +32,7 @@ export function sourceOf(context,lensRef,kristalRef) {
 export function normalizeProjection(raw, target, source) {
   check(raw?.schemaVersion==='0.1' && FIELDS.every(k=>raw.context?.[k]===source[k]), 'Projection hors contexte.');
   check(targetKey(raw)===targetKey(target),'Projection hors cible.');
-  const node=n=>{check(KINDS.includes(n?.kind)&&str(n.label,500),'Objet de projection invalide.');return {kind:n.kind,label:n.label};};
+  const node=n=>{check(KINDS.includes(n?.kind)&&str(n.label,500)&&n.label.trim().length>0,'Objet de projection invalide.');return {kind:n.kind,label:n.label};};
   check(Array.isArray(raw.satellites)&&raw.satellites.length<=25&&typeof raw.truncated==='boolean','Projection invalide.');
   return {target:targetOf(target),center:node(raw.center),satellites:raw.satellites.map(n=>{
     check(str(n.id,2200)&&Number.isFinite(n.salience?.score),'Satellite invalide.');
@@ -71,7 +72,16 @@ function sceneFor(proj,v,id,limit,previous,preferred, warnings){
   if(proj.truncated)warnings.add('SOURCE_TRUNCATED');if(nodes.length>budget)warnings.add('PRESENTATION_TRUNCATED');nodes=nodes.slice(0,budget);
   const slots=layoutConstellation(nodes,v.width,v.height,cx,cy).map(n=>({x:cx+(n.x-cx)*(v.aspectRatio==='9:16'?0.75:1.35),y:cy+(n.y-cy)*(v.aspectRatio==='9:16'?1.75:1.12)}));
   const old=new Map((previous?.objects||[]).map(n=>[n.key,n]));const assigned=new Map();
-  for(const n of nodes.filter(n=>old.has(n.key))){const p=old.get(n.key);let best=0;for(let i=1;i<slots.length;i++)if((slots[i].x-p.x)**2+(slots[i].y-p.y)**2<(slots[best].x-p.x)**2+(slots[best].y-p.y)**2)best=i;assigned.set(n.key,slots.splice(best,1)[0]);}
+  // Reserve a slot away from the incoming focus corridor for the outgoing center.
+  // Straight paths must not exchange places head-on merely to minimize travel.
+  const incoming=old.get(centerKey), outgoing=nodes.find(n=>n.key===previous?.focusKey);
+  if(incoming&&outgoing&&previous.focusKey!==centerKey&&slots.length){
+    const dx=incoming.x-cx,dy=incoming.y-cy,len=Math.hypot(dx,dy);
+    if(len>1){let best=0;const cost=p=>((p.x-cx)*dx+(p.y-cy)*dy)/len;
+      for(let i=1;i<slots.length;i++)if(cost(slots[i])<cost(slots[best]))best=i;
+      assigned.set(outgoing.key,slots.splice(best,1)[0]);}
+  }
+  for(const n of nodes.filter(n=>old.has(n.key)&&!assigned.has(n.key))){const p=old.get(n.key);let best=0;for(let i=1;i<slots.length;i++)if((slots[i].x-p.x)**2+(slots[i].y-p.y)**2<(slots[best].x-p.x)**2+(slots[best].y-p.y)**2)best=i;assigned.set(n.key,slots.splice(best,1)[0]);}
   for(const n of nodes)if(!assigned.has(n.key))assigned.set(n.key,slots.shift());
   const center={key:centerKey,...proj.center,role:'center',x:cx,y:cy,radius:48,opacity:1};
   const objects=[center,...nodes.map(n=>({key:n.key,label:n.label,kind:n.kind,role:'satellite',...assigned.get(n.key),radius:29,opacity:1}))];
@@ -81,7 +91,7 @@ function sceneFor(proj,v,id,limit,previous,preferred, warnings){
   return {id,focusKey:centerKey,objects,links:objects.slice(1).map(n=>({key:canonical([centerKey,n.key].sort()),from:centerKey,to:n.key,kind:'navigation'})),truncated};
 }
 export async function compileScore(score,resolve,{signal}={}){
-  validateScore(score);const warnings=new Set(), visits=[];const p=score.presentation;const v=viewport(p.aspectRatio);
+  validateScore(score);score=JSON.parse(JSON.stringify(score));const warnings=new Set(), visits=[];const p=score.presentation;const v=viewport(p.aspectRatio);
   const abort=()=>{if(signal?.aborted)throw new Error('Production annulée.');};
   async function read(t){abort();const raw=await resolve(targetOf(t),signal);abort();return normalizeProjection(raw,t,score.source);}
   if(score.mode==='auto'){
@@ -109,16 +119,27 @@ export async function compileScore(score,resolve,{signal}={}){
 }
 export function frameAt(bundle,t,{motion='standard'}={}){
   t=clamp(Number.isFinite(t)?t:0,0,bundle.durationMs);const s=bundle.segments.find(x=>t<x.endMs)||bundle.segments.at(-1);const a=bundle.scenes.find(x=>x.id===s.fromScene),b=bundle.scenes.find(x=>x.id===s.toScene);
-  const u=clamp((t-s.startMs)/(s.endMs-s.startMs),0,1);const q=motion==='reduced'?(u===1?1:0):s.easing==='smoothstep'?u*u*(3-2*u):u;
+  const duration=s.endMs-s.startMs, u=clamp((t-s.startMs)/duration,0,1);
+  // Anticipation: one small, windowed axial oscillation of the incoming focus.
+  // Everyone else waits; no camera motion, rotation, or transverse offset.
+  const anticipate=motion!=='reduced'&&s.primitive==='focus'?Math.min(320,duration*.25):0;
+  const elapsed=t-s.startMs, prep=anticipate>0&&elapsed<anticipate;
+  const travel=clamp((elapsed-anticipate)/(duration-anticipate),0,1);
+  const q=motion==='reduced'?(u===1?1:0):s.easing==='smoothstep'?travel*travel*(3-2*travel):travel;
   const mix=(x,y,z=q)=>x+(y-x)*z;const byA=new Map(a.objects.map(n=>[n.key,n])),byB=new Map(b.objects.map(n=>[n.key,n]));const nodes=[];
   for(const key of new Set([...byA.keys(),...byB.keys()])){let x=byA.get(key),y=byB.get(key);if(!x)x={...y,opacity:0};if(!y)y={...x,opacity:0};let z=q;if(s.primitive==='reveal'&&!byA.has(key)&&motion!=='reduced'){const i=b.objects.findIndex(n=>n.key===key);z=clamp((u-i*.035)/.65,0,1);z=z*z*(3-2*z);}const pick=z<.5?x:y;
     const fade=s.primitive==='fade';let alpha=fade?(q<.5?x.opacity*(1-q*2):y.opacity*(q*2-1)):mix(x.opacity,y.opacity,z);
     if(s.primitive==='focus'&&motion!=='reduced'){if(!byA.has(key))alpha=y.opacity*clamp((q-.48)/.52,0,1);else if(!byB.has(key))alpha=x.opacity*clamp(1-q/.48,0,1);}
+    // One scalar progress for both coordinates: a straight segment, never an arc.
     let px=fade?pick.x:mix(x.x,y.x,z),py=fade?pick.y:mix(x.y,y.y,z);
-    if(!fade&&s.primitive==='focus'&&byA.has(key)&&byB.has(key)&&x.role!==y.role){const dx=y.x-x.x,dy=y.y-x.y,len=Math.hypot(dx,dy);if(len>1){const arc=Math.min(125,len*.32)*Math.sin(Math.PI*z);px-=dy/len*arc;py+=dx/len*arc;}}
+    if(prep&&key===b.focusKey&&byA.has(key)&&byB.has(key)){
+      const dx=y.x-x.x,dy=y.y-x.y,len=Math.hypot(dx,dy),v=elapsed/anticipate;
+      if(len>1){const offset=Math.min(16,len*.06)*Math.sin(2*Math.PI*v)*Math.sin(Math.PI*v)**2;
+        px+=dx/len*offset;py+=dy/len*offset;}
+    }
     nodes.push({...pick,x:px,y:py,radius:fade?pick.radius:mix(x.radius,y.radius,z),opacity:alpha,focus:mix(byA.has(key)&&x.role==='center'?1:0,byB.has(key)&&y.role==='center'?1:0,z)});}
   if(s.primitive==='focus'&&q>0&&q<1){const active=nodes.filter(n=>n.focus>0.02);for(const n of nodes.filter(n=>n.focus<0.02)){let factor=1;for(const a of active){const dx=Math.abs(n.x-a.x),dy=Math.abs(n.y-a.y);if(dx<230&&dy<145)factor=Math.min(factor,clamp(Math.max(dx/230,dy/145)**2,.05,1));}n.opacity*=factor;}}
   const map=new Map(nodes.map(n=>[n.key,n])),aa=new Map(a.links.map(l=>[l.key,l])),bb=new Map(b.links.map(l=>[l.key,l]));const links=[];
-  for(const key of new Set([...aa.keys(),...bb.keys()])){const l=aa.get(key)||bb.get(key),x=map.get(l.from),y=map.get(l.to);links.push({...l,x1:x.x,y1:x.y,x2:y.x,y2:y.y,opacity:Math.min(x.opacity,y.opacity,mix(aa.has(key)?1:0,bb.has(key)?1:0))});}
+  for(const key of new Set([...aa.keys(),...bb.keys()])){const l=aa.get(key)||bb.get(key),x=map.get(l.from),y=map.get(l.to);links.push({...l,x1:x.x,y1:x.y,x2:y.x,y2:y.y,opacity:Math.min(x.opacity,y.opacity,s.primitive==='fade'?(q<.5?Number(aa.has(key))*(1-2*q):Number(bb.has(key))*(2*q-1)):mix(aa.has(key)?1:0,bb.has(key)?1:0))});}
   return {t,segment:s,scene:q<.5?a:b,nodes,links};
 }

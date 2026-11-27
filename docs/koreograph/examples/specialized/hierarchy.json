@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "1.0",
+  "projectionKind": "tree",
+  "recipeId": "hierarchy",
+  "rendererId": "tree",
+  "derived": true,
+  "truncated": false,
+  "nextCursor": null,
+  "totalCandidates": 4,
+  "explanation": {
+    "reason": "Scénario fictif Koreograph, sans autorité ni données réelles.",
+    "relationIds": [
+      "r"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "type": "demo",
+      "label": "Bibliothèque fictive"
+    },
+    {
+      "id": "b",
+      "type": "demo",
+      "label": "Sciences"
+    },
+    {
+      "id": "c",
+      "type": "demo",
+      "label": "Arts"
+    },
+    {
+      "id": "d",
+      "type": "demo",
+      "label": "Techniques"
+    },
+    {
+      "id": "e",
+      "type": "demo",
+      "label": "Musique"
+    }
+  ],
+  "edges": [
+    {
+      "id": "x",
+      "source": "a",
+      "target": "b",
+      "relationId": "r",
+      "relationLabel": "contient"
+    },
+    {
+      "id": "y",
+      "source": "a",
+      "target": "c",
+      "relationId": "r",
+      "relationLabel": "contient"
+    },
+    {
+      "id": "z",
+      "source": "a",
+      "target": "d",
+      "relationId": "r",
+      "relationLabel": "contient"
+    },
+    {
+      "id": "w",
+      "source": "c",
+      "target": "e",
+      "relationId": "r",
+      "relationLabel": "contient"
+    }
+  ],
+  "roots": [
+    "a"
+  ],
+  "hierarchySemantics": {
+    "version": "0.1",
+    "derived": true,
+    "authoritative": false,
+    "status": "reviewed-visible-hierarchy",
+    "ruleId": "demo-rule",
+    "relationId": "r",
+    "scope": "demo",
+    "direction": "parent-to-child",
+    "roots": [
+      "a"
+    ],
+    "edges": [
+      {
+        "source": "a",
+        "target": "b",
+        "relationId": "r",
+        "assertionRefs": [
+          "x"
+        ]
+      },
+      {
+        "source": "a",
+        "target": "c",
+        "relationId": "r",
+        "assertionRefs": [
+          "y"
+        ]
+      },
+      {
+        "source": "a",
+        "target": "d",
+        "relationId": "r",
+        "assertionRefs": [
+          "z"
+        ]
+      },
+      {
+        "source": "c",
+        "target": "e",
+        "relationId": "r",
+        "assertionRefs": [
+          "w"
+        ]
+      }
+    ],
+    "nodeIds": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e"
+    ],
+    "unfulfilled": [],
+    "truncated": false,
+    "explanation": "Qualification simulée uniquement pour cette fixture."
+  }
+}

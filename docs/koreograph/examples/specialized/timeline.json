@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "projectionKind": "timeline-lineage",
+  "recipeId": "timeline",
+  "rendererId": "timeline-lineage",
+  "derived": true,
+  "truncated": false,
+  "nextCursor": null,
+  "totalCandidates": 4,
+  "explanation": {
+    "reason": "Scénario fictif Koreograph, sans autorité ni données réelles.",
+    "relationIds": [
+      "r"
+    ]
+  },
+  "items": [
+    {
+      "id": "a",
+      "entity": {
+        "id": "a",
+        "type": "demo",
+        "label": "Premier dessin"
+      },
+      "relationId": "r",
+      "relationLabel": "année fictive",
+      "start": 2000,
+      "end": 2000,
+      "assertionRef": "ref-a"
+    },
+    {
+      "id": "b",
+      "entity": {
+        "id": "b",
+        "type": "demo",
+        "label": "Prototype"
+      },
+      "relationId": "r",
+      "relationLabel": "année fictive",
+      "start": 2005,
+      "end": 2005,
+      "assertionRef": "ref-b"
+    },
+    {
+      "id": "c",
+      "entity": {
+        "id": "c",
+        "type": "demo",
+        "label": "Version finale"
+      },
+      "relationId": "r",
+      "relationLabel": "année fictive",
+      "start": 2012,
+      "end": 2012,
+      "assertionRef": "ref-c"
+    },
+    {
+      "id": "d",
+      "entity": {
+        "id": "d",
+        "type": "demo",
+        "label": "Révision"
+      },
+      "relationId": "r",
+      "relationLabel": "année fictive",
+      "start": 2018,
+      "end": 2018,
+      "assertionRef": "ref-d"
+    }
+  ],
+  "links": []
+}

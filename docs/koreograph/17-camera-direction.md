@@ -27,3 +27,11 @@ Priorité lexicographique : (1) policy, exactitude, statuts, (2) compréhension 
 ## Tests
 
 C1 cadrage aspect horizontal/vertical/carré, labels longs et safe area ; C2 trajectoire focus vers centre et absence de saut aux bornes ; C3 pause/seek/export même pose ; C4 caméra fixe et reduced-motion ; C5 vitesse/zoom hors seuil => correction ou refus ; C6 assertions visibles et diagnostics non coupés par la caméra ; C7 export SVG non transposable => refus explicite, pas de poster déguisé. Les valeurs numériques sont des cibles proposées à mesurer, non des résultats.
+
+### Correctif v0.1.1
+
+La caméra automatique choisit une pose unique pour l'ensemble du parcours. Elle ne change ni de position ni d'échelle pendant les transitions ou les pauses de cette version. Ceci préserve la lecture de la trajectoire rectiligne du focus. Les mouvements de caméra spécialisés restent une extension future.
+
+### Durcissement 0.2.0
+
+La pose automatique unique autorise un zoom de 0,7 à 1,12, sans animation de caméra. Le contrôle de géométrie applique la pose effective ; la qualification Chromium synthétique couvre les huit thèmes et les trois aspects. Voir [23](23-durcissement-v0.2.md).

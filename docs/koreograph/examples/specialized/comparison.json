@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "projectionKind": "matrix",
+  "recipeId": "dimensions",
+  "rendererId": "matrix-profile",
+  "derived": true,
+  "truncated": false,
+  "nextCursor": null,
+  "totalCandidates": 3,
+  "explanation": {
+    "reason": "Scénario fictif Koreograph, sans autorité ni données réelles.",
+    "relationIds": [
+      "r"
+    ]
+  },
+  "rows": [
+    {
+      "id": "a",
+      "type": "demo",
+      "label": "Projet Alpha"
+    },
+    {
+      "id": "b",
+      "type": "demo",
+      "label": "Projet Bêta"
+    },
+    {
+      "id": "c",
+      "type": "demo",
+      "label": "Projet Gamma"
+    }
+  ],
+  "columns": [
+    {
+      "id": "d",
+      "label": "Durée",
+      "kind": "integer",
+      "unit": "jours"
+    },
+    {
+      "id": "e",
+      "label": "Nombre de modules",
+      "kind": "integer",
+      "unit": null
+    }
+  ],
+  "cells": [
+    {
+      "entityId": "a",
+      "dimensionId": "d",
+      "value": 12,
+      "assertionRef": "ad"
+    },
+    {
+      "entityId": "b",
+      "dimensionId": "d",
+      "value": 9,
+      "assertionRef": "bd"
+    },
+    {
+      "entityId": "c",
+      "dimensionId": "d",
+      "value": 15,
+      "assertionRef": "cd"
+    },
+    {
+      "entityId": "a",
+      "dimensionId": "e",
+      "value": 4,
+      "assertionRef": "ae"
+    },
+    {
+      "entityId": "b",
+      "dimensionId": "e",
+      "value": 6,
+      "assertionRef": "be"
+    }
+  ]
+}
