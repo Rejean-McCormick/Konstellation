@@ -65,3 +65,7 @@ Type `Focus` = union existante de ConstellationResponse ; `ReadContext` comprend
 ## Revue de changement
 
 Pour toute PR : contexte source et compatibilité, séparation des modules, validation du contrat, conservation d'identité, fallback explicite, tests négatifs policy, test d'accessibilité, absence de dépendance injustifiée, mesure de performance, changelog et documentation. Ne pas promouvoir le flag sans gate propriétaire. Toute modification de grammaire spécialisée inclut la preuve visible exacte et un exemple refusé. Voir [extension guide](../23-extension-guide.md).
+
+## Modules additionnels (après noyau)
+
+Ajouter au même `src/lib/koreograph/` des modules `theme.mjs`, `story.mjs`, `camera.mjs`, `director.mjs`, `quality.mjs`, `production.mjs` selon besoin ; ne pas les transformer en services. Le répertoire `themes/` contient les ressources validées lors de la promotion. Le compilateur peut conserver ces responsabilités dans moins de fichiers tant que les frontières sont testables. Voir [interfaces de production](19-production-contracts.md). Diagnostics additionnels proposés : `KOR_INVALID_THEME`, `KOR_UNSUPPORTED_ENCODING`, `KOR_PLAN_MISMATCH`, `KOR_QUALITY_BLOCKED`, `KOR_DURATION_INSUFFICIENT`, `KOR_OUTPUT_UNSUPPORTED`. Tests dédiés pour tokens, sélection, gabarits, poses, réparation et digests. Aucun de ces modules n'existe dans le snapshot.

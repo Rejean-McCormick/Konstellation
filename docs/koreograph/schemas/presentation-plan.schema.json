@@ -1,0 +1,327 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:koreograph:draft:presentation-plan:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "koreograph.presentation-plan/0.1"
+    },
+    "bundleSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "themeSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "theme": {
+      "$ref": "urn:koreograph:draft:theme:0.1"
+    },
+    "encoding": {
+      "enum": [
+        "mono",
+        "by-kind",
+        "by-focus"
+      ]
+    },
+    "geometry": {
+      "enum": [
+        "uniform",
+        "by-kind"
+      ]
+    },
+    "motion": {
+      "enum": [
+        "standard",
+        "reduced"
+      ]
+    },
+    "cameraMode": {
+      "enum": [
+        "fixed",
+        "auto"
+      ]
+    },
+    "narrationMode": {
+      "enum": [
+        "off",
+        "captions"
+      ]
+    },
+    "durationMs": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 120000
+    },
+    "compilerVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "camera": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "startMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 120000
+          },
+          "endMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120000
+          },
+          "kind": {
+            "enum": [
+              "overview",
+              "focus",
+              "follow",
+              "pullback"
+            ]
+          },
+          "from": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "cx": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 3840
+              },
+              "cy": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 3840
+              },
+              "zoom": {
+                "type": "number",
+                "minimum": 0.7,
+                "maximum": 1.6
+              }
+            },
+            "required": [
+              "cx",
+              "cy",
+              "zoom"
+            ]
+          },
+          "to": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "cx": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 3840
+              },
+              "cy": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 3840
+              },
+              "zoom": {
+                "type": "number",
+                "minimum": 0.7,
+                "maximum": 1.6
+              }
+            },
+            "required": [
+              "cx",
+              "cy",
+              "zoom"
+            ]
+          }
+        },
+        "required": [
+          "startMs",
+          "endMs",
+          "kind",
+          "from",
+          "to"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 48
+    },
+    "captions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "startMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 120000
+          },
+          "endMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120000
+          },
+          "act": {
+            "enum": [
+              "introduce",
+              "contextualize",
+              "reveal",
+              "associate",
+              "deepen",
+              "summarize",
+              "conclude"
+            ]
+          },
+          "templateId": {
+            "enum": [
+              "introduce.focus",
+              "context.neighbors",
+              "reveal.neighbors",
+              "associate.navigation",
+              "deepen.focus",
+              "summarize.route",
+              "conclude.end"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sceneId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "objectKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                }
+              },
+              "required": [
+                "sceneId",
+                "objectKey"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 24,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "startMs",
+          "endMs",
+          "act",
+          "templateId",
+          "text",
+          "refs"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 48
+    },
+    "qa": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "pass",
+            "review",
+            "fail"
+          ]
+        },
+        "samples": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2401
+        },
+        "passes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "enum": [
+                  "Q-SEM",
+                  "Q-BOUNDS",
+                  "Q-LABEL",
+                  "Q-CONTRAST",
+                  "Q-MOTION",
+                  "Q-READ",
+                  "Q-DENSITY",
+                  "Q-EXPORT",
+                  "Q-POLICY",
+                  "Q-NOT-RUNTIME-TESTED"
+                ]
+              },
+              "severity": {
+                "enum": [
+                  "warning",
+                  "blocking",
+                  "fatal"
+                ]
+              },
+              "segmentIndex": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 47
+                  }
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "severity",
+              "segmentIndex"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "state",
+        "samples",
+        "passes",
+        "diagnostics"
+      ]
+    }
+  },
+  "required": [
+    "format",
+    "bundleSha256",
+    "themeSha256",
+    "theme",
+    "encoding",
+    "geometry",
+    "motion",
+    "cameraMode",
+    "narrationMode",
+    "durationMs",
+    "compilerVersion",
+    "camera",
+    "captions",
+    "qa"
+  ]
+}

@@ -43,3 +43,7 @@ Le lecteur isolé masque les contrôles d'exploration inutiles mais conserve le 
 | Export annulé | Supprimer fichiers temporaires ; conserver Score si toujours autorisé |
 
 Le bouton de sortie ramène à l'Explorer sans changer son état. L'animation ne déclenche jamais une action métier et ne sélectionne pas à l'insu du lecteur un nouveau Kristal ou Lens.
+
+## Cible complète v0.2
+
+Le flux simple propose le focus prérempli, une intention, une durée et un thème. Par défaut Signature, marque #1E6864, monochrome ; modes de coloration et géométrie en avancé. Le Theme Lab propose un aperçu synthétique sans API, puis une prévisualisation sur le parcours préparé. Les corrections et avertissements QA sont visibles avant export ; aucune régénération de route silencieuse. Voir [thèmes](15-direction-artistique-themes.md) et [UX finale](20-production-serie-et-release.md).

@@ -43,3 +43,7 @@ La ConstellationResponse contient un `focus` structuré (entity, source, qualifi
 ## Compatibilité
 
 Le lecteur traditionnel v6/v10 et les packs compatibles restent la cible initiale. `/v11` est un preview isolé avec sa propre autorisation dataset ; aucune adaptation automatique de `/v11` vers les contrats traditionnels. Voir [guide v11](../34-v11-local-reader.md). Aucun changement à Kristal, Publisher, Light, SPEK, Manager ou autres intégrations externes n'est nécessaire. Le mode local est la première cible ; partagé/public nécessite une revue distincte.
+
+## Extension v0.2
+
+Les types du Bundle générique restent `entity`, `concept`, `source`, `value`, `group` et ses liens `navigation`. La couleur et la forme se dérivent de ces kinds graphiques, pas d'une ontologie supposée. L'adaptateur reste seul responsable de la normalisation. Les futures familles spécialisées doivent conserver le statut d'audit et les références visibles, selon la [grammaire de Konstellation](../38-grammaire-visuelle-semantique.md). Aucun branchement supplémentaire aux API n'est nécessaire pour changer de thème ou cadrer une scène déjà autorisée.

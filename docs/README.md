@@ -51,16 +51,15 @@ This directory is the **repository documentation index**. Read the [documentatio
 
 Historical reports are retained for traceability. They do **not** override the current code, contracts or validation gates.
 
-## Koreograph
-
-- [Local replay and export guide](koreograph/ETAT-IMPLEMENTATION.md)
-- [Design and contracts](koreograph/README.md)
-
 ## Architectural decisions and role guides
 
 - [ADRs](adr/README.md): ADR-0005 to ADR-0010
 - [User guide](guides/USER.md), [integrator guide](guides/INTEGRATOR.md), [developer guide](guides/DEVELOPER.md), [operator guide](guides/OPERATOR.md)
 - [Runbooks](runbooks/README.md): startup, rollback, backup, incident, upgrade and threat model
+
+## Koreograph — proposed design (2026-11-26)
+
+- [Koreograph documentation](koreograph/README.md): procedural semantic-navigation animation, proposed architecture v0.2, draft contracts, themes (#1E6864), narrative, camera, visual QA, production and implementation plan. Experimental 0.1.0 implementation available; see its [implementation guide](koreograph/22-implementation-v0.1.md). No release qualification is claimed.
 
 ## Documentation maintenance
 

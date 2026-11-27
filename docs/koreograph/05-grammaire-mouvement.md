@@ -46,3 +46,7 @@ Avant l'intégration spécialisée, chaque adaptateur doit déclarer les champs 
 ## Styles de présentation
 
 `minimal` : peu d'ornement, transitions courtes, fond sobre. `cinematic` : déplacement fluide, temps de lecture équilibré, cadrage léger. `didactic` : titre et étapes plus explicites, pauses plus longues. Ces profils changent l'esthétique et le rythme, pas le sens ni la sélection des données. Les tokens de couleur doivent préserver les encodages approuvés de Konstellation et offrir contraste et alternatives textuelles.
+
+## Extension v0.2 : thème et mouvement indépendants
+
+Les trois styles historiques sont des profils temporels. La [bibliothèque de thèmes](15-direction-artistique-themes.md) ajoute `mono`, `by-kind`, `by-focus` indépendamment du rythme et des primitives. Le mode by-relation n'est pas disponible dans le contrat générique. Les géométries, couleurs et traits doivent être redondants avec un label ou une légende ; aucun canal ne constitue une preuve. Les mouvements permanents décoratifs ne sont pas requis.

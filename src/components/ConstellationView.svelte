@@ -1,7 +1,7 @@
 <script>
   import { uiFinish as ui } from '../lib/i18n-finish.mjs';
-  import KoreographPanel from './KoreographPanel.svelte';
   import { onDestroy, tick } from 'svelte';
+  import KoreographStudio from './KoreographStudio.svelte';
   import { layoutConstellation, splitLabel } from '../lib/constellation/layout.js';
   import { portraitFor, orbitPreview } from '../lib/constellation/profile.mjs';
   export let locale = 'fr';
@@ -17,26 +17,7 @@
   export let authToken = '';
   export let kristal = '';
   export let koreographEnabled = false;
-  export let koreographPrincipal = '';
-  export let koreographRevision = null;
-  export let koreographRequest = null;
-  let koreographVisit = null;
-  let koreographGeneration = 0;
-  let koreographScope = null;
-  $: resetKoreograph(context, lensRef, kristal, authToken, koreographPrincipal, koreographEnabled, koreographRevision);
-  function resetKoreograph(context, lens, kristal, token, principal, enabled, revision) {
-    // The dependency on the live token invalidates state. No credential enters a Score.
-    koreographGeneration += 1;
-    koreographVisit = null;
-    koreographScope = enabled && context && lens ? {
-      source: { ...context, lensRef: lens, ...(kristal ? { kristalRef: kristal } : {}) },
-      generation: koreographGeneration, revision,
-    } : null;
-  }
-  const koreographReader = {
-    currentContext: () => koreographScope,
-    constellation: (target, density, signal) => koreographRequest(target, density, signal),
-  };
+  export let koreographSession = '';
 
   const VIEW_WIDTH = 1000;
   const VIEW_HEIGHT = 620;
@@ -45,6 +26,7 @@
   const CENTER_Y = 300;
   const HISTORY_X = 82;
 
+  let koreographOpen = false;
   let data = null,
     busy = false,
     error = '',
@@ -74,9 +56,10 @@
     clearPreview();
   }
   $: requestKey = current
-    ? JSON.stringify({ context, lensRef, focus: current.focus, groupId: current.groupId, limit, kristal, authToken, ...(koreographScope ? { generation: koreographScope.generation } : {}) })
+    ? JSON.stringify({ context, lensRef, focus: current.focus, groupId: current.groupId, limit, kristal, authToken })
     : '';
   $: if (requestKey && requestKey !== requestedKey) load(requestKey, path.length);
+  $: koreographTarget = current && requestKey && resolvedKey === requestKey && !busy && !error ? {focus:current.focus,groupId:current.groupId} : null;
 
   $: rootSatellites = rows.slice(0, limit).map((r) => ({
     id: r.entityId,
@@ -114,12 +97,10 @@
     controller?.abort();
     requestedKey = key;
     controller = new AbortController();
-    const active = controller;
-    const generation = koreographGeneration;
     busy = true;
     error = '';
     try {
-      const { kristal: _kristal, authToken: _authToken, generation: _generation, ...payload } = JSON.parse(key);
+      const { kristal: _kristal, authToken: _authToken, ...payload } = JSON.parse(key);
       const response = await fetch('/api/constellation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}), ...(kristal ? { 'X-Konstellation-Kristal': kristal } : {}) },
@@ -128,17 +109,16 @@
       });
       const value = await response.json();
       if (!response.ok) throw Error(value.error?.message || 'Constellation indisponible.');
-      if (requestedKey === key && controller === active && !active.signal.aborted) {
-        if (koreographEnabled && generation === koreographGeneration) koreographVisit = value;
+      if (requestedKey === key) {
         data = value;
         resolvedKey = key;
         resolvedPathDepth = depth;
         resolvedCenterKey = JSON.stringify({ focus: payload.focus, groupId: payload.groupId });
       }
     } catch (e) {
-      if (e.name !== 'AbortError' && requestedKey === key && controller === active) error = e.message;
+      if (e.name !== 'AbortError' && requestedKey === key) error = e.message;
     } finally {
-      if (requestedKey === key && controller === active) busy = false;
+      if (requestedKey === key) busy = false;
     }
   }
 
@@ -235,7 +215,6 @@
       busy = false;
       error = '';
       data = rootModel;
-      koreographVisit = null;
       return;
     }
 
@@ -273,7 +252,9 @@
       <span>{ui(locale,'constellationSatellites')} <strong>{limit}</strong></span>
       <input aria-label={ui(locale,'constellationSatellitesAria')} type="range" min="3" max="25" step="1" value={limit} on:input={onLimit} />
     </label>
+    {#if koreographEnabled}<button type="button" aria-expanded={koreographOpen} on:click={() => koreographOpen = !koreographOpen}>Koreograph</button>{/if}
   </div>
+  {#if koreographEnabled && koreographOpen}<KoreographStudio {context} {lensRef} {kristal} {authToken} sessionKey={koreographSession} target={koreographTarget}/>{/if}
 
   {#if error}<div class="constellation-message error">{error}</div>
   {:else if model}
@@ -413,9 +394,3 @@
     {#if !current}<p class="hint constellation-hint">{ui(locale,'constellationHint')}</p>{/if}
   {/if}
 </div>
-
-{#if koreographScope}
-  {#key koreographScope.generation}
-    <KoreographPanel {locale} visit={koreographVisit} available={!busy && !error && Boolean(current)} reader={koreographReader} />
-  {/key}
-{/if}

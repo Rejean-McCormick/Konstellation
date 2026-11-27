@@ -54,3 +54,7 @@ Le schema Bundle v0.1 n'intègre pas les preuves spécialisées : une extension 
 ## Évolution
 
 Toute rupture de contrat implique nouvelle version, schéma, migration explicite ou refus, golden tests et mise à jour de la documentation. Une migration n'élargit jamais les droits. Les drafts du dossier ne doivent pas être enregistrés comme contrats de production dans `server/contracts.mjs` avant implémentation et revue. Les versions de Konstellation, Score, Bundle, adaptateur et renderer restent distinctes.
+
+## Extension documentaire v0.2
+
+Score et Bundle 0.1 sont conservés à l'identique. Les styles `minimal/cinematic/didactic` sont des profils de rythme, non des thèmes. Une [demande de production et un plan de présentation](19-production-contracts.md) ajoutent Theme, encodage, géométrie, caméra, narration et QA sans étendre les droits ou les preuves du Bundle. Le Plan est lié au digest du Bundle exact ; les corrections géométriques recompilent le Bundle avant gel.

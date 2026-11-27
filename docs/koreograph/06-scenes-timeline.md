@@ -42,3 +42,7 @@ V0.1 : viewport fixe et zone sûre (marge proposée 8 %), changement de focus pa
 ## Déterminisme
 
 Même Score explicite, mêmes snapshots autorisés et ordonnés, mêmes versions d'adaptateur/compilateur, mêmes métriques de font et viewport ⇒ mêmes scènes/segments. Arrondir les valeurs sérialisées à une précision versionnée (par ex. 0.001 unité), sans arrondir chaque incrément de mouvement. Les pixels ne sont identiques qu'à environnement de rendu épinglé ; l'identité numérique de la timeline est le premier invariant.
+
+## Extension v0.2 : Presentation Plan
+
+La [caméra virtuelle](17-camera-direction.md) et les captions sont des pistes alignées sur la timeline immuable. Le [Presentation Plan](19-production-contracts.md) porte le thème effectif et les poses ; `frameAtPresentation` étend `frameAt` sans seconde horloge. La réparation visuelle se fait avant gel et peut produire un nouveau Bundle ; un changement de palette compatible n'exige pas de relecture. Le temps des captions entre dans le coût de lecture avant compilation.

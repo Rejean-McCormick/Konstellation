@@ -29,3 +29,6 @@ __pycache__/
 *.swp
 ZmartZnap.pyw
 GitSink.bat
+
+# Local Koreograph output (may contain authorized but private data)
+/artifacts/koreograph-demo/

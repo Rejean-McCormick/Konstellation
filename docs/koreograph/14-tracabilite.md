@@ -18,6 +18,12 @@ Toutes les exigences ci-dessous sont des cibles, non des capacités livrées. `K
 | KR-12 | Pas de régression Explorer, v11 isolé | Tous | Flag off, suite existante selon gates |
 | KR-13 | Architecture extensible sans moteur spécialisé par domaine | KOR-6 | Adaptateurs déclarés et testés, noyau inchangé |
 | KR-14 | Reproductibilité et transparence des limites | KOR-4/5 | Manifeste, versions, diagnostics, preuves de recette |
+| KR-15 | Marque #1E6864 et thèmes sélectionnables | KOR-2A | 8 presets validés, tokens officiels, tests contraste |
+| KR-16 | Modes mono/by-kind/by-focus et formes | KOR-2A | G8, légendes et distinction non chromatique |
+| KR-17 | Narration factuelle et caméra déterministe | KOR-2B | G9/G10, référence et cadence |
+| KR-18 | Autocorrection bornée et refus si échec | KOR-2B | G11, rapports QA et reproductibilité |
+| KR-19 | Plan de présentation lié au Bundle | KOR-2A/2B | G12, hashes et validation croisée |
+| KR-20 | Production en série locale et définition de terminé | KOR-7 | Batch borné, arrêt, manifeste, revue gates |
 
 ## Arbitrages retenus pour simplifier (proposés)
 
@@ -25,13 +31,13 @@ Toutes les exigences ci-dessous sont des cibles, non des capacités livrées. `K
 - Priorité au lecteur SVG et au HTML offline ; SVG animé autonome et vidéo après stabilisation de la timeline.
 - Choisir une tranche Script avant Kapture pour vérifier le cœur avec peu d'UI ; Auto glouton ensuite, pas d'algorithme global de planification.
 - Première version limitée au focus Constellation traditionnel ; recettes sémantiques spécialisées soumises à des preuves qualifiées.
-- Durée automatique et thème minimal de départ ; les presets et plafonds sont proposés, non calibrés sur utilisateurs.
+- Durée automatique, profil de rythme minimal et thème Signature de départ ; les presets et plafonds sont proposés, non calibrés sur utilisateurs.
 
 ## Questions ouvertes (ne bloquent pas KOR-0)
 
 1. Quel support de diffusion est prioritaire : site Web, présentation, réseau social ou vidéo ? Cela décide de la matrice SVG animé et formats de sortie.
 2. Quels Kristals et politiques sont autorisés pour les premières démos réelles ou publiques ? Utiliser synthétique tant que non confirmé.
-3. Quelle esthétique (typographie, contraste, marque) doit être conservée dans les exports ? Ne pas introduire d'assets propriétaires sans vérification de droits.
+3. La marque #1E6864 et le choix de thèmes sont décidés. Confirmer la typographie finale, les assets éventuels et les supports de diffusion ; vérifier leurs droits.
 4. Faut-il un CLI après le MVP ? Envisager `koreograph render score.json` uniquement si le mode local UI ne suffit pas ; aucun CLI actuel.
 5. Quelle machine de référence et quels navigateurs/logiciels hôtes doivent constituer les gates ? Les seuils sont à mesurer.
 6. Un adaptateur v11 indépendant sera-t-il souhaité ? Exige son propre contrat et modèle d'autorité, non une migration implicite.

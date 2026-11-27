@@ -45,3 +45,11 @@ Les identifiants `demo:conscience`, `demo:identite`, `demo:memoire` désignent d
 | Troncature | Limite explicite des données ou de la présentation, pas absence canonique |
 | Seed | Paramètre déterministe de départage, non source d'aléa implicite |
 | Poster | Frame statique exportée avec contexte de lecture |
+
+## Exemples et termes complémentaires
+
+- [Theme Library](themes/README.md) : tokens et encodage, non taxonomie canonique.
+- [Production Request](examples/signature.production.json) : demande de préparation, non autorisation de publication.
+- [Presentation Plan](examples/signature.presentation.json) : pistes caméra/captions et thème effectif, lié à un Bundle exact.
+- **Director** : coordination de présentation ; **Story** : actes factuels ; **QA** : contrôles et diagnostics ; **safe area** : zone écran réservant les overlays ; **by-kind** : distinction des kinds graphiques attestés, pas classification par IA.
+- [SVG synthétique](examples/koreograph-focus-demo.svg) : référence historique, couleurs antérieures à la marque officielle.

@@ -200,7 +200,3 @@ Les tests unitaires Node autonomes sont exécutables hors dépendances ; le
 build Astro, la suite complète Node 24/Vitest/Playwright restent à qualifier.
 
 Voir [30-kristal-v10-github.md](30-kristal-v10-github.md).
-
-## Koreograph local preview
-
-Koreograph provides confirmed-path capture, scripted and automatic route preparation, an SVG player, and private exports. See the [implementation and validation scope](koreograph/ETAT-IMPLEMENTATION.md).

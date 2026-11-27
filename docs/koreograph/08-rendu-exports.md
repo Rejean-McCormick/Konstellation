@@ -41,3 +41,7 @@ FFmpeg n'est pas une dépendance actuelle de Konstellation et la disponibilité 
 ## Manifeste et reproductibilité
 
 À côté du fichier, option locale de manifeste : version Score/Bundle, versions compilateur/adaptateur/runtime, révision Konstellation si autorisée, locale, aspect, dimensions, fps, font et environnement, durée effective, avertissements, SHA-256 du fichier et des données minimisées sous réserve d'autorisation. Ne pas embarquer tokens, chemins absolus, identifiants de principal ou journal de requêtes. Les empreintes de corpus peuvent être sensibles : manifeste public minimal distinct du manifeste privé. Les fichiers temporaires sont bornés et supprimés en fin/annulation. Pas de publication automatique vers CDN, Git ou plateforme vidéo.
+
+## Extension v0.2 : cohérence de présentation
+
+Aperçu et export consomment le même Bundle + Presentation Plan. Figer thème effectif, encodage, géométrie, métriques de font et piste caméra/captions ; recalculer QA après changement. Les textes d'overlay ne suivent pas le zoom. Pour SMIL/CSS autonome, compiler aussi les transformations caméra et transitions des formes et labels si transposables ; sinon refuser le format avec alternative HTML. Un poster accompagne l'export animé si demandé ; une transcription conserve le parcours et les diagnostics. Le manifeste ajoute hashes de thème/plan si autorisés. Voir [contrats](19-production-contracts.md) et [batch](20-production-serie-et-release.md).

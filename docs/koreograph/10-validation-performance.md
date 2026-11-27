@@ -63,3 +63,15 @@ npm run test:e2e:smoke
 ```
 
 Les tests Koreograph spécifiques sont à écrire, et aucune commande `test:koreograph` n'existe dans le snapshot. La présente livraison ne lance pas la suite applicative. Voir [VALIDATION](VALIDATION.md).
+
+## Extension du golden corpus et des gates v0.2
+
+| Golden | Vérification supplémentaire |
+|---|---|
+| G8 | huit thèmes, modes mono/by-kind/by-focus, géométrie uniforme/par kind ; labels/contours contrastés, légende, aucune mutation de route |
+| G9 | caméra fixe/auto, 3 aspects, continuité de poses et cadrage, reduced-motion |
+| G10 | captions factuelles, références et temps ; durée insuffisante, label malveillant, preuve refusée |
+| G11 | collisions réparables puis impossibles, trois passes max, même résultat, aucun objet indispensable supprimé |
+| G12 | import thème hostile, Plan avec mauvais hash, QA falsifié, batch annulé et contexte changé |
+
+G0 ajoute les trois schémas de présentation et fixtures. G1 ajoute Story, Theme Engine, caméra et validator purs. G3–G4 couvrent les combinaisons visuelles critiques et les exports. Le contrôle documentaire de contrastes n'est pas une qualification WCAG du produit. Voir [autocorrection](18-qualite-autocorrection.md) et [definition of done](20-production-serie-et-release.md).

@@ -1,0 +1,52 @@
+{
+  "format": "koreograph.theme/0.1",
+  "id": "editorial",
+  "revision": 1,
+  "name": "Editorial",
+  "defaults": {
+    "encoding": "by-kind",
+    "geometry": "by-kind"
+  },
+  "tokens": {
+    "background": "#F3EDE2",
+    "foreground": "#493C32",
+    "mutedText": "#65564A",
+    "node": "#1E6864",
+    "nodeStroke": "#1E6864",
+    "edge": "#796A5D",
+    "accent": "#1E6864",
+    "focus": "#1E6864",
+    "context": "#796A5D",
+    "brand": "#1E6864"
+  },
+  "kindColors": {
+    "entity": "#4E92D0",
+    "concept": "#1E6864",
+    "source": "#8D79C3",
+    "value": "#C48A42",
+    "group": "#C66F86"
+  },
+  "kindShapes": {
+    "entity": "rounded-rect",
+    "concept": "circle",
+    "source": "document",
+    "value": "capsule",
+    "group": "hexagon"
+  },
+  "typography": {
+    "fontFamily": "system-ui",
+    "labelPx": 26,
+    "titlePx": 42,
+    "captionPx": 24
+  },
+  "strokes": {
+    "edgePx": 2,
+    "nodePx": 2,
+    "focusPx": 3
+  },
+  "effects": {
+    "haloOpacity": 0.08,
+    "grid": false,
+    "branding": true
+  }
+}

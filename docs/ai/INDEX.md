@@ -40,3 +40,7 @@
 ## Procédure opérationnelle proposée (lot 04)
 
 - [`OPERATIONS.md`](OPERATIONS.md) — parcours concret et points de contrôle à vérifier avant tout effet.
+
+## Proposition Koreograph (26 novembre 2026)
+
+- [Documentation de conception](../koreograph/README.md) : lire pour une intervention concernant l’animation procédurale de la navigation, thèmes, caméra, narration, QA et exports (v0.2). Première tranche expérimentale : [guide de livraison](../koreograph/22-implementation-v0.1.md). Aucune publication ou modification des droits n’est autorisée par ce dossier.

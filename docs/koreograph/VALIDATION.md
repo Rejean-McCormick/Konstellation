@@ -1,18 +1,28 @@
-# Contrôle de la livraison documentaire — 26 novembre 2026
+# Contrôle de la livraison documentaire — v0.2, 26 novembre 2026
 
-## Vérifications réellement effectuées
+## Base et périmètre
 
-- Inspection du snapshot ZIP fourni, notamment `AGENTS.md`, index et manifeste docs, code Svelte, layout, routes de lecture, contrats existants et documents K0/K10/K11. Aucun accès au dépôt distant ni aux données externes.
-- Contrôle initial des liens avec le script existant `node scripts/check-docs.mjs` : 98 fichiers Markdown, 113 liens locaux, 0 problème.
-- Contrôle final du dossier docs intégré au snapshot : 115 fichiers Markdown, 173 liens locaux vérifiés, 0 problème.
-- Deux drafts JSON Schema contrôlés avec `jsonschema.Draft202012Validator.check_schema` ; trois exemples positifs validés (Score explicite, Score Auto, Bundle synthétique).
-- Douze mutations négatives rejetées : token, version inconnue, premier pas invalide, second focus, coordonnées arbitraires, trop d'étapes, mélange des modes, trop de sauts, publication prétendue, lien causal non autorisé, script, opacité invalide.
-- Contrôles transversaux sur le Bundle synthétique : IDs uniques, focus présent et unique, références de liens, bornes du viewport, proportion, segments contigus et positifs, continuité de scène, hold/focus compatibles et fin égale à la durée.
+Cette révision reprend le `/docs` complet de `Konstellation_docs_avec_Koreograph.zip` (v0.1), et le snapshot `znapshot_Konstellation_11260852.zip` pour les références vers le dépôt. Les fichiers historiques de Konstellation hors index sont conservés. Les contrats Score/Bundle et les trois fixtures JSON v0.1 restent inchangés. Le prototype SVG déjà fourni est copié dans les exemples, sans modification ; il précède la décision de marque et n'est pas une sortie du futur compilateur.
 
-Les contrôles JSON et transversaux sont des vérifications de conception ponctuelles, pas une suite runtime livrée. Les JSON Schemas restent dans `docs/koreograph/schemas/`, distincts des contrats de production.
+## Contrôles réellement effectués sur v0.2
 
-## Non vérifié / limites
+- Script du dépôt `node scripts/check-docs.mjs` exécuté après assemblage du `/docs` avec les autres fichiers du snapshot : liens relatifs vers les sources et les docs vérifiés. Les liens vers les fichiers applicatifs supposent l'intégration à la racine du repo ; un ZIP `/docs` seul ne contient pas ces fichiers externes.
+- [Script documentaire](validate-design.py) exécuté avec Python, `jsonschema` et `referencing`, registre de schémas local sans résolution réseau : 5 JSON Schemas Draft 2020-12 valides, 5 exemples Score/Bundle/Request/Plan acceptés, 8 presets Theme acceptés, 26 mutations négatives rejetées (21 par schémas, 5 par contrôles transversaux).
+- Contrôles transversaux : Bundle synthétique (identités, liens, focus, viewport, segments), demande (aspect), Plan (digests, durée, alignement et continuité des poses fixes, références et textes des trois captions). Le script est limité aux fixtures, pas un validateur générique de production ni une implémentation générale JCS.
+- 48 ratios de contraste de tokens sur fonds opaques : 2 tokens texte et 4 tokens graphiques par thème, seuils 4,5:1 et 3:1 respectés ; minimum texte 5,98:1, minimum graphique 3,61:1. Ces contrôles ne portent pas sur les combinaisons avec alpha, sur les remplissages adjacents, sur le rendu des labels ou sur une simulation du daltonisme. Ils ne constituent pas une qualification WCAG du produit.
+- Prototype SVG : XML bien formé, éléments `animate` présents, aucun script/foreignObject, href ou attribut d'événement détecté ; aucune lecture visuelle navigateur effectuée dans cette révision.
 
-Pas d'installation de dépendances, de build Astro, de tests Vitest/Playwright, de mesure de performance, de rendu SVG/HTML/vidéo, de test FFmpeg, de test réel Reader Policy ni de qualification de release Koreograph. L'environnement disponible pour le contrôle documentaire utilise Node 22.16.0, inférieur au minimum applicatif indiqué dans `package.json` (24.15.0). Le contrôle de liens est un script autonome sans dépendance npm ; il ne valide pas l'application. Les exemples ne sont pas des données du Kristal réel et le Bundle n'est pas produit par un compilateur existant.
+Pour répéter localement, depuis le repo avec `/docs` intégré et les dépendances Python déjà installées :
 
-Les arbitrages, budgets, formats et points d'insertion restent à valider avant développement. Aucun commit/push, publication, modification de source applicative ou autorisation de lecture supplémentaire n'a été réalisé.
+```bash
+node scripts/check-docs.mjs
+python docs/koreograph/validate-design.py
+```
+
+Les assertions du script Python doivent rester actives (ne pas lancer avec `-O`). Aucun ajout aux dépendances applicatives npm n'est nécessaire pour ces contrôles. Les fixtures ne sont pas des Kristals réels. Le plan synthétique porte `review`, et non `pass`, car le moteur et son rendu n'ont pas été validés.
+
+## Non vérifié / décisions proposées
+
+Pas de build Astro, tests Vitest/Playwright, implémentation Svelte, intégration effective des API, test réel Reader Policy, mesure de performance, export vidéo, test de compatibilité des animations SVG, ni qualification de release. Les noms de presets, tokens secondaires, choix de formes, seuils, budgets, ordre des lots et contrats d'extension restent des propositions techniques. Les deux choix propriétaires sont la marque #1E6864 et la possibilité de choisir des thèmes monochromes ou polychromes. Les familles spécialisées et la coloration par type de relation sont documentées comme extensions conditionnées aux preuves ; leur contrat Bundle spécialisé reste à finaliser et valider lors de KOR-6. L'extension multilingue est hors cible de cette itération.
+
+Aucun commit/push, publication, changement de droits ou de code applicatif. Ce livrable est une archive documentaire, non le dépôt distant.

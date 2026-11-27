@@ -52,3 +52,19 @@ V0.1 : en mémoire, sauvegarde locale explicite du Score. Aucun stockage navigat
 ## Isolation
 
 Le lecteur ne prend pas le contrôle du shell de navigation durant la lecture. Kapture observe les événements confirmés ; la démo ouvre une surface dédiée. Fermer la démo restaure simplement l'exploration laissée intacte. La désactivation du flag masque les commandes et évite de lancer tout travail Koreograph.
+
+## Extension de présentation v0.2
+
+```mermaid
+flowchart TD
+  A[Score + snapshots autorisés] --> B[Compiler / Story]
+  C[Theme + choix de présentation] --> D[Theme Engine]
+  B --> E[Director / Motion / layout]
+  D --> E
+  E --> F[Validator et réparation bornée]
+  F --> G[Bundle + Presentation Plan figés]
+  G --> H[frameAtPresentation]
+  H --> I[Player SVG et exports]
+```
+
+Theme Engine résout les tokens ; Story compose les actes factuels ; Director coordonne cadrage et mouvement ; Validator vérifie et corrige en compilation ; aucune boîte n'est un service. Le Plan dépend du Bundle exact, et aucune donnée de thème n'influence le choix de route. La couche de présentation est optionnelle pour la tranche initiale. Voir [contrats](19-production-contracts.md).

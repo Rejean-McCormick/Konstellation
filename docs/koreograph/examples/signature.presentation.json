@@ -1,0 +1,168 @@
+{
+  "format": "koreograph.presentation-plan/0.1",
+  "bundleSha256": "e482be2ed58626e72b7bbaf597f8c72ec1e37bf418c8b77f6c8a122450169331",
+  "themeSha256": "5cae60407575989b377ff6bca8181e1ba6014baf5876812b233863825f183b1d",
+  "theme": {
+    "format": "koreograph.theme/0.1",
+    "id": "signature",
+    "revision": 1,
+    "name": "Signature",
+    "defaults": {
+      "encoding": "mono",
+      "geometry": "uniform"
+    },
+    "tokens": {
+      "background": "#0C1918",
+      "foreground": "#E2F2EF",
+      "mutedText": "#A6C9C3",
+      "node": "#1E6864",
+      "nodeStroke": "#78C5BC",
+      "edge": "#6A9D96",
+      "accent": "#78C5BC",
+      "focus": "#78C5BC",
+      "context": "#477D78",
+      "brand": "#1E6864"
+    },
+    "kindColors": {
+      "entity": "#4E92D0",
+      "concept": "#1E6864",
+      "source": "#8D79C3",
+      "value": "#C48A42",
+      "group": "#C66F86"
+    },
+    "kindShapes": {
+      "entity": "rounded-rect",
+      "concept": "circle",
+      "source": "document",
+      "value": "capsule",
+      "group": "hexagon"
+    },
+    "typography": {
+      "fontFamily": "system-ui",
+      "labelPx": 26,
+      "titlePx": 42,
+      "captionPx": 24
+    },
+    "strokes": {
+      "edgePx": 2,
+      "nodePx": 2,
+      "focusPx": 3
+    },
+    "effects": {
+      "haloOpacity": 0.15,
+      "grid": true,
+      "branding": true
+    }
+  },
+  "encoding": "mono",
+  "geometry": "uniform",
+  "motion": "standard",
+  "cameraMode": "fixed",
+  "narrationMode": "captions",
+  "durationMs": 4400,
+  "compilerVersion": "not-implemented",
+  "camera": [
+    {
+      "startMs": 0,
+      "endMs": 1200,
+      "kind": "overview",
+      "from": {
+        "cx": 800,
+        "cy": 450,
+        "zoom": 1
+      },
+      "to": {
+        "cx": 800,
+        "cy": 450,
+        "zoom": 1
+      }
+    },
+    {
+      "startMs": 1200,
+      "endMs": 2600,
+      "kind": "overview",
+      "from": {
+        "cx": 800,
+        "cy": 450,
+        "zoom": 1
+      },
+      "to": {
+        "cx": 800,
+        "cy": 450,
+        "zoom": 1
+      }
+    },
+    {
+      "startMs": 2600,
+      "endMs": 4400,
+      "kind": "overview",
+      "from": {
+        "cx": 800,
+        "cy": 450,
+        "zoom": 1
+      },
+      "to": {
+        "cx": 800,
+        "cy": 450,
+        "zoom": 1
+      }
+    }
+  ],
+  "captions": [
+    {
+      "startMs": 0,
+      "endMs": 1200,
+      "act": "introduce",
+      "templateId": "introduce.focus",
+      "text": "Explorer : Conscience",
+      "refs": [
+        {
+          "sceneId": "s1",
+          "objectKey": "demo:conscience"
+        }
+      ]
+    },
+    {
+      "startMs": 1200,
+      "endMs": 2600,
+      "act": "associate",
+      "templateId": "associate.navigation",
+      "text": "Conscience → Identité : navigation",
+      "refs": [
+        {
+          "sceneId": "s1",
+          "objectKey": "demo:conscience"
+        },
+        {
+          "sceneId": "s2",
+          "objectKey": "demo:identite"
+        }
+      ]
+    },
+    {
+      "startMs": 2600,
+      "endMs": 4400,
+      "act": "deepen",
+      "templateId": "deepen.focus",
+      "text": "Explorer : Identité",
+      "refs": [
+        {
+          "sceneId": "s2",
+          "objectKey": "demo:identite"
+        }
+      ]
+    }
+  ],
+  "qa": {
+    "state": "review",
+    "samples": 0,
+    "passes": 0,
+    "diagnostics": [
+      {
+        "code": "Q-NOT-RUNTIME-TESTED",
+        "severity": "warning",
+        "segmentIndex": null
+      }
+    ]
+  }
+}

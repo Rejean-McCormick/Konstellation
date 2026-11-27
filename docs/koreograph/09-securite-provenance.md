@@ -31,3 +31,7 @@ Conserver pour le Score les références du contexte autorisé ; pour un Bundle 
 ## Opérations et incidents
 
 Déploiement local uniquement dans le premier lot, sous les mécanismes existants. Ne pas ajouter de route de rendu anonyme, de serveur de navigateur distant ou de job persistant. Pour partagé/public, revue des profils, CSP, auth, quotas, traitement du disque, stockage et révocation requise. En incident : stopper préparation/export, invalider caches, supprimer fichiers temporaires, désactiver le flag, suivre [runbook Incident](../runbooks/INCIDENT.md). Si un export a quitté le système, avertir l'autorité compétente ; ne pas promettre une suppression à distance.
+
+## Menaces supplémentaires v0.2
+
+Theme et Production Request sont non fiables à l'import : limiter taille, schéma strict, allowlist fonts et formes ; refuser CSS, scripts, URLs, commandes et champs arbitraires. Un Presentation Plan importé ne certifie jamais son QA ou ses captions : vérifier digests, recompilation factuelle et autorité locale ; aucun hash n'est une signature. Le batch reste local, explicitement sélectionné, borné et invalidé sur changement de contexte. Les logs et manifestes ne révèlent pas de labels ou IDs cachés. Voir [contrats](19-production-contracts.md).

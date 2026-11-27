@@ -1,0 +1,128 @@
+{
+  "format": "koreograph.production-request/0.1",
+  "score": {
+    "format": "koreograph.score/0.1",
+    "title": "Explorer la conscience — exemple fictif",
+    "locale": "fr",
+    "source": {
+      "datasetRef": "demo:synthetic",
+      "registryRef": "demo:registry",
+      "readerPolicyRef": "demo:policy",
+      "executionProfileRef": "demo:execution",
+      "lensRef": "demo:lens"
+    },
+    "presentation": {
+      "style": "cinematic",
+      "durationMs": "auto",
+      "aspectRatio": "16:9",
+      "density": 5
+    },
+    "mode": "script",
+    "steps": [
+      {
+        "action": "focus",
+        "target": {
+          "focus": {
+            "kind": "entity",
+            "id": "demo:conscience"
+          },
+          "groupId": null
+        }
+      },
+      {
+        "action": "reveal",
+        "limit": 3
+      },
+      {
+        "action": "follow",
+        "target": {
+          "focus": {
+            "kind": "entity",
+            "id": "demo:identite"
+          },
+          "groupId": null
+        }
+      },
+      {
+        "action": "hold",
+        "durationMs": 1800
+      },
+      {
+        "action": "follow",
+        "target": {
+          "focus": {
+            "kind": "entity",
+            "id": "demo:memoire"
+          },
+          "groupId": null
+        }
+      }
+    ]
+  },
+  "theme": {
+    "format": "koreograph.theme/0.1",
+    "id": "signature",
+    "revision": 1,
+    "name": "Signature",
+    "defaults": {
+      "encoding": "mono",
+      "geometry": "uniform"
+    },
+    "tokens": {
+      "background": "#0C1918",
+      "foreground": "#E2F2EF",
+      "mutedText": "#A6C9C3",
+      "node": "#1E6864",
+      "nodeStroke": "#78C5BC",
+      "edge": "#6A9D96",
+      "accent": "#78C5BC",
+      "focus": "#78C5BC",
+      "context": "#477D78",
+      "brand": "#1E6864"
+    },
+    "kindColors": {
+      "entity": "#4E92D0",
+      "concept": "#1E6864",
+      "source": "#8D79C3",
+      "value": "#C48A42",
+      "group": "#C66F86"
+    },
+    "kindShapes": {
+      "entity": "rounded-rect",
+      "concept": "circle",
+      "source": "document",
+      "value": "capsule",
+      "group": "hexagon"
+    },
+    "typography": {
+      "fontFamily": "system-ui",
+      "labelPx": 26,
+      "titlePx": 42,
+      "captionPx": 24
+    },
+    "strokes": {
+      "edgePx": 2,
+      "nodePx": 2,
+      "focusPx": 3
+    },
+    "effects": {
+      "haloOpacity": 0.15,
+      "grid": true,
+      "branding": true
+    }
+  },
+  "encoding": "mono",
+  "geometry": "uniform",
+  "camera": "fixed",
+  "narration": "captions",
+  "motion": "standard",
+  "outputs": [
+    "html",
+    "svg-animated"
+  ],
+  "resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "fps": 30
+}

@@ -1,0 +1,52 @@
+{
+  "format": "koreograph.theme/0.1",
+  "id": "graphite",
+  "revision": 1,
+  "name": "Graphite",
+  "defaults": {
+    "encoding": "mono",
+    "geometry": "uniform"
+  },
+  "tokens": {
+    "background": "#18191C",
+    "foreground": "#F2F3F5",
+    "mutedText": "#BFC2C7",
+    "node": "#55585E",
+    "nodeStroke": "#E8E9EC",
+    "edge": "#92959C",
+    "accent": "#E8E9EC",
+    "focus": "#E8E9EC",
+    "context": "#777B82",
+    "brand": "#1E6864"
+  },
+  "kindColors": {
+    "entity": "#4E92D0",
+    "concept": "#1E6864",
+    "source": "#8D79C3",
+    "value": "#C48A42",
+    "group": "#C66F86"
+  },
+  "kindShapes": {
+    "entity": "rounded-rect",
+    "concept": "circle",
+    "source": "document",
+    "value": "capsule",
+    "group": "hexagon"
+  },
+  "typography": {
+    "fontFamily": "system-ui",
+    "labelPx": 26,
+    "titlePx": 42,
+    "captionPx": 24
+  },
+  "strokes": {
+    "edgePx": 2,
+    "nodePx": 2,
+    "focusPx": 3
+  },
+  "effects": {
+    "haloOpacity": 0.08,
+    "grid": false,
+    "branding": true
+  }
+}

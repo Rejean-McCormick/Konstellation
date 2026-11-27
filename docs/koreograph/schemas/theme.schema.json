@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:koreograph:draft:theme:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "koreograph.theme/0.1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,47}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9999
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "encoding": {
+          "enum": [
+            "mono",
+            "by-kind",
+            "by-focus"
+          ]
+        },
+        "geometry": {
+          "enum": [
+            "uniform",
+            "by-kind"
+          ]
+        }
+      },
+      "required": [
+        "encoding",
+        "geometry"
+      ]
+    },
+    "tokens": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "background": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "foreground": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "mutedText": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "node": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "nodeStroke": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "edge": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "accent": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "focus": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "context": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "brand": {
+          "const": "#1E6864"
+        }
+      },
+      "required": [
+        "background",
+        "foreground",
+        "mutedText",
+        "node",
+        "nodeStroke",
+        "edge",
+        "accent",
+        "focus",
+        "context",
+        "brand"
+      ]
+    },
+    "kindColors": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "concept": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "group": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        }
+      },
+      "required": [
+        "entity",
+        "concept",
+        "source",
+        "value",
+        "group"
+      ]
+    },
+    "kindShapes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity": {
+          "enum": [
+            "circle",
+            "rounded-rect",
+            "document",
+            "capsule",
+            "hexagon"
+          ]
+        },
+        "concept": {
+          "enum": [
+            "circle",
+            "rounded-rect",
+            "document",
+            "capsule",
+            "hexagon"
+          ]
+        },
+        "source": {
+          "enum": [
+            "circle",
+            "rounded-rect",
+            "document",
+            "capsule",
+            "hexagon"
+          ]
+        },
+        "value": {
+          "enum": [
+            "circle",
+            "rounded-rect",
+            "document",
+            "capsule",
+            "hexagon"
+          ]
+        },
+        "group": {
+          "enum": [
+            "circle",
+            "rounded-rect",
+            "document",
+            "capsule",
+            "hexagon"
+          ]
+        }
+      },
+      "required": [
+        "entity",
+        "concept",
+        "source",
+        "value",
+        "group"
+      ]
+    },
+    "typography": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fontFamily": {
+          "enum": [
+            "system-ui",
+            "sans-serif",
+            "serif",
+            "monospace"
+          ]
+        },
+        "labelPx": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 48
+        },
+        "titlePx": {
+          "type": "integer",
+          "minimum": 24,
+          "maximum": 72
+        },
+        "captionPx": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 48
+        }
+      },
+      "required": [
+        "fontFamily",
+        "labelPx",
+        "titlePx",
+        "captionPx"
+      ]
+    },
+    "strokes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "edgePx": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "nodePx": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "focusPx": {
+          "type": "number",
+          "minimum": 2,
+          "maximum": 12
+        }
+      },
+      "required": [
+        "edgePx",
+        "nodePx",
+        "focusPx"
+      ]
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "haloOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.35
+        },
+        "grid": {
+          "type": "boolean"
+        },
+        "branding": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "haloOpacity",
+        "grid",
+        "branding"
+      ]
+    }
+  },
+  "required": [
+    "format",
+    "id",
+    "revision",
+    "name",
+    "defaults",
+    "tokens",
+    "kindColors",
+    "kindShapes",
+    "typography",
+    "strokes",
+    "effects"
+  ]
+}

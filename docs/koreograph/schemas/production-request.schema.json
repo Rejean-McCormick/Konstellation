@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:koreograph:draft:production-request:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "koreograph.production-request/0.1"
+    },
+    "score": {
+      "$ref": "urn:koreograph:draft:score:0.1"
+    },
+    "theme": {
+      "$ref": "urn:koreograph:draft:theme:0.1"
+    },
+    "encoding": {
+      "enum": [
+        "mono",
+        "by-kind",
+        "by-focus"
+      ]
+    },
+    "geometry": {
+      "enum": [
+        "uniform",
+        "by-kind"
+      ]
+    },
+    "camera": {
+      "enum": [
+        "fixed",
+        "auto"
+      ]
+    },
+    "narration": {
+      "enum": [
+        "off",
+        "captions"
+      ]
+    },
+    "motion": {
+      "enum": [
+        "standard",
+        "reduced"
+      ]
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "score",
+          "bundle",
+          "html",
+          "svg",
+          "svg-animated",
+          "png",
+          "mp4",
+          "webm",
+          "gif"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 9,
+      "uniqueItems": true
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 320,
+          "maximum": 3840
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 320,
+          "maximum": 3840
+        }
+      },
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "fps": {
+      "enum": [
+        24,
+        30,
+        60
+      ]
+    }
+  },
+  "required": [
+    "format",
+    "score",
+    "theme",
+    "encoding",
+    "geometry",
+    "camera",
+    "narration",
+    "motion",
+    "outputs",
+    "resolution",
+    "fps"
+  ]
+}

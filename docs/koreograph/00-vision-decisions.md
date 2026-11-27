@@ -41,3 +41,16 @@ Dans ces documents, DOIT/NE DOIT PAS = exigence pour la cible Koreograph ; DEVRA
 Un observateur doit pouvoir dire d'où l'on part, quel concept devient le focus, quel lien a permis le déplacement et où l'on arrive. Le focus reste lisible ; les éléments communs ne clignotent pas ; les relations ambiguës sont neutres ; la troncature est signalée. Le scénario peut être joué en pause, à l'envers via recherche temporelle et image par image sans réinterroger le graphe.
 
 Indicateurs à mesurer : nombre d'interactions pour créer une démo, temps de préparation, taux de parcours valides, continuité des identités, lisibilité, taux d'images respectant le budget, conformité aux politiques et part des exports réellement reproductibles. Les seuils initiaux sont dans [10](10-validation-performance.md), non des résultats mesurés.
+
+## Décisions complémentaires v0.2
+
+| ID | Décision | Justification |
+|---|---|---|
+| KD-13 | Marque `#1E6864` (décision propriétaire), thèmes sélectionnables mono/polychromes | Identité stable, lisibilité par type sans obligation de couleur |
+| KD-14 | Thème, encodage, géométrie et rythme indépendants | Même parcours, plusieurs interprétations visuelles |
+| KD-15 | Story/Director/Validator sont des fonctions du même compilateur | Pas de service, pas de seconde timeline ni IA |
+| KD-16 | Réparation bornée avant gel ; échec explicite plutôt que faux résultat | Fidélité et accessibilité avant esthétique |
+| KD-17 | Extensions de production séparées de Score/Bundle 0.1 | Compatibilité avec la tranche initiale |
+| KD-18 | Production locale en série après stabilisation du cœur | Pas d'infrastructure distribuée ni publication implicite |
+
+Voir [thèmes](15-direction-artistique-themes.md) et [cible finale](20-production-serie-et-release.md).

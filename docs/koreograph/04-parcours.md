@@ -49,3 +49,7 @@ En cas d'erreur d'autorisation, interruption totale et diagnostic générique ; 
 | Traçabilité | Liens de provenance visibles | Ne pas remonter vers source masquée |
 
 Ces recettes sont futures ; le premier Auto n'utilise pas un `NavigationPlan` comme certificat de vérité. Le plan peut orienter vers une projection disponible dans une version ultérieure ; la projection et son audit déterminent ce qui peut être montré.
+
+## Composition de la cible finale
+
+Le Planner choisit la route ; Story en dérive les actes factuels, Director les met en scène. La sélection d'un thème ne relance pas le Planner. Les intentions UI « Expliquer » et « Comparer » ne confèrent pas une nouvelle capacité de preuve : comparer exige un adaptateur spécialisé compatible. Voir [narration](16-narration-composition.md).

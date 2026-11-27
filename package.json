@@ -36,7 +36,9 @@
     "release:prepare": "npm run release:sbom && npm run release:manifest",
     "check:svelte-structure": "node scripts/check-svelte-structure.mjs",
     "test:offline": "python tools/validate.py",
-    "check:frontend-security": "node scripts/check-frontend-security.mjs"
+    "check:frontend-security": "node scripts/check-frontend-security.mjs",
+    "test:koreograph": "node --test tests/koreograph.test.mjs",
+    "koreograph:demo": "node scripts/koreograph-demo.mjs"
   },
   "dependencies": {
     "@astrojs/svelte": "9.0.1",

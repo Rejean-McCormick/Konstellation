@@ -87,6 +87,10 @@ Ils illustrent la plateforme mais ne définissent pas son architecture universel
 
 Ces fichiers ne doivent pas être utilisés pour déduire l'état courant lorsqu'un document plus récent existe.
 
+## Proposition de conception — Koreograph (26 novembre 2026)
+
+- [koreograph/README.md](koreograph/README.md) et documents associés : spécification proposée v0.2 (thèmes, marque #1E6864, production, narration, caméra et QA), non normative pour Konstellation 1.0. Les schemas et exemples du dossier sont des drafts documentaires, non des contrats de production. La tranche expérimentale est décrite dans le [guide 0.1.0](koreograph/22-implementation-v0.1.md) ; aucune qualification de release n’est revendiquée. Les contrats et ADRs existants prévalent.
+
 ## Règle de maintenance
 
 Toute modification de contrat, affordance, recette, renderer ou invariant doit mettre à jour :
@@ -97,8 +101,3 @@ Toute modification de contrat, affordance, recette, renderer ou invariant doit m
 4. un ADR si la décision est structurante ;
 5. les golden tests ;
 6. `CHANGELOG.md`.
-
-## Koreograph
-
-- [Koreograph](koreograph/README.md) — design, schemas and examples.
-- [Local implementation](koreograph/ETAT-IMPLEMENTATION.md) — activation, operations and scope.
