@@ -1,0 +1,43 @@
+{
+  "format": "koreograph.cloture/0.1",
+  "publicationAuthorized": false,
+  "decision": "REVUE DES LIMITES ET AVERTISSEMENTS",
+  "apiCode": 2,
+  "apiState": "review",
+  "summary": {
+    "sources": 6,
+    "cases": 18,
+    "pass": 8,
+    "review": 10,
+    "fail": 0,
+    "runtimeChecks": 54,
+    "policyPass": 0,
+    "policyFail": 0,
+    "families": [
+      "flow",
+      "traceability"
+    ]
+  },
+  "limitsHit": [
+    "kristals",
+    "lenses",
+    "recipes"
+  ],
+  "ui": [
+    {
+      "browser": "chromium",
+      "state": "pass",
+      "code": 0
+    },
+    {
+      "browser": "firefox",
+      "state": "pass",
+      "code": 0
+    },
+    {
+      "browser": "webkit",
+      "state": "pass",
+      "code": 0
+    }
+  ]
+}

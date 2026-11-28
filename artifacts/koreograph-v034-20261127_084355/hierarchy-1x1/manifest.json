@@ -1,0 +1,29 @@
+{
+  "format": "koreograph.specialized-production/0.1",
+  "sourceMode": "explicit-private-projection",
+  "publicationAuthorized": false,
+  "state": "review",
+  "runtimeQualified": false,
+  "projectionSha256": "7b1b52a8acacbd9d6dfd20b16d833822e1206c06db64b7bb22c10ea28628b1ea",
+  "projectionKind": "tree",
+  "mode": "reviewed-hierarchy",
+  "partial": false,
+  "omitted": 0,
+  "files": [
+    {
+      "file": "animation.svg",
+      "bytes": 6330,
+      "sha256": "bf7d29bfbc9adbbdb7a36227d5cdba56835cea33b5cdb0a76acf3576888c1e66"
+    },
+    {
+      "file": "animation.html",
+      "bytes": 9114,
+      "sha256": "404ed4193cc30166d761d7e7c6d2f07ab62cdf24c5f27fc2248cf55021a97233"
+    },
+    {
+      "file": "storyboard.json",
+      "bytes": 2566,
+      "sha256": "59550ce74a59492dd0739f133f999e8bd4dc68b0e489875f3e8e2c9b210864e7"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "format": "koreograph.runtime-campaign/0.1",
+  "manifestSha256": "9a8348220b19c64ea43e8d9e7cd40cec8b96baf6eb620cfb2fea06709fba9cdf",
+  "publicationAuthorized": false,
+  "state": "pass",
+  "scope": "SVG SMIL échantillonné uniquement ; pas une qualification d’accès, d’accessibilité complète ou de publication.",
+  "results": [
+    {
+      "file": "animation.svg",
+      "format": "koreograph.runtime-check/0.1",
+      "sha256": "c4cbf0cbecfafd649e8f29ee91f7b18a3b82fb3d9975c966f9b20ab88fbb79c7",
+      "browser": "Chromium 153.0.8010.12",
+      "durationMs": 8440,
+      "samples": 92,
+      "state": "pass",
+      "diagnostics": [],
+      "publicationAuthorized": false,
+      "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification"
+    },
+    {
+      "file": "animation.svg",
+      "format": "koreograph.runtime-check/0.1",
+      "sha256": "c4cbf0cbecfafd649e8f29ee91f7b18a3b82fb3d9975c966f9b20ab88fbb79c7",
+      "browser": "Firefox 155.0",
+      "durationMs": 8440,
+      "samples": 92,
+      "state": "pass",
+      "diagnostics": [],
+      "publicationAuthorized": false,
+      "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification"
+    },
+    {
+      "file": "animation.svg",
+      "format": "koreograph.runtime-check/0.1",
+      "sha256": "c4cbf0cbecfafd649e8f29ee91f7b18a3b82fb3d9975c966f9b20ab88fbb79c7",
+      "browser": "WebKit 26.6",
+      "durationMs": 8440,
+      "samples": 92,
+      "state": "pass",
+      "diagnostics": [],
+      "publicationAuthorized": false,
+      "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification"
+    }
+  ]
+}

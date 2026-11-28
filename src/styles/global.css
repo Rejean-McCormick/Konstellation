@@ -3062,3 +3062,32 @@ td {
 @media (max-width: 1200px) {
   .view-switch.adaptive-switch > button > span { display: inline; }
 }
+
+
+/* Catalogue éditorial : largeur utile, métadonnées à la demande. */
+.fleet-simple .fleet-heading h1 {font-size:clamp(1.9rem,3vw,2.7rem);margin:0 0 8px;}
+.fleet-simple .fleet-heading p {margin:0;}
+.fleet-simple .fleet-layout {grid-template-columns:minmax(0,1fr);grid-template-areas:"cards";}
+.fleet-simple .fleet-layout.has-selection {grid-template-columns:minmax(0,1fr) minmax(260px,330px);grid-template-areas:"cards detail";}
+.fleet-simple .fleet-grid {grid-area:cards;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:10px;}
+.fleet-simple .fleet-card {min-height:86px;padding:14px 16px;gap:8px;border-radius:9px;min-width:0;}
+.fleet-simple .fleet-card strong {font-size:1rem;line-height:1.35;}
+.fleet-simple .fleet-card-bottom {display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.fleet-simple .fleet-indicator {text-transform:none;font-size:.82rem;}
+.fleet-simple .fleet-indicator.available {color:#1e6864;}
+.fleet-simple .fleet-detail {grid-area:detail;min-width:0;padding:18px;max-height:calc(100vh - 40px);overflow:auto;}
+.fleet-simple .fleet-detail h2 {margin:10px 0;}
+.fleet-simple .fleet-detail .primary {white-space:normal;max-width:100%;}
+.fleet-simple .fleet-dismiss {display:block;margin-left:auto;}
+.fleet-simple .fleet-options,.fleet-simple .fleet-about,.fleet-simple .fleet-technical {font-size:.86rem;color:#365c58;}
+.fleet-simple details summary {cursor:pointer;font-weight:600;padding:8px 0;}
+.fleet-simple .fleet-options select {max-width:100%;padding:6px;}
+.fleet-simple .fleet-technical {border-top:1px solid #d6e4e0;margin-top:16px;padding-top:8px;}
+.fleet-simple .fleet-technical dl {margin:12px 0;grid-template-columns:minmax(0,1fr);gap:5px;}
+.fleet-simple .fleet-technical dd {margin-bottom:8px;}
+.fleet-simple .fleet-about {margin-top:20px;line-height:1.5;}
+.technical-reader-notice {margin:18px auto;padding:20px 24px;max-width:1100px;border:1px solid #b5cbc8;border-radius:12px;background:#f2f7f5;color:#223c3a;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.technical-reader-notice h2 {font-size:1.12rem;margin:0 0 6px;}
+.technical-reader-notice p {margin:0;line-height:1.5;max-width:70ch;}
+.technical-reader-notice button {flex-shrink:0;white-space:normal;}
+@media(max-width:850px){.fleet-simple .fleet-layout.has-selection {grid-template-columns:minmax(0,1fr);grid-template-areas:"detail" "cards";}.fleet-simple .fleet-detail{max-height:none;}.technical-reader-notice{flex-direction:column;align-items:flex-start;margin:16px;}}

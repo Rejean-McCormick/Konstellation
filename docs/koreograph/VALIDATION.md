@@ -34,3 +34,7 @@ Voir [23 — Durcissement](23-durcissement-v0.2.md) et [matrice Chromium synthé
 ## Mise à jour 0.3.0
 
 Voir [24 — Spécialisations et production](24-specialisations-v0.3.md) pour les résultats de la tranche 0.3.0 et les limites de qualification sur données réelles.
+
+## Correctif d'intégration 0.3.2
+
+Voir [24 — Correctif d'intégration v0.3.2](24-specialisations-v0.3.md). Les tests Node ciblés sont 31/31 dans l'environnement de préparation ; le nouveau test Vitest et la compilation Astro doivent être exécutés sur le poste propriétaire. Aucun résultat de la révision précédente ne constitue une qualification du nouveau build.

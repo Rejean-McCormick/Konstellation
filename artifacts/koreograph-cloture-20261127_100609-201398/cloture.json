@@ -1,0 +1,43 @@
+{
+  "format": "koreograph.cloture/0.1",
+  "publicationAuthorized": false,
+  "decision": "ANOMALIE A EXAMINER",
+  "apiCode": 1,
+  "apiState": "fail",
+  "summary": {
+    "sources": 6,
+    "cases": 18,
+    "pass": 5,
+    "review": 12,
+    "fail": 1,
+    "runtimeChecks": 54,
+    "policyPass": 0,
+    "policyFail": 0,
+    "families": [
+      "flow",
+      "traceability"
+    ]
+  },
+  "limitsHit": [
+    "kristals",
+    "lenses",
+    "recipes"
+  ],
+  "ui": [
+    {
+      "browser": "chromium",
+      "state": "fail",
+      "code": 1
+    },
+    {
+      "browser": "firefox",
+      "state": "fail",
+      "code": 1
+    },
+    {
+      "browser": "webkit",
+      "state": "fail",
+      "code": 1
+    }
+  ]
+}

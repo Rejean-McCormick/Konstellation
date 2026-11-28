@@ -1,0 +1,20 @@
+{
+  "format": "koreograph.real-ui-smoke/0.1",
+  "browser": "chromium",
+  "state": "pass",
+  "publicationAuthorized": false,
+  "checks": {
+    "catalogue": "pass",
+    "navigation": "pass",
+    "reader": "pass",
+    "privateExports": "pass",
+    "contextInvalidation": "pass"
+  },
+  "sourcesAttempted": 1,
+  "diagnostics": [],
+  "browserVersion": "153.0.8010.12",
+  "renderer": "traceability",
+  "readerStep": "complete",
+  "exportStep": "complete",
+  "contextSwitch": "kristal"
+}

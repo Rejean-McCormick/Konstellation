@@ -1,0 +1,20 @@
+import { afterEach, expect, test, vi } from 'vitest';
+import { cleanup, fireEvent, render, within } from '@testing-library/svelte';
+import MyKristals from '../../src/components/MyKristals.svelte';
+afterEach(cleanup);
+test('catalogue opens only permitted readers, keeps metadata behind disclosure and handles inventory', async()=>{
+  const items=[{key:'a',title:'Accounting',stateRef:'urn:test:accounting',source:'local_v10_reader',availability:'available',openable:true,readerId:'a',readiness:'unknown',verification:'checked_on_open',viewKind:'local_v10_derived'}, {key:'b',title:'Biology',source:'local_manager_preview',availability:'unknown',openable:false,readiness:'unknown',verification:'index_only',viewKind:'inventory_only'}];
+  const open=vi.fn(); const {container}=render(MyKristals,{visible:true,items,onOpen:open}); const ui=within(container);
+  expect(container.querySelector('.fleet-card').textContent).not.toContain('urn:');
+  expect(container.querySelector('.fleet-detail')).toBeNull();
+  await fireEvent.click(ui.getByRole('button',{name:'Choisir Accounting',exact:true}));
+  expect(container.querySelector('.fleet-technical').open).toBe(false);
+  expect(container.querySelector('.fleet-technical').textContent).toContain('urn:test:accounting');
+  await fireEvent.click(ui.getByRole('button',{name:/Ouvrir dans l’explorateur/})); expect(open).toHaveBeenCalledWith('a');
+  await fireEvent.click(ui.getByRole('button',{name:'Choisir Biology',exact:true}));
+  expect(ui.queryByRole('button',{name:/Ouvrir dans l’explorateur/})).toBeNull();
+  expect(container.querySelector('.fleet-technical').open).toBe(false);
+  await fireEvent.input(ui.getByRole('searchbox'),{target:{value:'Accounting'}});
+  expect(container.querySelector('.fleet-detail')).toBeNull();
+  expect(ui.queryByRole('button',{name:'Choisir Biology',exact:true})).toBeNull();
+});

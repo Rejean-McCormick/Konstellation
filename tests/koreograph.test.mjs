@@ -113,3 +113,91 @@ test('multi-Bundle batch creates independent private manifests and reports inval
   const run=spawnSync(process.execPath,[fileURLToPath(cli),'--list',list,'--out',out,'--private-bundle','--themes','signature','--formats','svg'],{encoding:'utf8',timeout:30000});assert.equal(run.status,1,run.stderr);const manifest=JSON.parse(await fs.readFile(path.join(out,'manifest.json'),'utf8'));assert.equal(manifest.publicationAuthorized,false);assert.deepEqual(manifest.jobs.map(x=>x.status),['review','failed','review']);assert.equal(manifest.state,'failed');assert.ok(!JSON.stringify(manifest).includes(tmp));for(const j of manifest.jobs.filter(x=>x.status==='review')){const data=await fs.readFile(path.join(out,j.manifest));assert.equal(j.manifestSha256,createHash('sha256').update(data).digest('hex'));}assert.ok((await fs.readdir(out)).every(x=>!x.endsWith('.tmp')));
  }finally{await fs.rm(tmp,{recursive:true,force:true});}
 });
+
+// v0.3.2: all Svelte named imports must correspond to the actual module contract.
+// Static check (not a substitute for the Svelte/Astro build).
+test('all Svelte Koreograph named imports match declared module exports',async()=>{
+  const root=new URL('../src/components/',import.meta.url);
+  let checked=0;
+  for(const entry of await fs.readdir(root,{recursive:true,withFileTypes:true})){
+    if(!entry.isFile()||!entry.name.endsWith('.svelte'))continue;
+    // On Windows use pathToFileURL rather than constructing a file URL.
+    const {pathToFileURL}=await import('node:url');
+    const path=await import('node:path');
+    const component=pathToFileURL(path.join(entry.parentPath||entry.path,entry.name));
+    const text=await fs.readFile(component,'utf8');
+    for(const m of text.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"]([^'"]+\/koreograph\/[^'"]+\.mjs)['"]/g)){
+      const module=await fs.readFile(new URL(m[2],component),'utf8');
+      const names=new Set([...module.matchAll(/\bexport\s+(?:async\s+)?(?:function|class|const|let|var)\s+(\w+)/g)].map(x=>x[1]));
+      for(const imported of m[1].split(',').map(x=>x.trim()).filter(Boolean)){
+        const name=imported.split(/\s+as\s+/)[0];
+        assert.ok(names.has(name),`${entry.name} imports missing ${name} from ${m[2]}`);checked++;
+      }
+    }
+  }
+  assert.ok(checked>=10,'integration imports were not examined');
+});
+
+test('specialized integration uses the storyboard, not the legacy Bundle player',async()=>{
+  const {supportsProjection,chapterAt}=await import('../src/lib/koreograph/specialized.mjs');
+  const fixture=await specializedFixture('hierarchy');
+  assert.equal(supportsProjection(fixture),true);
+  assert.equal(supportsProjection({...fixture,derived:false}),false);
+  assert.equal(supportsProjection({...fixture,projectionKind:'unsupported'}),false);
+  const story=compileSpecialized(fixture);
+  for(const [index,page] of story.pages.entries()){
+    assert.equal(chapterAt(story,page.startMs),index);
+    assert.equal(chapterAt(story,page.endMs-1),index);
+    const fixed=renderSpecialized(story,{themeId:'paper',chapterIndex:index});
+    assert.ok(!fixed.includes('<animate'));
+    assert.ok(fixed.includes(`${index+1} / ${story.pages.length}`));
+    assert.ok(fixed.includes('aucune autorisation de publication'));
+  }
+  assert.equal(chapterAt(story,story.durationMs),story.pages.length-1);
+  assert.throws(()=>chapterAt(story,NaN));
+  assert.throws(()=>renderSpecialized(story,{chapterIndex:story.pages.length}));
+  const explorer=await fs.readFile(new URL('../src/components/Explorer.svelte',import.meta.url),'utf8');
+  const adaptive=await fs.readFile(new URL('../src/components/AdaptiveProjectionView.svelte',import.meta.url),'utf8');
+  const component=await fs.readFile(new URL('../src/components/KoreographProjection.svelte',import.meta.url),'utf8');
+  assert.match(explorer,/<AdaptiveProjectionView[\s\S]*?koreographEnabled=\{boot\?\.koreographAvailable === true && !fleetView && !technicalView && !switchingKristal\}/);
+  assert.match(adaptive,/!busy && loadedKey === requestKey && supportsProjection\(data\)/);
+  assert.match(adaptive,/koreographRevision: _revision/);
+  assert.match(component,/compileSpecialized\(data,/);
+  assert.doesNotMatch(component,/prepareProjection|KoreographPlayer|KoreographExports/);
+});
+
+// v0.3.4: Windows Firefox 155 measured ~33.04 px for 23 px labels.
+// Keep a conservative baseline gap and separate label/detail bands in every ratio.
+test('specialized cards reserve cross-browser multiline spacing without shrinking text',async()=>{
+  const fixture=await specializedFixture('comparison');
+  fixture.rows[0].label='Éléments de comparaison très détaillés';
+  fixture.cells[0].value='Valeur descriptive suffisamment longue pour deux lignes';
+  for(const aspectRatio of ['16:9','1:1','9:16']){
+    const story=compileSpecialized(fixture,{aspectRatio});
+    const before=canonical(story);
+    for(const options of [{},{motion:'reduced'},{chapterIndex:0}]){
+      const svg=renderSpecialized(story,options);
+      const card=[...svg.matchAll(/<title>[^<]*<\/title><rect\b[^>]*height="(\d+)"[^>]*\/>[\s\S]*?<\/g>/g)][0];
+      assert.ok(card,aspectRatio);assert.equal(Number(card[1]),184);
+      const rectY=Number(card[0].match(/<rect\b[^>]*\by="([\d.]+)"/)[1]);
+      const texts=[...card[0].matchAll(/<text x="[^"]+" y="([\d.]+)" font-size="(\d+)"/g)].map(m=>({y:Number(m[1]),size:Number(m[2])}));
+      assert.deepEqual(texts.map(t=>t.size),[23,23,19,19]);
+      for(let i=1;i<texts.length;i++)assert.ok(texts[i].y-texts[i-1].y>=Math.ceil(Math.max(texts[i].size,texts[i-1].size)*1.65),`${aspectRatio} baseline gap`);
+      assert.ok(texts[0].y-rectY>=38);assert.ok(rectY+184-texts.at(-1).y>=30);
+    }
+    assert.equal(canonical(story),before);
+  }
+});
+
+// Real campaign: orbital multiline labels and captions need the same spacing
+// contract as specialized cards, with static/SMIL parity.
+test('orbital multiline labels and captions use cross-browser baseline spacing',async()=>{
+ const {lineStep}=await import('../src/lib/koreograph/presentation.mjs');
+ const b=await compileScore(auto({aspectRatio:'1:1',maxHops:1}),async t=>{const p=await demoResolve(t);p.center.label='Étiquette multilignes pour vérifier';return p;});
+ const p=await compilePresentation(b);const size=p.theme.typography.labelPx;assert.equal(lineStep(size),Math.ceil(size*1.65));
+ const labels=svg=>[...svg.matchAll(/<text x="0" y="([0-9.]+)" font-size="([0-9]+)"[^>]*>/g)].map(m=>Number(m[1]));
+ for(const svg of [renderSvg(b,p,0),renderAnimatedSvg(b,p)]){const ys=labels(svg);assert.ok(ys.some((y,i)=>i>0&&Math.abs(y-ys[i-1]-lineStep(size))<.01));}
+ const cap=p.theme.typography.captionPx;const y=b.viewport.height;const expected=Math.min(y-87,y-52-lineStep(cap));
+ const long=structuredClone(p);long.captions=long.captions.map(c=>({...c,text:'Une légende longue '.repeat(8)}));
+ for(const svg of [renderSvg(b,long,0),renderAnimatedSvg(b,long)]){assert.ok(svg.includes(`y="${expected}" font-size="${cap}"`));assert.ok(svg.includes(`y="${expected+lineStep(cap)}" font-size="${cap}"`));}
+});

@@ -3,7 +3,7 @@
 import { optionsFor, sha256Portable } from './presentation.mjs';
 import { canonical } from './engine.mjs';
 import { xml } from './render.mjs';
-export const SPECIALIZED_VERSION='0.3.0';
+export const SPECIALIZED_VERSION='0.3.4';
 const kinds=['tree','dag','causal-feedback','timeline-lineage','matrix','traceability','flow','multiscale','state-flow','spatial'];
 const require=(c,m)=>{if(!c)throw Error('Projection Koreograph : '+m);};
 const list=(v,max=2400)=>{require(Array.isArray(v)&&v.length<=max,'tableau absent ou hors budget');return v;};
@@ -97,17 +97,27 @@ export function compileSpecialized(projection,{aspectRatio='16:9',maxPages=12}={
 // complete selected labels/relations are available in the private storyboard.
 const dims={'16:9':[1600,900],'1:1':[1080,1080],'9:16':[900,1600]};
 const wrap=(s,max,lines=3)=>{const a=Array.from(String(s).replace(/\s+/g,' ').trim()),out=[];while(a.length&&out.length<lines){let n=Math.min(max,a.length);if(n<a.length){const k=a.slice(0,n).lastIndexOf(' ');if(k>max*.55)n=k;}out.push(a.splice(0,n).join('').trim());while(a[0]===' ')a.shift();}if(a.length&&out.length)out[out.length-1]=Array.from(out.at(-1)).slice(0,max-1).join('')+'…';return out;};
+export function chapterAt(story,timeMs){
+  require(Number.isFinite(timeMs),'temps invalide');
+  const t=Math.max(0,Math.min(story.durationMs,timeMs));
+  return story.pages.findIndex((p,i)=>t<p.endMs||i===story.pages.length-1);
+}
 export function renderSpecialized(story,input={}){
-  const opts=optionsFor(input),t=opts.theme.tokens,[w,h]=dims[story.aspectRatio],d=story.durationMs;
+  const fixed=input.chapterIndex!==undefined;
+  require(!fixed||Number.isInteger(input.chapterIndex)&&input.chapterIndex>=0&&input.chapterIndex<story.pages.length,'chapitre invalide');
+  const opts=optionsFor(fixed?{...input,motion:'reduced'}:input),t=opts.theme.tokens,[w,h]=dims[story.aspectRatio],d=story.durationMs;
   const text=(x,y,s,size=25,color=t.foreground,anchor='start')=>`<text x="${x}" y="${y}" font-size="${size}" fill="${color}" text-anchor="${anchor}">${xml(s)}</text>`;
-  const lines=(x,y,s,size,max,count,anchor='start',color=t.foreground)=>wrap(s,max,count).map((l,i)=>text(x,y+i*(size+8),l,size,color,anchor)).join('');
+  // Firefox 155 on Windows reports line boxes ~1.44 × font size.
+  // Keep 1.65 × baseline spacing, independent of browser font metrics.
+  const lines=(x,y,s,size,max,count,anchor='start',color=t.foreground)=>wrap(s,max,count).map((l,i)=>text(x,y+i*Math.ceil(size*1.65),l,size,color,anchor)).join('');
   const opacity=(start,end)=>{const times=[0,start,end,d].filter((v,i,a)=>i===0||v!==a[i-1]);const vals=times.map(v=>v===d?(end===d?1:0):v>=start&&v<end?1:0);return `<animate attributeName="opacity" values="${vals.join(';')}" keyTimes="${times.map(v=>(v/d).toFixed(9)).join(';')}" dur="${d}ms" repeatCount="1" fill="freeze" calcMode="discrete"/>`;};
   const content=story.pages.map((p,index)=>{
+    if(fixed&&index!==input.chapterIndex)return '';
     const graph=p.links.length>0,vertical=w<h,cs=p.cards;let positions=new Map();
     const hubLayout=graph&&p.links.length>1&&(p.links.every(e=>e.to===p.links[0].to)||p.links.every(e=>e.from===p.links[0].from));
-    const boxW=hubLayout?Math.min(350,w/4-24):vertical?Math.min(360,w-140):Math.min(350,w/4-32),boxH=160;
+    const boxW=hubLayout?Math.min(350,w/4-24):vertical?Math.min(360,w-140):Math.min(350,w/4-32),boxH=184;
     const reveal=(start,end)=>{if(opts.motion==='reduced'||start<=0||start>=end)return '';const times=[0,start,Math.min(start+250,end),d].filter((v,i,a)=>i===0||v!==a[i-1]);return `<animate attributeName="opacity" values="${times.map((v,i)=>i<=1?0:1).join(';')}" keyTimes="${times.map(v=>(v/d).toFixed(9)).join(';')}" dur="${d}ms" repeatCount="1" fill="freeze"/>`;};
-    const node=(c,x,y)=>{positions.set(c.id,{x,y});const col=opts.encoding==='by-kind'?opts.theme.kindColors[c.kind]:t.node;const offset=!graph&&cs.length>1&&opts.motion!=='reduced'?cs.indexOf(c)*420:0;return `<g opacity="${offset?0:1}">${offset?reveal(p.startMs+offset,p.endMs):''}<title>${xml(c.label+' '+c.detail)}</title><rect x="${x-boxW/2}" y="${y-boxH/2}" width="${boxW}" height="${boxH}" rx="15" fill="${t.background}" stroke="${t.nodeStroke}" stroke-width="2"/><circle cx="${x-boxW/2+20}" cy="${y-boxH/2+20}" r="6" fill="${col}" stroke="${t.nodeStroke}"/>${lines(x,y-boxH/2+38,c.label,23,Math.max(10,Math.floor((boxW-32)/19)),2,'middle')}${lines(x,y+22,c.detail,19,Math.max(10,Math.floor((boxW-28)/15)),2,'middle',t.mutedText)}</g>`;};
+    const node=(c,x,y)=>{positions.set(c.id,{x,y});const col=opts.encoding==='by-kind'?opts.theme.kindColors[c.kind]:t.node;const offset=!graph&&cs.length>1&&opts.motion!=='reduced'?cs.indexOf(c)*420:0;return `<g opacity="${offset?0:1}">${offset?reveal(p.startMs+offset,p.endMs):''}<title>${xml(c.label+' '+c.detail)}</title><rect x="${x-boxW/2}" y="${y-boxH/2}" width="${boxW}" height="${boxH}" rx="15" fill="${t.background}" stroke="${t.nodeStroke}" stroke-width="2"/><circle cx="${x-boxW/2+20}" cy="${y-boxH/2+20}" r="6" fill="${col}" stroke="${t.nodeStroke}"/>${lines(x,y-boxH/2+38,c.label,23,Math.max(10,Math.floor((boxW-32)/19)),2,'middle')}${lines(x,y+28,c.detail,19,Math.max(10,Math.floor((boxW-28)/15)),2,'middle',t.mutedText)}</g>`;};
     let nodes='';
     if(graph){const convergence=p.links.length>1&&p.links.every(e=>e.to===p.links[0].to),branch=p.links.length>1&&p.links.every(e=>e.from===p.links[0].from);const hub=convergence?p.links[0].to:branch?p.links[0].from:null;
       if(hub){const others=cs.filter(c=>c.id!==hub);const top=convergence?0:1;nodes+=node(cs.find(c=>c.id===hub),w/2,top?h*.67:h*.36);others.forEach((c,i)=>{const x=(w/(others.length+1))*(i+1),y=top?h*.36:h*.65;nodes+=node(c,x,y);});}
@@ -115,13 +125,30 @@ export function renderSpecialized(story,input={}){
     }else{cs.forEach((c,i)=>{nodes+=node(c,vertical?w/2:w/(cs.length+1)*(i+1),vertical?h*.45+(i-(cs.length-1)/2)*(boxH+35):h*.48);});}
     let links='';for(const [li,e] of p.links.entries()){const a=positions.get(e.from),b=positions.get(e.to);if(!a||!b||e.from===e.to)continue;const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy);if(!L)continue;const ux=dx/L,uy=dy/L;const distance=Math.min(boxW/2/Math.max(Math.abs(ux),.0001),boxH/2/Math.max(Math.abs(uy),.0001));const x1=a.x+ux*distance,y1=a.y+uy*distance,x2=b.x-ux*distance,y2=b.y-uy*distance;const start=p.startMs+500+li*400;links+=`<g opacity="${opts.motion==='reduced'?1:0}">${reveal(start,p.endMs)}<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${t.edge}" stroke-width="3"/>`;if(e.directed){const x=x2-ux*15,y=y2-uy*15;links+=`<path d="M ${x+uy*7} ${y-ux*7} L ${x2} ${y2} L ${x-uy*7} ${y+ux*7}" stroke="${t.edge}" stroke-width="3" fill="none"/>`;}links+='</g>';}
     const descriptions=p.transcript||p.links.map(e=>e.label);const cap=descriptions.slice(0,3).map((s,i)=>`<g opacity="${opts.motion==='reduced'?1:0}">${reveal(p.startMs+500+i*400,p.endMs)}${lines(55,h-190+i*34,s,20,Math.floor((w-110)/16),1)}</g>`).join('');
-    return `<g opacity="${index===0?1:0}">${opacity(p.startMs,p.endMs)}${lines(55,174,p.label,32,Math.floor((w-110)/25),2)}${links}${nodes}${cap}${lines(55,h-65,p.note,18,Math.floor((w-110)/14),2,'start',t.mutedText)}${text(w-55,115,`${index+1} / ${story.pages.length}`,20,t.mutedText,'end')}</g>`;
+    return `<g opacity="${fixed||index===0?1:0}">${fixed?'':opacity(p.startMs,p.endMs)}${lines(55,174,p.label,32,Math.floor((w-110)/25),2)}${links}${nodes}${cap}${lines(55,h-65,p.note,18,Math.floor((w-110)/14),2,'start',t.mutedText)}${text(w-55,115,`${index+1} / ${story.pages.length}`,20,t.mutedText,'end')}</g>`;
   }).join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${xml(story.title)}" font-family="${opts.theme.typography.fontFamily}"><title>${xml(story.title)}</title><desc>Projection dérivée privée. Les relations affichées ne constituent pas une preuve ou une autorisation de publication.</desc><rect width="${w}" height="${h}" fill="${t.background}"/><rect x="42" y="35" width="8" height="38" rx="3" fill="${t.brand}"/>${text(64,65,'KOREOGRAPH · '+story.title,23)}${text(55,105,story.partial?'Vue partielle · aucune autorisation de publication':'Vue dérivée · aucune autorisation de publication',18,t.mutedText)}${content}<g opacity="0"><animate attributeName="opacity" values="0;0" keyTimes="0;1" dur="${d}ms" repeatCount="1" fill="freeze"/></g></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${xml(story.title)}" font-family="${opts.theme.typography.fontFamily}"><title>${xml(story.title)}</title><desc>Projection dérivée privée. Les relations affichées ne constituent pas une preuve ou une autorisation de publication.</desc><rect width="${w}" height="${h}" fill="${t.background}"/><rect x="42" y="35" width="8" height="38" rx="3" fill="${t.brand}"/>${text(64,65,'KOREOGRAPH · '+story.title,23)}${text(55,105,story.partial?'Vue partielle · aucune autorisation de publication':'Vue dérivée · aucune autorisation de publication',18,t.mutedText)}${content}${fixed?'':`<g opacity="0"><animate attributeName="opacity" values="0;0" keyTimes="0;1" dur="${d}ms" repeatCount="1" fill="freeze"/></g>`}</svg>`;
 }
 export function specializedHtml(story,opts={}){
   // Explicit start; users who prefer reduced motion get the same discrete chapters.
   const svg=renderSpecialized(story,opts),d=story.durationMs;
   const transcript=story.pages.map(p=>`<li><strong>${xml(p.label)}</strong><ul>${p.cards.map(c=>`<li>${xml(c.label)} — ${xml(c.detail)}</li>`).join('')}${(p.transcript||[]).map(s=>`<li>${xml(s)}</li>`).join('')}</ul>${xml(p.note)}</li>`).join('');
-  return `<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${xml(story.title)}</title><style>body{font:16px system-ui;background:#f4f7f6;color:#173b38;margin:0}main{max-width:1100px;margin:auto;padding:16px}svg{width:100%;height:auto;max-height:75vh;display:block}section{display:flex;gap:10px;align-items:center;flex-wrap:wrap}input{flex:1;min-width:130px}button{font:inherit;padding:8px;border:1px solid #1E6864;background:white;color:#173b38;border-radius:6px}:focus-visible{outline:3px solid #1E6864;outline-offset:3px}</style><main>${svg}<section><button id="play" type="button">Lire</button><button id="prev" type="button">Précédent</button><button id="next" type="button">Suivant</button><label for="seek">Temps</label><input id="seek" type="range" min="0" max="${d}" value="0"><output id="time">0 s</output></section><details><summary>Transcription des chapitres</summary><ol>${transcript}</ol></details></main><script>(()=>{const s=document.querySelector('svg'),b=document.querySelector('#play'),r=document.querySelector('#seek'),o=document.querySelector('#time'),starts=${JSON.stringify(story.pages.map(p=>p.startMs))},d=${d};let paused=true;s.pauseAnimations();s.setCurrentTime(0);function stop(){paused=true;s.pauseAnimations();b.textContent='Lire'}function seek(t){s.setCurrentTime(Math.max(0,Math.min(t,d/1000)));}b.onclick=()=>{if(!paused)return stop();if(s.getCurrentTime()*1000>=d)seek(0);paused=false;s.unpauseAnimations();b.textContent='Pause'};r.oninput=()=>{stop();seek(Number(r.value)/1000)};document.querySelector('#prev').onclick=()=>{stop();const t=s.getCurrentTime()*1000;seek((starts.filter(x=>x<t-50).at(-1)||0)/1000)};document.querySelector('#next').onclick=()=>{stop();seek((starts.find(x=>x>s.getCurrentTime()*1000+50)??d)/1000)};function tick(){const t=Math.min(d,s.getCurrentTime()*1000);r.value=t;o.value=(t/1000).toFixed(1)+' s';if(t>=d&&!paused)stop();requestAnimationFrame(tick)}requestAnimationFrame(tick);})();</script></html>`;
+  return `<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${xml(story.title)}</title><style>body{font:16px system-ui;background:#f4f7f6;color:#173b38;margin:0}main{max-width:1100px;margin:auto;padding:16px}svg{width:100%;height:auto;max-height:75vh;display:block}section{display:flex;gap:10px;align-items:center;flex-wrap:wrap}input{flex:1;min-width:130px}button{font:inherit;padding:8px;border:1px solid #1E6864;background:white;color:#173b38;border-radius:6px}:focus-visible{outline:3px solid #1E6864;outline-offset:3px}</style><main>${svg}<section><button id="play" type="button">Lire</button><button id="prev" type="button">Précédent</button><button id="next" type="button">Suivant</button><label for="seek">Temps</label><input id="seek" type="range" min="0" max="${d}" value="0"><output id="time">0 s</output></section><details><summary>Transcription des chapitres</summary><ol>${transcript}</ol></details></main><script>(()=>{const s=document.querySelector('svg'),b=document.querySelector('#play'),r=document.querySelector('#seek'),o=document.querySelector('#time'),starts=${JSON.stringify(story.pages.map(p=>p.startMs))},d=${d};const media=matchMedia('(prefers-reduced-motion: reduce)');let paused=true;s.pauseAnimations();s.setCurrentTime(0);function stop(){paused=true;s.pauseAnimations();b.textContent='Lire'}function seek(t){let ms=Math.max(0,Math.min(t*1000,d));if(media.matches){const end=starts.find(x=>x>ms)??d;ms=Math.max(0,end-1);}s.setCurrentTime(ms/1000);}b.onclick=()=>{if(!paused)return stop();if(s.getCurrentTime()*1000>=d)seek(0);paused=false;s.unpauseAnimations();b.textContent='Pause'};r.oninput=()=>{stop();seek(Number(r.value)/1000)};document.querySelector('#prev').onclick=()=>{stop();const t=s.getCurrentTime()*1000,i=starts.findLastIndex(x=>x<=t);seek(starts[Math.max(0,i-1)]/1000)};document.querySelector('#next').onclick=()=>{stop();seek((starts.find(x=>x>s.getCurrentTime()*1000+50)??d)/1000)};function preference(){stop();b.disabled=media.matches;if(media.matches)seek(s.getCurrentTime());}media.addEventListener('change',preference);preference();function tick(){const t=Math.min(d,s.getCurrentTime()*1000);r.value=t;o.value=(t/1000).toFixed(1)+' s';if(t>=d&&!paused)stop();requestAnimationFrame(tick)}requestAnimationFrame(tick);})();</script></html>`;
+}
+
+
+// Capability detection only.
+// Does not validate a DTO or authorize publication.
+export function supportsProjection(projection) {
+  if (typeof projection === 'string') {
+    return kinds.includes(projection);
+  }
+
+  return Boolean(
+    projection &&
+    projection.schemaVersion === '1.0' &&
+    projection.derived === true &&
+    kinds.includes(projection.projectionKind) &&
+    typeof projection.truncated === 'boolean'
+  );
 }

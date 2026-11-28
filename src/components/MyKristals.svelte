@@ -1,100 +1,109 @@
 <script>
-  // KNAV experimental fleet browser: all search/facets are client-side over
-  // the already authorized response from GET /api/fleet.
+  import { tick } from 'svelte';
+  import { catalogueStatus, filterCatalogue } from '../lib/reader-presentation.mjs';
   export let visible = false;
   export let items = [];
   export let opening = false;
   export let hasCurrent = false;
+  export let locale = 'fr';
+  export let aboutOpen = false;
   export let onOpen = async () => {};
   export let onExploreCurrent = () => {};
-  let search = '';
-  let source = 'all';
-  let availability = 'all';
-  let selected = null;
-  const lower = (text) => String(text || '').toLocaleLowerCase();
-  $: filtered = items.filter((item) => {
-    const q = lower(search.trim());
-    return (source === 'all' || item.source === source) &&
-      (availability === 'all' || item.availability === availability) &&
-      (!q || [item.title, item.stateRef, item.archetype, item.id, item.discovery?.classification?.primary_archetype, item.discovery?.classification?.primary_usage].some((value) => lower(value).includes(q)));
-  });
-  $: if (selected && !filtered.some((item) => item.key === selected.key)) selected = null;
+  let search = '', source = 'all', availability = 'all', selectedKey = null;
+  let expert = false, selectedHeading;
+  $: t = (fr, en) => locale === 'fr' ? fr : en;
+  $: filtered = filterCatalogue(items, { search, source, availability, expert });
+  $: selected = filtered.find(item => item.key === selectedKey) || null;
+  $: if (!visible) selectedKey = null;
+  async function choose(item) {
+    selectedKey = item.key;
+    await tick();
+    selectedHeading?.focus();
+  }
+  function status(item, translate) {
+    return catalogueStatus(item) === 'available' ? translate('Disponible', 'Available') :
+      catalogueStatus(item) === 'unavailable' ? translate('Indisponible', 'Unavailable') :
+      translate('Inventaire seulement', 'Inventory only');
+  }
 </script>
 
-<section class="fleet" hidden={!visible} aria-label="My Kristals">
+<section class="fleet fleet-simple" hidden={!visible} aria-label={t('Mes Kristals', 'My Kristals')}>
   <header class="fleet-heading">
     <div>
-      <span class="fleet-eyebrow">KRISTAL NETWORK · READ ONLY</span>
-      <h1>Mes Kristals<span class="fleet-accent">.</span></h1>
-      <p>Choisissez un Kristal local pour l’ouvrir dans Konstellation. Un inventaire ne prouve pas sa publication ni sa qualification.</p>
+      <h1>{t('Mes Kristals', 'My Kristals')}<span class="fleet-accent">.</span></h1>
+      <p>{t('Choisissez un Kristal à explorer. Le contenu accessible dépend du lecteur disponible.', 'Choose a Kristal to explore. Accessible content depends on the available reader.')}</p>
     </div>
-    {#if hasCurrent}<button class="button" on:click={onExploreCurrent}>Explorer le Kristal ouvert →</button>{/if}
+    {#if hasCurrent}<button class="button" on:click={onExploreCurrent}>{t('Reprendre mon exploration', 'Resume exploration')} →</button>{/if}
   </header>
-  <div class="fleet-disclaimer" role="status">
-    Local Manager inventory requires explicit authorization. Authoring Kit Discovery 3.3 is advisory metadata only; it does not prove qualification, publication or a usable reader. Hosted index metadata is not a publication receipt.
-  </div>
   <div class="fleet-filters">
-    <label>Search Kristals<input aria-label="Search Kristals" type="search" bind:value={search} placeholder="Name, state reference, archetype or usage" /></label>
-    <label>Source<select aria-label="Kristal source" bind:value={source}>
-      <option value="all">All permitted sources</option>
-      <option value="local_manager_preview">Local Manager inventory</option>
-      <option value="github_v10_checkout">GitHub v10 checkout</option>
-      <option value="local_v10_reader">Local Kristal v10 reader</option>
-      <option value="legacy_reader">Legacy reader</option>
-    </select></label>
-    <label>Availability<select aria-label="Kristal availability" bind:value={availability}>
-      <option value="all">All states</option><option value="available">Available</option>
-      <option value="unavailable">Unavailable</option><option value="unknown">Unknown</option>
+    <label>{t('Rechercher un Kristal', 'Search Kristals')}<input type="search" bind:value={search} placeholder={expert ? t('Nom, référence ou archétype', 'Name, reference or archetype') : t('Nom du Kristal…', 'Kristal name…')} /></label>
+    <label>{t('Disponibilité', 'Availability')}<select bind:value={availability}>
+      <option value="all">{t('Tous', 'All')}</option><option value="available">{t('Disponibles', 'Available')}</option>
+      <option value="unavailable">{t('Indisponibles', 'Unavailable')}</option><option value="inventory">{t('Inventaire seulement', 'Inventory only')}</option>
     </select></label>
   </div>
-  <p class="fleet-count">{filtered.length} visible {filtered.length === 1 ? 'entry' : 'entries'} · Counts reflect only permitted inventory</p>
-  <div class="fleet-layout">
-    <div class="fleet-grid" aria-label="Permitted Kristals">
-      {#each filtered as item (item.key)}
-        <button class="fleet-card" class:selected={selected?.key === item.key} on:click={() => (selected = item)} aria-label={'Inspect ' + item.title}>
-          <span class="fleet-card-top"><span class="fleet-type">{item.source === 'local_manager_preview' ? 'LOCAL INVENTORY' : item.source === 'github_v10_checkout' ? 'GITHUB V10' : item.source === 'local_v10_reader' ? 'LOCAL V10 READER' : 'LEGACY READER'}</span><span class="fleet-indicator">{item.availability}</span></span>
-          <strong>{item.title}</strong>
-          <span class="fleet-ref">{item.stateRef || 'State reference not supplied'}</span>
-          <span class="fleet-card-bottom">{item.openable ? 'Reader configured' : 'Inventory only'} · {item.readiness.replaceAll('_', ' ')}</span>
-        </button>
-      {:else}
-        <div class="fleet-empty">No permitted entries match these filters. Unknown or missing inventory is not evidence of absence.</div>
-      {/each}
-    </div>
-    <aside class="fleet-detail" aria-label="Kristal properties">
-      {#if selected}
-        <span class="fleet-eyebrow">ENTRY PROPERTIES</span>
-        <h2>{selected.title}</h2>
+  <details class="fleet-options" bind:open={expert}>
+    <summary>{t('Filtres techniques', 'Technical filters')}</summary>
+    <label>{t('Source', 'Source')} <select bind:value={source}>
+      <option value="all">{t('Toutes les sources autorisées', 'All permitted sources')}</option>
+      <option value="local_manager_preview">{t('Inventaire Manager local', 'Local Manager inventory')}</option>
+      <option value="github_v10_checkout">GitHub v10</option>
+      <option value="local_v10_reader">{t('Lecteur local v10', 'Local v10 reader')}</option>
+      <option value="legacy_reader">{t('Lecteur historique', 'Legacy reader')}</option>
+    </select></label>
+  </details>
+  <p class="fleet-count" aria-live="polite">{filtered.length}{filtered.length !== items.length ? ' / ' + items.length : ''} {filtered.length === 1 ? 'Kristal' : 'Kristals'}</p>
+  <div class="fleet-layout" class:has-selection={!!selected}>
+    {#if selected}
+      <aside class="fleet-detail" aria-label={t('Kristal sélectionné', 'Selected Kristal')}>
+        <button type="button" class="text-button fleet-dismiss" on:click={() => selectedKey = null}>{t('Fermer', 'Close')} ×</button>
+        <h2 tabindex="-1" bind:this={selectedHeading}>{selected.title}</h2>
+        <p class="fleet-indicator">{status(selected,t)}</p>
+        {#if selected.openable === true && selected.availability === 'available' && selected.readerId}
+          <button class="button primary" disabled={opening} on:click={() => onOpen(selected.readerId)}>{opening ? t('Ouverture…', 'Opening…') : t('Ouvrir dans l’explorateur', 'Open in Explorer') + ' →'}</button>
+          <p class="fleet-detail-note">{t('Le contenu disponible est déterminé à l’ouverture. Certains Kristals ne proposent qu’une vue de leur structure.', 'Available content is determined on opening. Some Kristals expose only their structure.')}</p>
+        {:else}<p class="fleet-detail-note">{t('Aucun lecteur compatible autorisé n’est disponible pour cette entrée.', 'No authorized compatible reader is available for this entry.')}</p>{/if}
+        {#key selected.key}<details class="fleet-technical">
+          <summary>{t('Informations techniques', 'Technical information')}</summary>
         <dl>
-          <dt>Source</dt><dd>{selected.source.replaceAll('_', ' ')}</dd>
-          <dt>Reference</dt><dd>{selected.stateRef || 'Not supplied'}</dd>
-          <dt>State commitment</dt><dd>{selected.stateCommitment || 'Not supplied'}</dd>
-          <dt>Availability</dt><dd>{selected.availability}</dd>
-          <dt>Readiness (declared)</dt><dd>{selected.readiness.replaceAll('_', ' ')}</dd>
-          <dt>Verification</dt><dd>{selected.verification.replaceAll('_', ' ')}</dd>
+          <dt>{t("Source", "Source")}</dt><dd>{selected.source.replaceAll('_', ' ')}</dd>
+          <dt>{t("Référence", "Reference")}</dt><dd>{selected.stateRef || t('Non fourni', 'Not supplied')}</dd>
+          <dt>{t("Engagement déclaré", "State commitment")}</dt><dd>{selected.stateCommitment || t('Non fourni', 'Not supplied')}</dd>
+          <dt>{t("Disponibilité", "Availability")}</dt><dd>{selected.availability}</dd>
+          <dt>{t("Maturité déclarée", "Readiness (declared)")}</dt><dd>{selected.readiness.replaceAll('_', ' ')}</dd>
+          <dt>{t("Vérification", "Verification")}</dt><dd>{selected.verification.replaceAll('_', ' ')}</dd>
           {#if selected.managerAssessment}
-            <dt>Manager (local)</dt><dd>{selected.managerAssessment.result.replaceAll('_', ' ')}</dd>
-            <dt>Discovery (Manager)</dt><dd>{selected.managerAssessment.discovery.replaceAll('_', ' ')}</dd>
-            <dt>Framework state (Manager)</dt><dd>{selected.managerAssessment.frameworkState.replaceAll('_', ' ')}</dd>
+            <dt>{t("Manager local", "Manager (local)")}</dt><dd>{selected.managerAssessment.result.replaceAll('_', ' ')}</dd>
+            <dt>{t("Discovery (Manager)", "Discovery (Manager)")}</dt><dd>{selected.managerAssessment.discovery.replaceAll('_', ' ')}</dd>
+            <dt>{t("État Framework (Manager)", "Framework state (Manager)")}</dt><dd>{selected.managerAssessment.frameworkState.replaceAll('_', ' ')}</dd>
           {/if}
-          <dt>View</dt><dd>{selected.viewKind.replaceAll('_', ' ')}</dd>
-          <dt>Archetype (declared)</dt><dd>{selected.discovery?.classification?.primary_archetype || selected.archetype || 'Unknown'}</dd>
+          <dt>{t("Vue", "View")}</dt><dd>{selected.viewKind.replaceAll('_', ' ')}</dd>
+          <dt>{t("Archétype déclaré", "Archetype (declared)")}</dt><dd>{selected.discovery?.classification?.primary_archetype || selected.archetype || t('Inconnu', 'Unknown')}</dd>
           {#if selected.discovery}
-            <dt>Usage Arketype (declared)</dt><dd>{selected.discovery.classification?.primary_usage || 'Not declared'}</dd>
-            <dt>Data organization</dt><dd>{selected.discovery.organization}</dd>
-            <dt>Reader recommendation</dt><dd>{selected.discovery.readerProfile}</dd>
-            {#if selected.discovery.accessPattern}<dt>Suggested access</dt><dd>{selected.discovery.accessPattern}</dd>{/if}
-            <dt>Measured registered bytes</dt><dd>{selected.discovery.trackedLocalBytes.toLocaleString()} ({selected.discovery.sizeClass}; {selected.discovery.completeness.replaceAll('_',' ')})</dd>
-            <dt>Discovery status</dt><dd>Declared, noncanonical, not independently verified</dd>
+            <dt>{t("Usage déclaré", "Usage Arketype (declared)")}</dt><dd>{selected.discovery.classification?.primary_usage || t('Non déclaré', 'Not declared')}</dd>
+            <dt>{t("Organisation des données", "Data organization")}</dt><dd>{selected.discovery.organization}</dd>
+            <dt>{t("Lecteur recommandé", "Reader recommendation")}</dt><dd>{selected.discovery.readerProfile}</dd>
+            {#if selected.discovery.accessPattern}<dt>{t("Accès suggéré", "Suggested access")}</dt><dd>{selected.discovery.accessPattern}</dd>{/if}
+            <dt>{t("Octets enregistrés mesurés", "Measured registered bytes")}</dt><dd>{selected.discovery.trackedLocalBytes.toLocaleString()} ({selected.discovery.sizeClass}; {selected.discovery.completeness.replaceAll('_',' ')})</dd>
+            <dt>{t("Statut Discovery", "Discovery status")}</dt><dd>{t('Déclaré, non canonique, non vérifié indépendamment', 'Declared, noncanonical, not independently verified')}</dd>
           {/if}
         </dl>
-        {#if selected.openable}
-          <button class="button primary" disabled={opening} on:click={() => onOpen(selected.readerId)}>{opening ? 'Ouverture…' : 'Ouvrir dans l’explorateur →'}</button>
-          <p class="fleet-detail-note">The reader validates its own payload when opened. The result may be a technical hosting view.</p>
-        {:else}<p class="fleet-detail-note">No authorized compatible reader is configured for this entry. Manager inventory access does not grant canonical content access.</p>{/if}
-      {:else}
-        <h2>Choisir un Kristal</h2><p>Sélectionnez une entrée pour connaître ses propriétés et l’ouvrir avec un lecteur compatible.</p>
-      {/if}
-    </aside>
+          <p class="fleet-detail-note">{t('L’inventaire Manager ne donne pas accès au contenu canonique. Les métadonnées déclarées ne prouvent ni qualification ni publication.', 'Manager inventory does not grant canonical content access. Declared metadata does not prove qualification or publication.')}</p>
+        </details>{/key}
+      </aside>
+    {/if}
+    <div class="fleet-grid" aria-label={t('Kristals accessibles dans le catalogue', 'Permitted Kristals')}>
+      {#each filtered as item (item.key)}
+        <button class="fleet-card" class:selected={selected?.key === item.key} aria-pressed={selected?.key === item.key} disabled={opening} on:click={() => choose(item)} aria-label={t('Choisir ', 'Choose ') + item.title}>
+          <strong>{item.title}</strong>
+          <span class="fleet-card-bottom"><span class="fleet-indicator" class:available={catalogueStatus(item) === 'available'}>{status(item,t)}</span><span aria-hidden="true">→</span></span>
+        </button>
+      {:else}<div class="fleet-empty">{t('Aucun Kristal autorisé ne correspond à ces filtres.', 'No permitted Kristals match these filters.')}</div>{/each}
+    </div>
   </div>
+  <details class="fleet-about" bind:open={aboutOpen}>
+    <summary>{t('À propos des Kristals et de leur disponibilité', 'About Kristals and availability')}</summary>
+    <p>{t('Le catalogue affiche uniquement les entrées autorisées, en lecture seule. Une entrée disponible signifie qu’un lecteur est configuré, pas que son contenu est qualifié ou publié.', 'The catalogue shows permitted entries only, in read-only mode. Available means a reader is configured, not that its content is qualified or published.')}</p>
+    <p>{t('L’inventaire Manager local exige une autorisation explicite. Discovery 3.3 est indicatif. Les métadonnées d’un index hébergé ne sont pas une preuve de publication.', 'Local Manager inventory requires explicit authorization. Discovery 3.3 is advisory. Hosted index metadata is not a publication receipt.')}</p>
+  </details>
 </section>

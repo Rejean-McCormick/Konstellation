@@ -1,0 +1,118 @@
+{
+  "format": "koreograph.projection-storyboard/0.1",
+  "compilerVersion": "0.3.2",
+  "projectionSha256": "7b1b52a8acacbd9d6dfd20b16d833822e1206c06db64b7bb22c10ea28628b1ea",
+  "projectionKind": "tree",
+  "mode": "reviewed-hierarchy",
+  "title": "Relations hiérarchiques",
+  "aspectRatio": "16:9",
+  "derived": true,
+  "authoritative": false,
+  "publicationAuthorized": false,
+  "partial": false,
+  "omitted": 0,
+  "totalPages": 2,
+  "durationMs": 8440,
+  "pages": [
+    {
+      "label": "Branche examinée",
+      "cards": [
+        {
+          "id": "a",
+          "label": "Bibliothèque fictive",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "b",
+          "label": "Sciences",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "c",
+          "label": "Arts",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "d",
+          "label": "Techniques",
+          "detail": "",
+          "kind": "entity"
+        }
+      ],
+      "links": [
+        {
+          "from": "a",
+          "to": "b",
+          "label": "Parent → enfant",
+          "ref": "x",
+          "directed": true
+        },
+        {
+          "from": "a",
+          "to": "c",
+          "label": "Parent → enfant",
+          "ref": "y",
+          "directed": true
+        },
+        {
+          "from": "a",
+          "to": "d",
+          "label": "Parent → enfant",
+          "ref": "z",
+          "directed": true
+        }
+      ],
+      "note": "",
+      "refs": [
+        "x",
+        "y",
+        "z"
+      ],
+      "transcript": [
+        "Bibliothèque fictive — Parent → enfant — Sciences",
+        "Bibliothèque fictive — Parent → enfant — Arts",
+        "Bibliothèque fictive — Parent → enfant — Techniques"
+      ],
+      "startMs": 0,
+      "endMs": 5480
+    },
+    {
+      "label": "Branche examinée",
+      "cards": [
+        {
+          "id": "c",
+          "label": "Arts",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "e",
+          "label": "Musique",
+          "detail": "",
+          "kind": "entity"
+        }
+      ],
+      "links": [
+        {
+          "from": "c",
+          "to": "e",
+          "label": "Parent → enfant",
+          "ref": "w",
+          "directed": true
+        }
+      ],
+      "note": "",
+      "refs": [
+        "w"
+      ],
+      "transcript": [
+        "Arts — Parent → enfant — Musique"
+      ],
+      "startMs": 5480,
+      "endMs": 8440
+    }
+  ]
+}

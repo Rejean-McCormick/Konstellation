@@ -2,7 +2,7 @@
   "adapter": "kristal-local-catalog-v10",
   "directory": "C:/mycode/Kristal/locals",
   "readModels": {
-    "A-Kristal-Catho": {
+    "Kristal-Catho": {
       "type": "node-edge-json/1",
       "manifest": "derived/catho-graph/manifest.json",
       "nodes": "derived/catho-graph/nodes.json",

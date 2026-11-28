@@ -3,6 +3,7 @@
   import Communication from './Communication.svelte';
   import KompilerPanel from './KompilerPanel.svelte';
   import MyKristals from './MyKristals.svelte';
+  import { technicalReaderView } from '../lib/reader-presentation.mjs';
   import { publicKristalsLabel } from '../lib/public-kristals-ui.mjs';
   import Astrolabe from './Astrolabe.svelte';
   import { uiFinish as ui, localizedRecipeLabel, assertionStatusLabel, localizedCapabilityLabel } from '../lib/i18n-finish.mjs';
@@ -60,6 +61,15 @@
     constellationPath = [],
     satelliteLimit = 8;
   let locale = 'fr';
+  let technicalOpen = false, technicalContext = '';
+  $: technicalView = technicalReaderView(boot, query?.selection?.entityType);
+  $: nextTechnicalContext = JSON.stringify([kristal, query?.context, query?.selection?.entityType, boot?.principal]);
+  $: if (nextTechnicalContext !== technicalContext) {
+    technicalContext = nextTechnicalContext;
+    technicalOpen = false;
+  }
+  $: if (fleetView) technicalOpen = false;
+
   function setLocale(value) {
     locale = normalizeLocale(value);
     if (typeof document !== 'undefined') document.documentElement.lang = locale;
@@ -103,7 +113,7 @@
   $: lens = boot?.lenses.find((l) => l.id === lensId);
   $: featuredEntries = (boot?.presentation?.featuredTypes || []).map((type) => {
     const entryLens = boot?.lenses?.find((item) => item.rootType === type);
-    if (!entryLens) return null;
+    if (!entryLens || technicalReaderView(boot, type)) return null;
     return { type, id: entryLens.id, title: localizedLabel(entryLens.label, locale),
       count: (boot?.entities || []).filter((entity) => entity.type === type).length };
   }).filter(Boolean);
@@ -275,7 +285,8 @@
     return nextBoot;
   }
   function initializeExploration(nextBoot) {
-    const nextLensId = nextBoot.lenses[0]?.id || `type:${nextBoot.registry.entityTypes[0]}`;
+    const preferredLens = nextBoot.lenses.find(l => !technicalReaderView(nextBoot, l.rootType)) || nextBoot.lenses[0];
+    const nextLensId = preferredLens?.id || `type:${nextBoot.registry.entityTypes[0]}`;
     const firstLens = nextBoot.lenses.find((l) => l.id === nextLensId);
     const entityType = firstLens?.rootType || nextBoot.registry.entityTypes[0];
     if (!entityType) throw Error('Ce Kristal ne contient aucun type exploratoire visible.');
@@ -566,7 +577,7 @@
       nextBoot.policies.find((p) => p.ref === ref)?.maxPageSize || 100,
     );
     if (!nextBoot.registry.entityTypes.includes(next.selection.entityType)) {
-      const fallbackLens = nextBoot.lenses[0];
+      const fallbackLens = nextBoot.lenses.find(l => !technicalReaderView(nextBoot, l.rootType)) || nextBoot.lenses[0];
       const fallbackType = fallbackLens?.rootType || nextBoot.registry.entityTypes[0];
       if (!fallbackType) throw Error('Aucun type visible pour cette politique de lecture.');
       next.selection = { entityType: fallbackType, filters: [], links: [] };
@@ -885,7 +896,7 @@
       <span>Konstellation<small>{ui(locale,'brandTagline')}</small></span>
     </a>
     <nav aria-label="Navigation principale">
-      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>My Kristals</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}<a href="/kristals-publics/index.html">✦ {publicKristalsLabel(locale)}</a>{#if boot?.v11Available}<a href="/v11">Kristal v11</a>{/if}{#if boot && query && (!selectionRequired || kristal)}<a href="#astrolabe" on:click={openAstrolabe}>Astrolabe</a>{/if}<button
+      {#if fleetEnabled}<button class:active={fleetView} on:click={() => (fleetView = true)}>{locale === 'fr' ? 'Mes Kristals' : 'My Kristals'}</button>{#if !selectionRequired || kristal}<button class:active={!fleetView} on:click={() => (fleetView = false)}>Explorer</button>{/if}{:else}<a class="active" href="/">Explorer</a>{/if}<a href="/kristals-publics/index.html">✦ {publicKristalsLabel(locale)}</a>{#if boot?.v11Available}<a href="/v11">Kristal v11</a>{/if}{#if boot && query && !fleetView && !technicalView && (!selectionRequired || kristal)}<a href="#astrolabe" on:click={openAstrolabe}>Astrolabe</a>{/if}<button
         class:active={showSaved}
         on:click={() => (showSaved = !showSaved)}
         >{ui(locale,'saved')} <span class="nav-count">{saved.length}</span></button
@@ -919,22 +930,22 @@
     <main>
       {#if fleetError}<div role="status" class="alert notice">{fleetError}</div>{/if}
       {#if fleetView && error}<div role="alert" class="alert error">{error}</div>{/if}
-      {#if fleetEnabled}<MyKristals visible={fleetView} items={fleetItems} opening={switchingKristal} hasCurrent={Boolean(kristal)} onOpen={openFleetKristal} onExploreCurrent={() => (fleetView = false)} />{/if}
+      {#if fleetEnabled}<MyKristals {locale} bind:aboutOpen={showSource} visible={fleetView} items={fleetItems} opening={switchingKristal} hasCurrent={Boolean(kristal)} onOpen={openFleetKristal} onExploreCurrent={() => (fleetView = false)} />{/if}
       {#if boot && query}<div hidden={fleetEnabled && fleetView}>
       <section class="intro">
         <div>
-          <div class="eyebrow">{ui(locale,'introEyebrow')} <span> / </span> {boot.title}</div>
-          <h1>{ui(locale,'introTitle')}<span>.</span></h1>
-          <p>{ui(locale,'introDescription')}</p>
+          <div class="eyebrow">{ui(locale,'introEyebrow')} <span> / </span> {kristals.find(item => item.id === kristal)?.label || boot.title}</div>
+          <h1>{technicalView ? (locale === 'fr' ? 'Structure du Kristal' : 'Kristal structure') : ui(locale,'introTitle')}<span>.</span></h1>
+          <p>{technicalView ? (locale === 'fr' ? 'Cette perspective décrit la structure technique du Kristal, pas les connaissances de son domaine.' : 'This perspective describes the technical structure of the Kristal, not its domain knowledge.') : ui(locale,'introDescription')}</p>
         </div>
-        <div class="intro-actions">
+        {#if !technicalView || technicalOpen}<div class="intro-actions">
           <button class="button subtle-button" on:click={share}>{'↗ ' + ui(locale,'share')}</button><button
             class="button primary"
             on:click={() => (showSaved = true)}>{'＋ ' + ui(locale,'save')}</button
           >
-        </div>
+        </div>{/if}
       </section>
-      {#if featuredEntries.length}<section class="reader-guide" aria-label="Parcours du Kristal">
+      {#if !technicalView && featuredEntries.length}<section class="reader-guide" aria-label="Parcours du Kristal">
         <div class="reader-guide-heading"><div><span class="eyebrow">EXPLORER LE KRISTAL</span>
           <h2>{ui(locale,'guideTitle')}</h2></div>
           <p>{ui(locale,'guideDescription')}</p>
@@ -951,8 +962,8 @@
           {/each}
         </div>
       </section>{/if}
-      <Astrolabe {locale} entities={boot.entities} typeLabels={boot?.presentation?.typeLabels || {}} preferredType={boot.lenses[0]?.rootType || ''} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />
-      {#if boot.readingNotice}<div class="demo-banner" role="note">
+      {#if !technicalView}<Astrolabe {locale} entities={boot.entities.filter(entity => !technicalReaderView(boot, entity.type))} typeLabels={boot?.presentation?.typeLabels || {}} preferredType={boot.lenses.find(l => !technicalReaderView(boot,l.rootType))?.rootType || ''} corpusTitle={boot.title} onNavigate={errorGuard(navigateFromAstrolabe)} />{/if}
+      {#if boot.readingNotice && (!technicalView || technicalOpen)}<div class="demo-banner" role="note">
           <span class="tiny-star">✦</span><strong>{boot.readingNotice.heading}</strong><span>{boot.readingNotice.text}</span>
         </div>{/if}
       {#if boot.synthetic}<div class="demo-banner">
@@ -962,7 +973,7 @@
         </div>{/if}
       {#if locale !== 'fr'}<div class="language-fallback" role="status">
         <span>{ui(locale,'readingFallback')}</span>
-        <small>diK · 14 · NOT_PROVEN_FOR_ALL_14</small>
+        <details><summary>{locale === 'fr' ? 'Détails linguistiques' : 'Language details'}</summary><small>diK · 14 · NOT_PROVEN_FOR_ALL_14</small></details>
       </div>{/if}
       {#if error}<div role="alert" class="alert error">
           <span>{error}</span><button aria-label={ui(locale,'closeError')} on:click={() => (error = '')}
@@ -1057,8 +1068,8 @@
               on:change={(e) => changeLens(e.target.value)}
               >{#if !boot.lenses.some((l) => l.id === lensId)}<option value={lensId}
                   >{typeLabel(query.selection.entityType)}</option
-                >{/if}{#each boot.lenses as l}<option value={l.id}>{localizedLabel(l.label,locale)}</option
-                >{/each}</select
+                >{/if}{#each boot.lenses.filter(l => !technicalReaderView(boot,l.rootType)) as l}<option value={l.id}>{localizedLabel(l.label,locale)}</option>{/each}
+                {#if boot.lenses.some(l => technicalReaderView(boot,l.rootType))}<optgroup label={locale === 'fr' ? 'Structure technique' : 'Technical structure'}>{#each boot.lenses.filter(l => technicalReaderView(boot,l.rootType)) as l}<option value={l.id}>{localizedLabel(l.label,locale)}</option>{/each}</optgroup>{/if}</select
             ></span
           ></label
         ><label
@@ -1074,11 +1085,15 @@
           ></label
         >
         <div class="context-end">
-          <span>{boot.entities.length} {ui(locale,'catalog')}</span><span class="version-pill"
-            >{ui(locale,'pinned')}</span
-          >
+          <span>{technicalView ? boot.entities.filter(e => technicalReaderView(boot,e.type)).length : boot.entities.filter(e => !technicalReaderView(boot,e.type)).length} {ui(locale,'catalog')}</span>{#if showSource}<span class="version-pill">{ui(locale,'pinned')}</span>{/if}
         </div>
       </section>
+      {#if technicalView}<section class="technical-reader-notice" data-technical-view="true" aria-label={locale === 'fr' ? 'Vue technique' : 'Technical view'}>
+        <div><h2>{locale === 'fr' ? 'Exploration des connaissances non disponible dans cette perspective' : 'Knowledge exploration is unavailable in this perspective'}</h2>
+          <p>{locale === 'fr' ? 'Le lecteur expose ici des états, des artefacts ou des métadonnées. Choisissez une autre perspective si elle est disponible, ou un autre Kristal. Koreograph ne transforme pas ces éléments en connaissances du domaine.' : 'This reader exposes states, artifacts or metadata here. Choose another perspective if available, or another Kristal. Koreograph does not turn these elements into domain knowledge.'}</p></div>
+        <button class="button" aria-expanded={technicalOpen} on:click={() => technicalOpen = !technicalOpen}>{technicalOpen ? (locale === 'fr' ? 'Masquer la structure technique' : 'Hide technical structure') : (locale === 'fr' ? 'Examiner la structure technique' : 'Inspect technical structure')}</button>
+      </section>{/if}
+      {#if !switchingKristal && (!technicalView || technicalOpen)}
       <Communication
         uiLocale={locale}
         {query}
@@ -1089,7 +1104,7 @@
         {authToken}
         {kristal}
       />
-      <KompilerPanel {authToken} />
+      {#if showSource}<KompilerPanel {authToken} />{/if}
       <div class="workspace">
         <aside class="filters-panel" aria-label="Filtres">
           <div class="panel-heading">
@@ -1343,6 +1358,8 @@
                 selectedEntityId={selected}
                 inspect={(id) => inspect(id)}
                 fallback={fallbackAdaptive}
+                koreographEnabled={boot?.koreographAvailable === true && !fleetView && !technicalView && !switchingKristal}
+                koreographRevision={JSON.stringify(boot?.principal || null)}
                 {authToken}
                 {kristal}
               />
@@ -1356,7 +1373,7 @@
                 lensRef={lensId}
                 bind:path={constellationPath}
                 bind:limit={satelliteLimit}
-                koreographEnabled={boot?.koreographAvailable === true && !fleetView}
+                koreographEnabled={boot?.koreographAvailable === true && !fleetView && !technicalView && !switchingKristal}
                 koreographSession={JSON.stringify(boot?.principal || null)}
                 inspect={(id) => inspect(id)}
                 {authToken}
@@ -1523,8 +1540,9 @@
                 </div>{:else}<p>{ui(locale,'noVisibleAssertion')}</p>{/each}{/if}
           </aside>{/if}
       </div>
+      {/if}
       <footer class="page-footer">
-        <span class="footer-brand"><img src="/brand-logo.svg" alt="" aria-hidden="true" />{ui(locale,'footerBrand')}</span><span>{ui(locale,'footerDetails')} · v0.5</span>
+        <span class="footer-brand"><img src="/brand-logo.svg" alt="" aria-hidden="true" />{ui(locale,'footerBrand')}</span><span>{ui(locale,'footerDetails')}</span>
       </footer>
       </div>{/if}
     </main>

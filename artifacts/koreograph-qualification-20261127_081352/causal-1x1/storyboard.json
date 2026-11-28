@@ -1,0 +1,123 @@
+{
+  "format": "koreograph.projection-storyboard/0.1",
+  "compilerVersion": "0.3.2",
+  "projectionSha256": "522ae0193d17600c42099c3d873cb08c176e268822fd56ee388cc03610c4eb44",
+  "projectionKind": "causal-feedback",
+  "mode": "qualified-causal",
+  "title": "Relations et causalité",
+  "aspectRatio": "1:1",
+  "derived": true,
+  "authoritative": false,
+  "publicationAuthorized": false,
+  "partial": false,
+  "omitted": 0,
+  "totalPages": 3,
+  "durationMs": 15600,
+  "pages": [
+    {
+      "label": "Relation causale qualifiée",
+      "cards": [
+        {
+          "id": "b",
+          "label": "Chauffage simulé",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "a",
+          "label": "Température simulée",
+          "detail": "",
+          "kind": "entity"
+        }
+      ],
+      "links": [
+        {
+          "from": "b",
+          "to": "a",
+          "label": "augmente",
+          "ref": "x",
+          "directed": true
+        }
+      ],
+      "note": "Révélation de relations, aucune propagation temporelle simulée.",
+      "refs": [
+        "x"
+      ],
+      "transcript": [
+        "Chauffage simulé — augmente — Température simulée (signe +)"
+      ],
+      "startMs": 0,
+      "endMs": 5200
+    },
+    {
+      "label": "Relation causale qualifiée",
+      "cards": [
+        {
+          "id": "a",
+          "label": "Température simulée",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "c",
+          "label": "Thermostat simulé",
+          "detail": "",
+          "kind": "entity"
+        }
+      ],
+      "links": [
+        {
+          "from": "a",
+          "to": "c",
+          "label": "augmente",
+          "ref": "y",
+          "directed": true
+        }
+      ],
+      "note": "Révélation de relations, aucune propagation temporelle simulée.",
+      "refs": [
+        "y"
+      ],
+      "transcript": [
+        "Température simulée — augmente — Thermostat simulé (signe +)"
+      ],
+      "startMs": 5200,
+      "endMs": 10400
+    },
+    {
+      "label": "Relation causale qualifiée",
+      "cards": [
+        {
+          "id": "c",
+          "label": "Thermostat simulé",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "b",
+          "label": "Chauffage simulé",
+          "detail": "",
+          "kind": "entity"
+        }
+      ],
+      "links": [
+        {
+          "from": "c",
+          "to": "b",
+          "label": "diminue",
+          "ref": "z",
+          "directed": true
+        }
+      ],
+      "note": "Révélation de relations, aucune propagation temporelle simulée.",
+      "refs": [
+        "z"
+      ],
+      "transcript": [
+        "Thermostat simulé — diminue — Chauffage simulé (signe −)"
+      ],
+      "startMs": 10400,
+      "endMs": 15600
+    }
+  ]
+}

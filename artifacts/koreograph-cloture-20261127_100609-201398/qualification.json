@@ -1,0 +1,1645 @@
+{
+  "format": "koreograph.real-campaign/0.1",
+  "state": "fail",
+  "publicationAuthorized": false,
+  "scope": "API locale réelle, compilation et contrôles SVG/HTML échantillonnés; pas de qualification exhaustive des droits, du composant Svelte, ni de publication.",
+  "settings": {
+    "ratio": "1:1",
+    "theme": "signature",
+    "browsers": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "apiOnly": false,
+    "limits": {
+      "kristals": 6,
+      "policies": 2,
+      "lenses": 1,
+      "recipes": 2,
+      "cases": 24
+    }
+  },
+  "catalogue": {
+    "available": 127,
+    "unavailable": 0,
+    "selected": 6,
+    "excluded": 0
+  },
+  "sources": [
+    {
+      "id": "K01",
+      "state": "sampled",
+      "policies": [
+        {
+          "id": "P1",
+          "state": "sampled",
+          "lenses": [
+            {
+              "id": "L1",
+              "state": "sampled",
+              "errors": [],
+              "availableRecipes": 3
+            }
+          ],
+          "errors": [],
+          "visibleEntities": 15,
+          "availableLenses": 2
+        }
+      ],
+      "errors": [],
+      "availablePolicies": 1,
+      "unavailablePolicies": 0
+    },
+    {
+      "id": "K02",
+      "state": "sampled",
+      "policies": [
+        {
+          "id": "P1",
+          "state": "sampled",
+          "lenses": [
+            {
+              "id": "L1",
+              "state": "sampled",
+              "errors": [],
+              "availableRecipes": 3
+            }
+          ],
+          "errors": [],
+          "visibleEntities": 3,
+          "availableLenses": 2
+        }
+      ],
+      "errors": [],
+      "availablePolicies": 1,
+      "unavailablePolicies": 0
+    },
+    {
+      "id": "K03",
+      "state": "sampled",
+      "policies": [
+        {
+          "id": "P1",
+          "state": "sampled",
+          "lenses": [
+            {
+              "id": "L1",
+              "state": "sampled",
+              "errors": [],
+              "availableRecipes": 3
+            }
+          ],
+          "errors": [],
+          "visibleEntities": 15,
+          "availableLenses": 2
+        }
+      ],
+      "errors": [],
+      "availablePolicies": 1,
+      "unavailablePolicies": 0
+    },
+    {
+      "id": "K04",
+      "state": "sampled",
+      "policies": [
+        {
+          "id": "P1",
+          "state": "sampled",
+          "lenses": [
+            {
+              "id": "L1",
+              "state": "sampled",
+              "errors": [],
+              "availableRecipes": 3
+            }
+          ],
+          "errors": [],
+          "visibleEntities": 3,
+          "availableLenses": 2
+        }
+      ],
+      "errors": [],
+      "availablePolicies": 1,
+      "unavailablePolicies": 0
+    },
+    {
+      "id": "K05",
+      "state": "sampled",
+      "policies": [
+        {
+          "id": "P1",
+          "state": "sampled",
+          "lenses": [
+            {
+              "id": "L1",
+              "state": "sampled",
+              "errors": [],
+              "availableRecipes": 3
+            }
+          ],
+          "errors": [],
+          "visibleEntities": 11,
+          "availableLenses": 2
+        }
+      ],
+      "errors": [],
+      "availablePolicies": 1,
+      "unavailablePolicies": 0
+    },
+    {
+      "id": "K06",
+      "state": "sampled",
+      "policies": [
+        {
+          "id": "P1",
+          "state": "sampled",
+          "lenses": [
+            {
+              "id": "L1",
+              "state": "sampled",
+              "errors": [],
+              "availableRecipes": 3
+            }
+          ],
+          "errors": [],
+          "visibleEntities": 10,
+          "availableLenses": 2
+        }
+      ],
+      "errors": [],
+      "availablePolicies": 1,
+      "unavailablePolicies": 0
+    }
+  ],
+  "cases": [
+    {
+      "id": "C001",
+      "source": "K01",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "orbital",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "21fa8333dee740d9688dddd85632be047c32f0aa593985dfda798bdbf1415640",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f6eee4cfc34fadfb7fc58074f0d13f507218833b2b39ac2feba4fd41167abe2f",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "21fa8333dee740d9688dddd85632be047c32f0aa593985dfda798bdbf1415640",
+          "browser": "Firefox 155.0",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f6eee4cfc34fadfb7fc58074f0d13f507218833b2b39ac2feba4fd41167abe2f",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "21fa8333dee740d9688dddd85632be047c32f0aa593985dfda798bdbf1415640",
+          "browser": "WebKit 26.6",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f6eee4cfc34fadfb7fc58074f0d13f507218833b2b39ac2feba4fd41167abe2f",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "modes": [
+        "auto",
+        "script",
+        "capture"
+      ],
+      "scenes": 3,
+      "partial": true,
+      "svgSha256": "21fa8333dee740d9688dddd85632be047c32f0aa593985dfda798bdbf1415640",
+      "htmlSha256": "f6eee4cfc34fadfb7fc58074f0d13f507218833b2b39ac2feba4fd41167abe2f"
+    },
+    {
+      "id": "C002",
+      "source": "K01",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "traceability",
+      "renderer": "traceability",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7d5dcfbb97f5a148c06571008f3959a03fe34a15c09951881a9620881ad33172",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "b4c984ab040346872e9a44724533dc13caf62fc8d1d3c91414a0b4c541ae766f",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7d5dcfbb97f5a148c06571008f3959a03fe34a15c09951881a9620881ad33172",
+          "browser": "Firefox 155.0",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "b4c984ab040346872e9a44724533dc13caf62fc8d1d3c91414a0b4c541ae766f",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7d5dcfbb97f5a148c06571008f3959a03fe34a15c09951881a9620881ad33172",
+          "browser": "WebKit 26.6",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "b4c984ab040346872e9a44724533dc13caf62fc8d1d3c91414a0b4c541ae766f",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "traceability",
+      "mode": "traceability",
+      "pages": 12,
+      "partial": true,
+      "omitted": 16,
+      "empty": false,
+      "svgSha256": "7d5dcfbb97f5a148c06571008f3959a03fe34a15c09951881a9620881ad33172",
+      "htmlSha256": "b4c984ab040346872e9a44724533dc13caf62fc8d1d3c91414a0b4c541ae766f"
+    },
+    {
+      "id": "C003",
+      "source": "K01",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "path",
+      "renderer": "flow-path",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "4d39dd340e81ea8b242b03a6c089a1ddb2cbcd45000ea7aaeda020d50d8e2a48",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 42240,
+          "samples": 459,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "75c2d588261b5745867606db26f26661d302ff6b12e8147584ed09bad683dacc",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "4d39dd340e81ea8b242b03a6c089a1ddb2cbcd45000ea7aaeda020d50d8e2a48",
+          "browser": "Firefox 155.0",
+          "durationMs": 42240,
+          "samples": 459,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "75c2d588261b5745867606db26f26661d302ff6b12e8147584ed09bad683dacc",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "4d39dd340e81ea8b242b03a6c089a1ddb2cbcd45000ea7aaeda020d50d8e2a48",
+          "browser": "WebKit 26.6",
+          "durationMs": 42240,
+          "samples": 459,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "75c2d588261b5745867606db26f26661d302ff6b12e8147584ed09bad683dacc",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "flow",
+      "mode": "flow",
+      "pages": 12,
+      "partial": true,
+      "omitted": 2,
+      "empty": false,
+      "svgSha256": "4d39dd340e81ea8b242b03a6c089a1ddb2cbcd45000ea7aaeda020d50d8e2a48",
+      "htmlSha256": "75c2d588261b5745867606db26f26661d302ff6b12e8147584ed09bad683dacc"
+    },
+    {
+      "id": "C004",
+      "source": "K02",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "orbital",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7ce28dd282f32f9872a2ab2849709b5d05c2832d137c2e21c4897a91ebbb2607",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 7050,
+          "samples": 168,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "6a492a698a1a7c2e6141fc8d46dd19811f5c47547f390afc9e218239c31ab317",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7ce28dd282f32f9872a2ab2849709b5d05c2832d137c2e21c4897a91ebbb2607",
+          "browser": "Firefox 155.0",
+          "durationMs": 7050,
+          "samples": 168,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "6a492a698a1a7c2e6141fc8d46dd19811f5c47547f390afc9e218239c31ab317",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7ce28dd282f32f9872a2ab2849709b5d05c2832d137c2e21c4897a91ebbb2607",
+          "browser": "WebKit 26.6",
+          "durationMs": 7050,
+          "samples": 168,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "6a492a698a1a7c2e6141fc8d46dd19811f5c47547f390afc9e218239c31ab317",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "modes": [
+        "auto",
+        "script",
+        "capture"
+      ],
+      "scenes": 3,
+      "partial": false,
+      "svgSha256": "7ce28dd282f32f9872a2ab2849709b5d05c2832d137c2e21c4897a91ebbb2607",
+      "htmlSha256": "6a492a698a1a7c2e6141fc8d46dd19811f5c47547f390afc9e218239c31ab317"
+    },
+    {
+      "id": "C005",
+      "source": "K02",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "traceability",
+      "renderer": "traceability",
+      "state": "pass",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "6748f8191fe4c0ca62c7a2d48b843d4f079ae439d000d99448fe52d5b41f54f5",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 13200,
+          "samples": 137,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "201b26f26477e013d4762b95873efff30d1e90280c615f7e9a9464c1f08f8d1c",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "6748f8191fe4c0ca62c7a2d48b843d4f079ae439d000d99448fe52d5b41f54f5",
+          "browser": "Firefox 155.0",
+          "durationMs": 13200,
+          "samples": 137,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "201b26f26477e013d4762b95873efff30d1e90280c615f7e9a9464c1f08f8d1c",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "6748f8191fe4c0ca62c7a2d48b843d4f079ae439d000d99448fe52d5b41f54f5",
+          "browser": "WebKit 26.6",
+          "durationMs": 13200,
+          "samples": 137,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "201b26f26477e013d4762b95873efff30d1e90280c615f7e9a9464c1f08f8d1c",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "traceability",
+      "mode": "traceability",
+      "pages": 4,
+      "partial": false,
+      "omitted": 0,
+      "empty": false,
+      "svgSha256": "6748f8191fe4c0ca62c7a2d48b843d4f079ae439d000d99448fe52d5b41f54f5",
+      "htmlSha256": "201b26f26477e013d4762b95873efff30d1e90280c615f7e9a9464c1f08f8d1c"
+    },
+    {
+      "id": "C006",
+      "source": "K02",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "path",
+      "renderer": "flow-path",
+      "state": "pass",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "455b3ef2a5a960f03744dbc186da7493adf817cb62585050b341567e9dc10089",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 7040,
+          "samples": 76,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "596026e1e5bdbd70e1fd6f47c1b6c85970d491858b3e0058d728fb3acb09ef86",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "455b3ef2a5a960f03744dbc186da7493adf817cb62585050b341567e9dc10089",
+          "browser": "Firefox 155.0",
+          "durationMs": 7040,
+          "samples": 76,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "596026e1e5bdbd70e1fd6f47c1b6c85970d491858b3e0058d728fb3acb09ef86",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "455b3ef2a5a960f03744dbc186da7493adf817cb62585050b341567e9dc10089",
+          "browser": "WebKit 26.6",
+          "durationMs": 7040,
+          "samples": 76,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "596026e1e5bdbd70e1fd6f47c1b6c85970d491858b3e0058d728fb3acb09ef86",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "flow",
+      "mode": "flow",
+      "pages": 2,
+      "partial": false,
+      "omitted": 0,
+      "empty": false,
+      "svgSha256": "455b3ef2a5a960f03744dbc186da7493adf817cb62585050b341567e9dc10089",
+      "htmlSha256": "596026e1e5bdbd70e1fd6f47c1b6c85970d491858b3e0058d728fb3acb09ef86"
+    },
+    {
+      "id": "C007",
+      "source": "K03",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "orbital",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "b8a68cf938bc6e902cd6d34614961849e57cb21c279476f99effd83da5f067b3",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "81a3e8206391a0670d2c72f25a1cc9ed1560bb41562eb1feb41018445c33fdba",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "b8a68cf938bc6e902cd6d34614961849e57cb21c279476f99effd83da5f067b3",
+          "browser": "Firefox 155.0",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "81a3e8206391a0670d2c72f25a1cc9ed1560bb41562eb1feb41018445c33fdba",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "b8a68cf938bc6e902cd6d34614961849e57cb21c279476f99effd83da5f067b3",
+          "browser": "WebKit 26.6",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "81a3e8206391a0670d2c72f25a1cc9ed1560bb41562eb1feb41018445c33fdba",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "modes": [
+        "auto",
+        "script",
+        "capture"
+      ],
+      "scenes": 3,
+      "partial": true,
+      "svgSha256": "b8a68cf938bc6e902cd6d34614961849e57cb21c279476f99effd83da5f067b3",
+      "htmlSha256": "81a3e8206391a0670d2c72f25a1cc9ed1560bb41562eb1feb41018445c33fdba"
+    },
+    {
+      "id": "C008",
+      "source": "K03",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "traceability",
+      "renderer": "traceability",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "f18ea4e0022b04ca19945f6190cddc1e66ed84cc9c9ed13b4b04ec032f76e576",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "3e868121a4fc303bca3c451301586b5a41a692ed0126b59b9460ba8318d66e31",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "f18ea4e0022b04ca19945f6190cddc1e66ed84cc9c9ed13b4b04ec032f76e576",
+          "browser": "Firefox 155.0",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "3e868121a4fc303bca3c451301586b5a41a692ed0126b59b9460ba8318d66e31",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "f18ea4e0022b04ca19945f6190cddc1e66ed84cc9c9ed13b4b04ec032f76e576",
+          "browser": "WebKit 26.6",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "3e868121a4fc303bca3c451301586b5a41a692ed0126b59b9460ba8318d66e31",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "traceability",
+      "mode": "traceability",
+      "pages": 12,
+      "partial": true,
+      "omitted": 16,
+      "empty": false,
+      "svgSha256": "f18ea4e0022b04ca19945f6190cddc1e66ed84cc9c9ed13b4b04ec032f76e576",
+      "htmlSha256": "3e868121a4fc303bca3c451301586b5a41a692ed0126b59b9460ba8318d66e31"
+    },
+    {
+      "id": "C009",
+      "source": "K03",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "path",
+      "renderer": "flow-path",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "9fe16bdc7bc16eb2d0807525469d1864763d00f878bfa83a68a78372fb1019b2",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 42240,
+          "samples": 459,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "b94cee0452aa799feb55660b2b7f9a393ccc555918914318a79ef0a2428fecb6",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "9fe16bdc7bc16eb2d0807525469d1864763d00f878bfa83a68a78372fb1019b2",
+          "browser": "Firefox 155.0",
+          "durationMs": 42240,
+          "samples": 459,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "b94cee0452aa799feb55660b2b7f9a393ccc555918914318a79ef0a2428fecb6",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "9fe16bdc7bc16eb2d0807525469d1864763d00f878bfa83a68a78372fb1019b2",
+          "browser": "WebKit 26.6",
+          "durationMs": 42240,
+          "samples": 459,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "b94cee0452aa799feb55660b2b7f9a393ccc555918914318a79ef0a2428fecb6",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "flow",
+      "mode": "flow",
+      "pages": 12,
+      "partial": true,
+      "omitted": 2,
+      "empty": false,
+      "svgSha256": "9fe16bdc7bc16eb2d0807525469d1864763d00f878bfa83a68a78372fb1019b2",
+      "htmlSha256": "b94cee0452aa799feb55660b2b7f9a393ccc555918914318a79ef0a2428fecb6"
+    },
+    {
+      "id": "C010",
+      "source": "K04",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "orbital",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "5c7b410569eda522b3ecbcfd5f9ff1d0a23be5a8831970bb755769209991108a",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 7050,
+          "samples": 168,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "192e36270bc5955959d9f4a4881ddbb21c8192f0bd5c96252740a1cadcc9f7ca",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "5c7b410569eda522b3ecbcfd5f9ff1d0a23be5a8831970bb755769209991108a",
+          "browser": "Firefox 155.0",
+          "durationMs": 7050,
+          "samples": 168,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "192e36270bc5955959d9f4a4881ddbb21c8192f0bd5c96252740a1cadcc9f7ca",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "5c7b410569eda522b3ecbcfd5f9ff1d0a23be5a8831970bb755769209991108a",
+          "browser": "WebKit 26.6",
+          "durationMs": 7050,
+          "samples": 168,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "192e36270bc5955959d9f4a4881ddbb21c8192f0bd5c96252740a1cadcc9f7ca",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "modes": [
+        "auto",
+        "script",
+        "capture"
+      ],
+      "scenes": 3,
+      "partial": false,
+      "svgSha256": "5c7b410569eda522b3ecbcfd5f9ff1d0a23be5a8831970bb755769209991108a",
+      "htmlSha256": "192e36270bc5955959d9f4a4881ddbb21c8192f0bd5c96252740a1cadcc9f7ca"
+    },
+    {
+      "id": "C011",
+      "source": "K04",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "traceability",
+      "renderer": "traceability",
+      "state": "pass",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "ce9ef959d5ec8906fe551c6b970717c9e9560c2590a002a6d87eca3347c349b3",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 13200,
+          "samples": 137,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f1987340415ccf37fafc551e71e7fbcd1900dc2bda9bd316ac4611ec096db8a3",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "ce9ef959d5ec8906fe551c6b970717c9e9560c2590a002a6d87eca3347c349b3",
+          "browser": "Firefox 155.0",
+          "durationMs": 13200,
+          "samples": 137,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f1987340415ccf37fafc551e71e7fbcd1900dc2bda9bd316ac4611ec096db8a3",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "ce9ef959d5ec8906fe551c6b970717c9e9560c2590a002a6d87eca3347c349b3",
+          "browser": "WebKit 26.6",
+          "durationMs": 13200,
+          "samples": 137,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f1987340415ccf37fafc551e71e7fbcd1900dc2bda9bd316ac4611ec096db8a3",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "traceability",
+      "mode": "traceability",
+      "pages": 4,
+      "partial": false,
+      "omitted": 0,
+      "empty": false,
+      "svgSha256": "ce9ef959d5ec8906fe551c6b970717c9e9560c2590a002a6d87eca3347c349b3",
+      "htmlSha256": "f1987340415ccf37fafc551e71e7fbcd1900dc2bda9bd316ac4611ec096db8a3"
+    },
+    {
+      "id": "C012",
+      "source": "K04",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "path",
+      "renderer": "flow-path",
+      "state": "pass",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "378a81c5656a4133cd4d23b7c30075e7ba3f83b1ff86da3aad4e23d5e4a267aa",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 7040,
+          "samples": 76,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f9d4af9ee1177ba4a6d5a60e72e73fd2c3516dbce88a480cc644dd807d8f30a1",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "378a81c5656a4133cd4d23b7c30075e7ba3f83b1ff86da3aad4e23d5e4a267aa",
+          "browser": "Firefox 155.0",
+          "durationMs": 7040,
+          "samples": 76,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f9d4af9ee1177ba4a6d5a60e72e73fd2c3516dbce88a480cc644dd807d8f30a1",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "378a81c5656a4133cd4d23b7c30075e7ba3f83b1ff86da3aad4e23d5e4a267aa",
+          "browser": "WebKit 26.6",
+          "durationMs": 7040,
+          "samples": 76,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "f9d4af9ee1177ba4a6d5a60e72e73fd2c3516dbce88a480cc644dd807d8f30a1",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "flow",
+      "mode": "flow",
+      "pages": 2,
+      "partial": false,
+      "omitted": 0,
+      "empty": false,
+      "svgSha256": "378a81c5656a4133cd4d23b7c30075e7ba3f83b1ff86da3aad4e23d5e4a267aa",
+      "htmlSha256": "f9d4af9ee1177ba4a6d5a60e72e73fd2c3516dbce88a480cc644dd807d8f30a1"
+    },
+    {
+      "id": "C013",
+      "source": "K05",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "orbital",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "da09af17f2cf859e2f3153b656975b118e6bd62dabd37a686928618d11e4d9ef",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "6d2eb66292713e32f5c439054878ded1753f460b86406fefa87070eb08d40411",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "da09af17f2cf859e2f3153b656975b118e6bd62dabd37a686928618d11e4d9ef",
+          "browser": "Firefox 155.0",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "6d2eb66292713e32f5c439054878ded1753f460b86406fefa87070eb08d40411",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "da09af17f2cf859e2f3153b656975b118e6bd62dabd37a686928618d11e4d9ef",
+          "browser": "WebKit 26.6",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "6d2eb66292713e32f5c439054878ded1753f460b86406fefa87070eb08d40411",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "modes": [
+        "auto",
+        "script",
+        "capture"
+      ],
+      "scenes": 3,
+      "partial": true,
+      "svgSha256": "da09af17f2cf859e2f3153b656975b118e6bd62dabd37a686928618d11e4d9ef",
+      "htmlSha256": "6d2eb66292713e32f5c439054878ded1753f460b86406fefa87070eb08d40411"
+    },
+    {
+      "id": "C014",
+      "source": "K05",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "traceability",
+      "renderer": "traceability",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "2487a5831ffecea22edb478628e24694b6c7e606fbb1b7989a3c9b7654c65b8f",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "2129daf8a60f1f88139155401763a24eeae1b99ef8d16c23b0ea79d3a519486d",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "2487a5831ffecea22edb478628e24694b6c7e606fbb1b7989a3c9b7654c65b8f",
+          "browser": "Firefox 155.0",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "2129daf8a60f1f88139155401763a24eeae1b99ef8d16c23b0ea79d3a519486d",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "2487a5831ffecea22edb478628e24694b6c7e606fbb1b7989a3c9b7654c65b8f",
+          "browser": "WebKit 26.6",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "2129daf8a60f1f88139155401763a24eeae1b99ef8d16c23b0ea79d3a519486d",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "traceability",
+      "mode": "traceability",
+      "pages": 12,
+      "partial": true,
+      "omitted": 8,
+      "empty": false,
+      "svgSha256": "2487a5831ffecea22edb478628e24694b6c7e606fbb1b7989a3c9b7654c65b8f",
+      "htmlSha256": "2129daf8a60f1f88139155401763a24eeae1b99ef8d16c23b0ea79d3a519486d"
+    },
+    {
+      "id": "C015",
+      "source": "K05",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "path",
+      "renderer": "flow-path",
+      "state": "pass",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "91be67db574020a85be30f3af38065b3759075984f451c5a61eed42fa8b77d18",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 35200,
+          "samples": 381,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "03639e6294172631306dd7183d7a3827e20d3b8571aed64909019a5671f7513a",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "91be67db574020a85be30f3af38065b3759075984f451c5a61eed42fa8b77d18",
+          "browser": "Firefox 155.0",
+          "durationMs": 35200,
+          "samples": 381,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "03639e6294172631306dd7183d7a3827e20d3b8571aed64909019a5671f7513a",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "91be67db574020a85be30f3af38065b3759075984f451c5a61eed42fa8b77d18",
+          "browser": "WebKit 26.6",
+          "durationMs": 35200,
+          "samples": 381,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "03639e6294172631306dd7183d7a3827e20d3b8571aed64909019a5671f7513a",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "flow",
+      "mode": "flow",
+      "pages": 10,
+      "partial": false,
+      "omitted": 0,
+      "empty": false,
+      "svgSha256": "91be67db574020a85be30f3af38065b3759075984f451c5a61eed42fa8b77d18",
+      "htmlSha256": "03639e6294172631306dd7183d7a3827e20d3b8571aed64909019a5671f7513a"
+    },
+    {
+      "id": "C016",
+      "source": "K06",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "orbital",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "16f23fb9f372f48c436d0427e628e5fe2b9a089b5f028f381c5d7f40fcc24ad2",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "29a168e2a8371b847d06ed7b5fa7d699b3b4fc1e882d236f9e89312d025584f6",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "16f23fb9f372f48c436d0427e628e5fe2b9a089b5f028f381c5d7f40fcc24ad2",
+          "browser": "Firefox 155.0",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "review",
+          "diagnostics": [
+            "R-TEXT-OVERLAP"
+          ],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "29a168e2a8371b847d06ed7b5fa7d699b3b4fc1e882d236f9e89312d025584f6",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "16f23fb9f372f48c436d0427e628e5fe2b9a089b5f028f381c5d7f40fcc24ad2",
+          "browser": "WebKit 26.6",
+          "durationMs": 7485,
+          "samples": 176,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "29a168e2a8371b847d06ed7b5fa7d699b3b4fc1e882d236f9e89312d025584f6",
+            "tested": [
+              "standard"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "modes": [
+        "auto",
+        "script",
+        "capture"
+      ],
+      "scenes": 3,
+      "partial": true,
+      "svgSha256": "16f23fb9f372f48c436d0427e628e5fe2b9a089b5f028f381c5d7f40fcc24ad2",
+      "htmlSha256": "29a168e2a8371b847d06ed7b5fa7d699b3b4fc1e882d236f9e89312d025584f6"
+    },
+    {
+      "id": "C017",
+      "source": "K06",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "traceability",
+      "renderer": "traceability",
+      "state": "review",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7cfaa574d915ddbebe1b665864a4db356d9e502b3eec926c8701c55da858a21a",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "583c9180de29e02bb874889fc7e14397de6ceef11a06e16321ee8b2f1b89e83d",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7cfaa574d915ddbebe1b665864a4db356d9e502b3eec926c8701c55da858a21a",
+          "browser": "Firefox 155.0",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "583c9180de29e02bb874889fc7e14397de6ceef11a06e16321ee8b2f1b89e83d",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "7cfaa574d915ddbebe1b665864a4db356d9e502b3eec926c8701c55da858a21a",
+          "browser": "WebKit 26.6",
+          "durationMs": 39600,
+          "samples": 425,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "583c9180de29e02bb874889fc7e14397de6ceef11a06e16321ee8b2f1b89e83d",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "traceability",
+      "mode": "traceability",
+      "pages": 12,
+      "partial": true,
+      "omitted": 6,
+      "empty": false,
+      "svgSha256": "7cfaa574d915ddbebe1b665864a4db356d9e502b3eec926c8701c55da858a21a",
+      "htmlSha256": "583c9180de29e02bb874889fc7e14397de6ceef11a06e16321ee8b2f1b89e83d"
+    },
+    {
+      "id": "C018",
+      "source": "K06",
+      "policy": "P1",
+      "lens": "L1",
+      "kind": "specialized",
+      "recipe": "path",
+      "renderer": "flow-path",
+      "state": "fail",
+      "diagnostics": [],
+      "runtime": [
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "6f9f805fc18cbf6439be65951ba02168f5e3f28a197f3a1db3ebcc30f962f3fb",
+          "browser": "Chromium 153.0.8010.12",
+          "durationMs": 31680,
+          "samples": 344,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "bcb3dddfcd268c6469f96d1ea03bdfee5784d9752f82d2eb4315cf15ee0512c9",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        },
+        {
+          "sha256": "6f9f805fc18cbf6439be65951ba02168f5e3f28a197f3a1db3ebcc30f962f3fb",
+          "browser": "firefox",
+          "state": "fail",
+          "diagnostics": [
+            "R-REAL-BROWSER-EXECUTION"
+          ],
+          "publicationAuthorized": false
+        },
+        {
+          "format": "koreograph.runtime-check/0.1",
+          "sha256": "6f9f805fc18cbf6439be65951ba02168f5e3f28a197f3a1db3ebcc30f962f3fb",
+          "browser": "WebKit 26.6",
+          "durationMs": 31680,
+          "samples": 344,
+          "state": "pass",
+          "diagnostics": [],
+          "publicationAuthorized": false,
+          "scope": "sampled SMIL text geometry, JS errors and attempted network; not WCAG or Reader Policy qualification",
+          "html": {
+            "sha256": "bcb3dddfcd268c6469f96d1ea03bdfee5784d9752f82d2eb4315cf15ee0512c9",
+            "tested": [
+              "standard",
+              "reduced"
+            ],
+            "diagnostics": [],
+            "state": "pass"
+          }
+        }
+      ],
+      "family": "flow",
+      "mode": "flow",
+      "pages": 9,
+      "partial": false,
+      "omitted": 0,
+      "empty": false,
+      "svgSha256": "6f9f805fc18cbf6439be65951ba02168f5e3f28a197f3a1db3ebcc30f962f3fb",
+      "htmlSha256": "bcb3dddfcd268c6469f96d1ea03bdfee5784d9752f82d2eb4315cf15ee0512c9"
+    }
+  ],
+  "policyProbes": [],
+  "limitsHit": [
+    "kristals",
+    "lenses",
+    "recipes"
+  ],
+  "errors": [],
+  "summary": {
+    "sources": 6,
+    "cases": 18,
+    "pass": 5,
+    "review": 12,
+    "fail": 1,
+    "runtimeChecks": 54,
+    "policyPass": 0,
+    "policyFail": 0,
+    "families": [
+      "flow",
+      "traceability"
+    ]
+  }
+}

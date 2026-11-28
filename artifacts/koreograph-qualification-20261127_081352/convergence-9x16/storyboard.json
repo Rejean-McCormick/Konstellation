@@ -1,0 +1,83 @@
+{
+  "format": "koreograph.projection-storyboard/0.1",
+  "compilerVersion": "0.3.2",
+  "projectionSha256": "7558d0044fb3572820fd169fc77a00d03884523754d2752dfa50c51ee78932d3",
+  "projectionKind": "dag",
+  "mode": "dag",
+  "title": "Dépendances et convergence",
+  "aspectRatio": "9:16",
+  "derived": true,
+  "authoritative": false,
+  "publicationAuthorized": false,
+  "partial": false,
+  "omitted": 0,
+  "totalPages": 1,
+  "durationMs": 6600,
+  "pages": [
+    {
+      "label": "Convergence de relations",
+      "cards": [
+        {
+          "id": "a",
+          "label": "Mesure",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "d",
+          "label": "Analyse",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "b",
+          "label": "Observation",
+          "detail": "",
+          "kind": "entity"
+        },
+        {
+          "id": "c",
+          "label": "Contexte",
+          "detail": "",
+          "kind": "entity"
+        }
+      ],
+      "links": [
+        {
+          "from": "a",
+          "to": "d",
+          "label": "contribue à",
+          "ref": "x",
+          "directed": true
+        },
+        {
+          "from": "b",
+          "to": "d",
+          "label": "contribue à",
+          "ref": "y",
+          "directed": true
+        },
+        {
+          "from": "c",
+          "to": "d",
+          "label": "contribue à",
+          "ref": "z",
+          "directed": true
+        }
+      ],
+      "note": "Ordre des relations affichées, pas une preuve.",
+      "refs": [
+        "x",
+        "y",
+        "z"
+      ],
+      "transcript": [
+        "Mesure — contribue à — Analyse",
+        "Observation — contribue à — Analyse",
+        "Contexte — contribue à — Analyse"
+      ],
+      "startMs": 0,
+      "endMs": 6600
+    }
+  ]
+}

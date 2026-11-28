@@ -1,0 +1,68 @@
+{
+  "format": "koreograph.projection-storyboard/0.1",
+  "compilerVersion": "0.3.2",
+  "projectionSha256": "759eb1f946a2a65f6cfaf876677937cb37a69c5ab323ee15b61aa7603ae7e777",
+  "projectionKind": "timeline-lineage",
+  "mode": "timeline-lineage",
+  "title": "Repères temporels",
+  "aspectRatio": "9:16",
+  "derived": true,
+  "authoritative": false,
+  "publicationAuthorized": false,
+  "partial": false,
+  "omitted": 0,
+  "totalPages": 2,
+  "durationMs": 14760,
+  "pages": [
+    {
+      "label": "Repères ordonnés",
+      "cards": [
+        {
+          "id": "a",
+          "label": "Premier dessin",
+          "detail": "année fictive · 2000",
+          "kind": "concept"
+        },
+        {
+          "id": "b",
+          "label": "Prototype",
+          "detail": "année fictive · 2005",
+          "kind": "concept"
+        },
+        {
+          "id": "c",
+          "label": "Version finale",
+          "detail": "année fictive · 2012",
+          "kind": "concept"
+        }
+      ],
+      "links": [],
+      "note": "Ordre de début connu ; espacements non proportionnels au temps.",
+      "refs": [
+        "ref-a",
+        "ref-b",
+        "ref-c"
+      ],
+      "startMs": 0,
+      "endMs": 9000
+    },
+    {
+      "label": "Repères ordonnés",
+      "cards": [
+        {
+          "id": "d",
+          "label": "Révision",
+          "detail": "année fictive · 2018",
+          "kind": "concept"
+        }
+      ],
+      "links": [],
+      "note": "Ordre de début connu ; espacements non proportionnels au temps.",
+      "refs": [
+        "ref-d"
+      ],
+      "startMs": 9000,
+      "endMs": 14760
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+/* Shared, unscoped rules: studio children are created with document.createElement,
+   and both players import SVG nodes after compilation. Do not scope to Svelte hashes. */
+:is(.koreograph-studio,.kg-specialized) {
+  box-sizing:border-box; min-width:0; max-width:100%; margin:12px 0; padding:12px;
+  border:1px solid #1e6864; border-radius:12px; background:#f8fbfa; color:#183b38;
+  overflow-wrap:anywhere;
+}
+:is(.koreograph-studio,.kg-specialized) .kg-header {
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; flex:none;
+}
+:is(.koreograph-studio,.kg-specialized) .kg-title {color:#1e6864; margin:0; font:700 1.2rem system-ui,sans-serif;}
+:is(.koreograph-studio,.kg-specialized) .kg-controls,
+:is(.koreograph-studio,.kg-specialized) .kg-player {
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center; min-width:0; margin:8px 0;
+}
+:is(.koreograph-studio,.kg-specialized) .kg-setup {min-width:0;}
+:is(.koreograph-studio,.kg-specialized) .kg-setup details {border:0; padding:0; margin:4px 0;}
+:is(.koreograph-studio,.kg-specialized) .kg-setup summary {cursor:pointer; font-size:.85rem; font-weight:650; color:#1e6864;}
+:is(.koreograph-studio,.kg-specialized) .kg-controls label {display:grid; gap:4px; min-width:0; max-width:100%; font-size:.8rem;}
+:is(.koreograph-studio,.kg-specialized) :is(button,select) {
+  box-sizing:border-box; max-width:100%; border:1px solid #8bb2ad; border-radius:6px;
+  padding:6px 9px; font:500 .85rem/1.3 system-ui,sans-serif; color:#183b38; background:white;
+}
+:is(.koreograph-studio,.kg-specialized) button:not(:disabled):hover {background:#e1eeec;}
+:is(.koreograph-studio,.kg-specialized) button:disabled {opacity:.48;}
+:is(.koreograph-studio,.kg-specialized) :is(button,select,input,summary):focus-visible {outline:2px solid #1e6864; outline-offset:2px;}
+:is(.koreograph-studio,.kg-specialized) .kg-present-toggle {background:#1e6864;color:white;border-color:#1e6864;}
+:is(.koreograph-studio,.kg-specialized) .kg-present-toggle:not(:disabled):hover {background:#164d4a;}
+:is(.koreograph-studio,.kg-specialized) .kg-stage {
+  box-sizing:border-box; display:grid; place-items:center; width:100%; min-width:0; max-width:100%; min-height:0;
+  overflow:hidden; border-radius:8px; background:#e7efed;
+}
+:is(.koreograph-studio,.kg-specialized) .kg-stage:empty {background:transparent;}
+/* Explicit width bound for each native viewBox; height:auto preserves the aspect ratio. */
+:is(.koreograph-studio,.kg-specialized) .kg-stage > svg {
+  --kg-ratio:1.777777778; display:block; box-sizing:border-box; min-width:0; min-height:0;
+  width:min(100%,calc(65vh * var(--kg-ratio))); max-width:100%; height:auto; max-height:65vh;
+}
+:is(.koreograph-studio,.kg-specialized) .kg-stage > svg[viewBox="0 0 1080 1080"] {--kg-ratio:1;}
+:is(.koreograph-studio,.kg-specialized) .kg-stage > svg[viewBox="0 0 900 1600"] {--kg-ratio:.5625;}
+:is(.koreograph-studio,.kg-specialized) .kg-player {flex:none;}
+:is(.koreograph-studio,.kg-specialized) .kg-player input[type=range] {flex:1 1 8rem; min-width:0; max-width:100%; accent-color:#1e6864;}
+:is(.koreograph-studio,.kg-specialized) .kg-player output {white-space:nowrap;font-variant-numeric:tabular-nums;font-size:.8rem;}
+:is(.koreograph-studio,.kg-specialized) :is(.kg-status,.kg-legend,.kg-meta,.kg-description) {font-size:.8rem; margin:5px 0; line-height:1.35;}
+:is(.koreograph-studio,.kg-specialized) .kg-footer {min-width:0; font-size:.85rem;}
+:is(.koreograph-studio,.kg-specialized) [hidden] {display:none!important;}
+/* A presentation fills the browser viewport without reparenting the live reader. */
+body:has(.kg-presenting) {overflow:hidden;}
+:is(.koreograph-studio,.kg-specialized).kg-presenting {
+  position:fixed; inset:0; z-index:10000; width:100%; max-width:none; height:100dvh; max-height:none;
+  margin:0; padding:clamp(8px,1.2vw,18px); border:0; border-radius:0;
+  display:flex; flex-direction:column; gap:6px; overflow:auto; overscroll-behavior:contain;
+}
+.kg-presenting .kg-setup {flex:0 1 auto; max-height:31vh; overflow:auto;}
+.kg-presenting .kg-stage {flex:1 1 0; min-height:80px; container-type:size;}
+.kg-presenting .kg-stage > svg {width:100%; height:100%; max-height:none;}
+@supports (width:1cqw) {
+  .kg-presenting .kg-stage > svg {width:min(100cqw,calc(100cqh * var(--kg-ratio))); height:auto; max-height:100%;}
+}
+.kg-presenting .kg-player {margin:0;}
+.kg-presenting .kg-footer {flex:0 1 auto; max-height:19vh; overflow:auto;}
+@media (max-height:550px) {
+  .kg-presenting .kg-setup {max-height:26vh;}
+  .kg-presenting .kg-footer {max-height:12vh;}
+}
+/* Only the narrow adaptive projection cards: preserve text, avoid forcing wider columns. */
+.adaptive-projection :is(.renderer-stack,.renderer-card,.renderer-edge,.renderer-row,.renderer-card header) {min-width:0;overflow-wrap:anywhere;}
+.adaptive-projection .renderer-stack .renderer-edge {grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);}
+.adaptive-projection .renderer-stack .renderer-row {grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+.adaptive-projection .renderer-card header {flex-wrap:wrap;}
+@media(max-width:720px) {.adaptive-projection .renderer-stack .renderer-row {grid-template-columns:minmax(0,1fr);}}

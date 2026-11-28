@@ -1,0 +1,17 @@
+{
+  "format": "koreograph.real-ui-smoke/0.1",
+  "browser": "webkit",
+  "state": "fail",
+  "publicationAuthorized": false,
+  "checks": {
+    "catalogue": "pass",
+    "navigation": "pass",
+    "reader": "fail"
+  },
+  "sourcesAttempted": 1,
+  "diagnostics": [
+    "UI-READER-FAILED"
+  ],
+  "browserVersion": "26.6",
+  "renderer": "traceability"
+}
